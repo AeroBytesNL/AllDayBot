@@ -5,14 +5,9 @@ from env import *
 from database import *
 from datetime import datetime, date
 from dateutil import relativedelta
-import re
-from typing import Optional
 
 
-# TODO add admin mention when thread created
 # TODO change user.name to general name to prefend errors
-# TODO if thread deleted, remove also "Nieuwe ModMail ticket"
-# TODO fix "afwijzen" button
 
 class modmail(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -124,8 +119,8 @@ class modmail(commands.Cog):
         role_admin = guild.get_role(Role_ids.ADMIN)
         role_moderator = guild.get_role(Role_ids.MODERATOR)
 
-        channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
-        msg = await channel.send(f"Nieuwe ModMail ticket {role_admin.mention}, {role_moderator.mention}", allowed_mentions=disnake.AllowedMentions(roles=True))
+        channel = self.bot.get_channel(env_variable.MODMAIL_ID)
+        msg = await channel.send(f"Nieuwe ModMail ticket") # , allowed_mentions=disnake.AllowedMentions(roles=True)
         thread  = await channel.create_thread(name=f"{str(message.author.name)}&&MM", reason=f"ModMail for {message.author.name}", type=None, message=msg)
 
         # Embed 
