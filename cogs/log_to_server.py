@@ -62,7 +62,7 @@ class log_to_server(commands.Cog):
 
     # Messages in guild
     @commands.Cog.listener()
-    async def on_raw_message_delete(self, payload):
+    async def on_message_delete(self, payload):
         await self.message_deleted(payload, message=payload.content, channel=payload.channel)
             
     @commands.Cog.listener()
