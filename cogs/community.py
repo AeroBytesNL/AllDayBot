@@ -6,6 +6,8 @@ import pytz
 import numpy as np
 from database import Database
 import random
+
+
 class community(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
