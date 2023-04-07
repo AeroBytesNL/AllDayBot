@@ -39,7 +39,7 @@ levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.listening , name="jou"))
+    await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
     global guild    
     global channel
     guild = await bot.fetch_guild(env_variable.GUILD_ID)
@@ -607,7 +607,7 @@ bot.load_extension("cogs.log_to_server")
 bot.load_extension("cogs.community") 
 bot.load_extension("cogs.moderation") 
 bot.load_extension("cogs.configuration") 
-#bot.load_extension("cogs.modmail") 
+bot.load_extension("cogs.modmail") 
 
 
 
