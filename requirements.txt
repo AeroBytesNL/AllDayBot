@@ -1,0 +1,4 @@
+disnake
+mysql-connector
+schedule
+pytz
