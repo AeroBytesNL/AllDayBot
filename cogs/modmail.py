@@ -102,7 +102,7 @@ class modmail(commands.Cog):
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 await inter.response.send_message("Ik heb het verzoek geaccepteert!")
                 # Starting make thread function
-                await modmail.accept_or_deny(self, message, type=True)
+                await modmail.accept_or_deny(self, message, type=True, by_user=inter.author.name)
                 self_inside_button.stop()
 
             @disnake.ui.button(label="Afwijzen", style=disnake.ButtonStyle.grey)
@@ -112,7 +112,7 @@ class modmail(commands.Cog):
                 
                 await thread_to_close.delete(reason=f"Ticket gesloten door `{inter.author.name}`")
 
-                await modmail.accept_or_deny(self, message, type=False)
+                await modmail.accept_or_deny(self, message, type=False, by_user=inter.author.name)
                 await modmail.remove_last_msg(self)
                 self_inside_button.stop()
 
@@ -136,12 +136,12 @@ class modmail(commands.Cog):
         
 
     # Deny or accept request from user
-    async def accept_or_deny(self, message, type):
+    async def accept_or_deny(self, message, type, by_user):
             
         if type == True:
-            embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Verzoek geaccepteerd door `{message.author.name}`! Het kan even duren voor je antwoord krijgt.", color=disnake.Color.green())
+            embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Verzoek geaccepteerd door `{by_user}`! Het kan even duren voor je antwoord krijgt.", color=disnake.Color.green())
         else:
-            embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Verzoek gewijgerd door `{message.author.name}`! Probeer het anders opnieuw met een betere vraag.", color=disnake.Color.red())
+            embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Verzoek geweigerd door `{by_user}`! Probeer het anders opnieuw met een betere vraag.", color=disnake.Color.red())
         
         await message.channel.send(embed=embed)
 
