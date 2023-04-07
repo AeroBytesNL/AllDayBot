@@ -57,7 +57,6 @@ class modmail(commands.Cog):
                             await modmail.close_ticket_and_thread(self, message, member)
 
 
-        
 
     # First contact
     async def first_contact(self, message):
@@ -104,11 +103,10 @@ class modmail(commands.Cog):
             async def cancel(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 msg = await inter.response.send_message("Ik heb het verzoek afgewezen!")
                 thread_to_close= self.bot.get_channel(inter.channel.id)
-                
-                await thread_to_close.delete(reason=f"Ticket gesloten door `{inter.author.name}`")
+                name_thread = thread_to_close.name
+                await thread_to_close.edit(name=f"(gesloten){name_thread}")
 
                 await modmail.accept_or_deny(self, message, type=False, by_user=inter.author.name)
-                await modmail.remove_last_msg(self)
                 self_inside_button.stop()
 
         # Creating instance
@@ -165,8 +163,9 @@ class modmail(commands.Cog):
                 await member.send(embed=embed)
                 
                 thread_to_close= self.bot.get_channel(message.channel.id)
-                await thread_to_close.delete(reason=f"Ticket beantwoord van {member.name}. Gesloten door `{inter.author.name}`")
-                await modmail.remove_last_msg(self)
+                name_thread = thread_to_close.name
+                await thread_to_close.edit(name=f"(gesloten){name_thread}")
+
                 self_inside_button.stop()
 
         # Creating instance
@@ -187,12 +186,6 @@ class modmail(commands.Cog):
     async def logging(self, from_user, interaction, on_user):
         print(from_user, interaction, on_user)
 
-
-
-    async def remove_last_msg(self):
-        msg = (await self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID).history(limit=1).flatten())[0]
-        if "Nieuwe ModMail" in str(msg.clean_content):
-            await msg.delete()
 
 
 
