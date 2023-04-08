@@ -19,7 +19,6 @@ import random
 import asyncio
 from database import *
 
-
 # Time stuffies
 tz_AM = pytz.timezone('Europe/Amsterdam') 
 datetime_AM = datetime.now(tz_AM)

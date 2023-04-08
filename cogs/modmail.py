@@ -104,7 +104,7 @@ class modmail(commands.Cog):
                 msg = await inter.response.send_message("Ik heb het verzoek afgewezen!")
                 thread_to_close= self.bot.get_channel(inter.channel.id)
                 name_thread = thread_to_close.name
-                await thread_to_close.edit(name=f"(gesloten){name_thread}")
+                await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
 
                 await modmail.accept_or_deny(self, message, type=False, by_user=inter.author.name)
                 self_inside_button.stop()
@@ -142,9 +142,10 @@ class modmail(commands.Cog):
 
     # Sending response from ticket handler to end user
     async def send_admin_response_to_ticket_maker(self, message, member):
+
         embed=disnake.Embed(title=f"Contact ADT&G antwoord", description=f"Door beheerder: `{message.author.name}`", color=disnake.Color.green())
         embed.add_field(name=f"Antwoord beheer:", value=str(message.clean_content), inline=False)
-        embed.add_field(name=f"\n", value="Als je vraag niet beantwoord is, dan kun je hieronder gewoon terugtypen! (In 1 bericht)", inline=False)
+        embed.add_field(name=f"Info:", value="Als je vraag niet beantwoord is, dan kun je hieronder gewoon terugtypen! (In 1 bericht)", inline=False)
 
         await member.send(embed=embed)
 
@@ -155,7 +156,7 @@ class modmail(commands.Cog):
         # Button class
         class Confirm(disnake.ui.View):
 
-            @disnake.ui.button(label="Close ticket", style=disnake.ButtonStyle.red)
+            @disnake.ui.button(label="Sluit ticket", style=disnake.ButtonStyle.red)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 
                 await inter.response.send_message("Ik heb de ticket gesloten!")
@@ -164,7 +165,7 @@ class modmail(commands.Cog):
                 
                 thread_to_close= self.bot.get_channel(message.channel.id)
                 name_thread = thread_to_close.name
-                await thread_to_close.edit(name=f"(gesloten){name_thread}")
+                await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
 
                 self_inside_button.stop()
 
