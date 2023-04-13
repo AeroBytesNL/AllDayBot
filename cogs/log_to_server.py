@@ -19,7 +19,6 @@ class log_to_server(commands.Cog):
     async def on_member_join(self, member):
         print("Welcome! ", member)
         await self.member_guild_embed(member, type="joinde de keet!")
-        await self.welcome_msg_member(member)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -134,16 +133,6 @@ class log_to_server(commands.Cog):
         print(set(before).symmetric_difference(set(after)))
 
 
-
-    # LOG EMBEDS functions
-    async def welcome_msg_member(self, member):
-
-        channel = self.bot.get_channel(int(env_variable.WELCOME_CHANNEL))
-        Database.cursor.execute("SELECT content FROM configuration_text WHERE service='welcome_text' LIMIT 1")
-
-        res = Database.cursor.fetchone()[0]
-        member_mentiont = member.mention
-        await channel.send(res.format(member_mentiont))
 
 
     async def member_guild_embed(self, member, type):

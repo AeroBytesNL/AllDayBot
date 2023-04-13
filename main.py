@@ -606,6 +606,7 @@ bot.load_extension("cogs.community")
 bot.load_extension("cogs.moderation") 
 bot.load_extension("cogs.configuration") 
 bot.load_extension("cogs.modmail") 
+#bot.load_extension("cogs.minecraft") 
 
 
 

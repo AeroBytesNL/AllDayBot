@@ -56,22 +56,7 @@ class community(commands.Cog):
             embed.add_field(name=f"Rollen ({len(gebruiker.roles)})", value=str(' '.join(list_roles)), inline=False)
             embed.add_field(name=f"XP", value=str(res[0]), inline=True)
             embed.add_field(name=f"Level", value=str(res[1]), inline=True)
-
-
-            if len(perm_roles) > 20: 
-                half = len(perm_roles)//2
-                a = perm_roles[:half]
-                b = perm_roles[half:]            
-                embed.add_field(name=f"Key permissies", value=str(' '.join(a)), inline=False)
-                embed.add_field(name=f"Key permissies", value=str(' '.join(b)), inline=False)
-
-            else:
-                embed.add_field(name=f"Key permissies", value=str(' '.join(perm_roles)), inline=False)
-                
-            embed.set_footer(text=f"ID: {gebruiker.id}")
-            await inter.response.send_message(embed=embed, ephemeral=True)
-            await log_command(author=inter.author, command="`/gebruiker_info`", channel=inter.channel)
-
+            
 
 
         # Commands users
