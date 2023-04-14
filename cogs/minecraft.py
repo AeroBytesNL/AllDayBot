@@ -12,6 +12,7 @@ class minecraft(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+
     # Mother Off All Commands
     @commands.slash_command()
     async def minecraft(self, inter):
@@ -93,7 +94,7 @@ class minecraft(commands.Cog):
         if len(moderator_storage) == 0:
             moderator_storage = "Er zijn geen moderators online."
         if len(member_storage) == 0:
-            moderator_storage = "Er zijn geen leden online."
+            member_storage = "Er zijn geen leden online."
 
         
         embed.add_field(name="Admins online:", value=str(admin_storage), inline=False)
