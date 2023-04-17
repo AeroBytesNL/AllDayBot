@@ -104,7 +104,9 @@ class minecraft(commands.Cog):
         embed.set_thumbnail(url=guild.icon)
         await inter.response.send_message(embed=embed)
 
-
+        admin_storage = ""
+        moderator_storage = ""
+        member_storage = ""
 
 
 def setup(bot: commands.Bot):

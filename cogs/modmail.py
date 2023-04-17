@@ -14,7 +14,6 @@ class modmail(commands.Cog):
         self.bot = bot
         
 
-
     # On message
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -64,6 +63,10 @@ class modmail(commands.Cog):
         # Button class
         class Confirm(disnake.ui.View):
 
+            def __init__(self):
+                super().__init__(timeout=0)
+
+            
             @disnake.ui.button(label="Verstuur", style=disnake.ButtonStyle.green)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 await inter.response.send_message("Ik heb het verstuurd!")
@@ -92,22 +95,23 @@ class modmail(commands.Cog):
         # Button class
         class Confirm(disnake.ui.View):
 
+            def __init__(self):
+                super().__init__(timeout=0)
+
             @disnake.ui.button(label="Accepteren", style=disnake.ButtonStyle.green)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 await inter.response.send_message("Ik heb het verzoek geaccepteert!")
                 # Starting make thread function
                 await modmail.accept_or_deny(self, message, type=True, by_user=inter.author.name)
-                self_inside_button.stop()
 
             @disnake.ui.button(label="Afwijzen", style=disnake.ButtonStyle.grey)
             async def cancel(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 msg = await inter.response.send_message("Ik heb het verzoek afgewezen!")
                 thread_to_close= self.bot.get_channel(inter.channel.id)
                 name_thread = thread_to_close.name
+                
                 await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
-
                 await modmail.accept_or_deny(self, message, type=False, by_user=inter.author.name)
-                self_inside_button.stop()
 
         # Creating instance
         view = Confirm()
@@ -153,8 +157,12 @@ class modmail(commands.Cog):
 
     # Closing thread
     async def close_ticket_and_thread(self, message, member):
+
         # Button class
         class Confirm(disnake.ui.View):
+
+            def __init__(self):
+                super().__init__(timeout=0)            
 
             @disnake.ui.button(label="Sluit ticket", style=disnake.ButtonStyle.red)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
@@ -162,11 +170,11 @@ class modmail(commands.Cog):
                 await inter.response.send_message("Ik heb de ticket gesloten!")
                 embed=disnake.Embed(title="Contact ADT&G ticket gesloten!", description=f"Door: `{message.author.name}`", color=disnake.Color.red())
                 await member.send(embed=embed)
-                
+                self_inside_button.stop()
+
                 thread_to_close= self.bot.get_channel(message.channel.id)
                 name_thread = thread_to_close.name
                 await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
-
                 self_inside_button.stop()
 
         # Creating instance
@@ -178,8 +186,31 @@ class modmail(commands.Cog):
 
 
     async def send_user_response(self, message, thread_to_send):
+        # Button class
+        class Confirm(disnake.ui.View):
+
+            def __init__(self):
+                super().__init__(timeout=0)
+                
+            @disnake.ui.button(label="Sluit ticket", style=disnake.ButtonStyle.red)
+            async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
+                
+                await inter.response.send_message("Ik heb de ticket gesloten!")
+                embed=disnake.Embed(title="Contact ADT&G ticket gesloten!", description=f"Door: `{inter.author.name}`", color=disnake.Color.red())
+                await message.author.send(embed=embed)
+                self_inside_button.stop()
+
+                thread_to_close= self.bot.get_channel(inter.channel.id)
+                name_thread = thread_to_close.name
+                await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
+                self_inside_button.stop()
+
+        # Creating instance
+        view = Confirm()  
+
+
         embed=disnake.Embed(title="User reageerde:", description=str(message.clean_content), color=disnake.Color.red())
-        await thread_to_send.send(embed=embed)
+        await thread_to_send.send(embed=embed, view=view)
 
 
 
