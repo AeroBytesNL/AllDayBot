@@ -11,11 +11,12 @@ from env import secure
 class minecraft(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        print("Cog Minecraft is loaded!")
 
 
     # Mother Off All Commands
     @commands.slash_command()
-    async def minecraft(self, inter):
+    async def minecraft(inter):
         pass
 
 

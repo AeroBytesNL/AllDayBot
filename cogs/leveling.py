@@ -24,6 +24,7 @@ class Leveling(commands.Cog):
     def __init__(self, bot: commands.Bot):
 
         self.bot = bot
+        print("Cog Leveling is loaded!")
 
         # Time stuffies
         self.tz_AM = pytz.timezone('Europe/Amsterdam') 
@@ -209,35 +210,38 @@ class Leveling(commands.Cog):
 
 
     async def gainLevel(self, id, level):
-        global levelRoles
+        try:
+            global levelRoles
 
-        print("Leveling user " + str(id) + " to level " + str(level))
-        channel = self.bot.get_channel(768390290225889280)
-        
-        name = (await self.bot.get_or_fetch_user(id)).name 
-        name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
-        
-        member = await self.guild.fetch_member(id)
-        embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je hebt net level " + str(level) + " behaald!")
-        if level%5 == 0:
-            rolenum = (level // 5) - 1
-            rolenum_rm = (level // 5) - 2
+            print("Leveling user " + str(id) + " to level " + str(level))
+            channel = self.bot.get_channel(768390290225889280)
+            
+            name = (await self.bot.get_or_fetch_user(id)).name 
+            name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
+            
+            member = await self.guild.fetch_member(id)
+            embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je hebt net level " + str(level) + " behaald!")
+            if level%5 == 0:
+                rolenum = (level // 5) - 1
+                rolenum_rm = (level // 5) - 2
 
-            role = guild.get_role(levelRoles[rolenum])
-            role_to_rm = guild.get_role(levelRoles[rolenum_rm])
+                role = guild.get_role(levelRoles[rolenum])
+                role_to_rm = guild.get_role(levelRoles[rolenum_rm])
 
-            await member.add_roles(role)
-            await member.remove_roles(role_to_rm)
-        if level == 69:
-            role = guild.get_role(768382432155533322)
-            await member.add_roles(role)
-            embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je bent een fucking koning, je hebt level 69 gehaald! Mokergeil pik!")
-        if level == 70:
-            role = guild.get_role(768382432155533322)
-            await member.remove_roles(role)
-        embed.set_author(name=name, icon_url=name_avatar)
-        await channel.send(embed=embed)
+                await member.add_roles(role)
+                await member.remove_roles(role_to_rm)
+            if level == 69:
+                role = guild.get_role(768382432155533322)
+                await member.add_roles(role)
+                embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je bent een fucking koning, je hebt level 69 gehaald! Mokergeil pik!")
+            if level == 70:
+                role = guild.get_role(768382432155533322)
+                await member.remove_roles(role)
+            embed.set_author(name=name, icon_url=name_avatar)
+            await channel.send(embed=embed)
 
+        except Exception as error:
+            Leveling.basic_log(self, log=error)
 
 
     async def levelCalc(self, id, level):
@@ -516,20 +520,19 @@ class Leveling(commands.Cog):
     @tasks.loop(seconds=60)
     async def Minute(self):
         try:
-            print("Done")
             global vChannels
             global users
             self.messaged = []
 
             for vChannel in self.vChannels:
                 channel = self.bot.get_channel(vChannel)
-                if len(channel.members) > 0:
+                if len(channel.members) > 1:
                     for member in channel.members:
                         if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
                             Leveling.gainXP(self, member.id, 4, 6)
                             
         except Exception as error:
-            print("Minute error: ", error)
+            Leveling.basic_log(self, log=error)
             pass
 
     # DEBUGGING

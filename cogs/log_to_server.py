@@ -12,6 +12,7 @@ import re
 class log_to_server(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        print("Cog Log to server is loaded!")
 
 
     # Member guild

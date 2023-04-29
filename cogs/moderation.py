@@ -9,6 +9,7 @@ import pytz
 class moderation(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        print("Cog Moderation is loaded!")
 
         tz_AM = pytz.timezone('Europe/Amsterdam') 
 
