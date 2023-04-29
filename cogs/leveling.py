@@ -38,10 +38,29 @@ class Leveling(commands.Cog):
         self.vChannels = [env_variable.V_CHANNEL_ONE, env_variable.V_CHANNEL_TWO, env_variable.V_CHANNEL_THREE]
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
         
-        self.Minute.start()
 
-        self.guild = self.bot.loop.create_task(self.bot.fetch_guild(env_variable.GUILD_ID))
 
+        Leveling.testing()
+
+    def testing(self):
+        print("Jeeje")
+        try:
+            global vChannels
+            global users
+            threading.Timer(60, self.testing).start()
+
+            self.messaged = []
+
+            for vChannel in self.vChannels:
+                channel = self.bot.get_channel(vChannel)
+                if len(channel.members) > 1:
+                    for member in channel.members:
+                        if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
+                            Leveling.gainXP(self, member.id, 4, 6)
+                            
+        except Exception as error:
+            Leveling.basic_log(self, log=error)
+            pass
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -523,6 +542,7 @@ class Leveling(commands.Cog):
             global vChannels
             global users
             self.messaged = []
+            print("done")
 
             for vChannel in self.vChannels:
                 channel = self.bot.get_channel(vChannel)
