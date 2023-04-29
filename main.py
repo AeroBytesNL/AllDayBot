@@ -4,10 +4,7 @@ from datetime import timedelta
 from env import *
 from database import *
 
-
-intents = disnake.Intents.all()
-bot = commands.Bot(intents=intents)
-
+bot = commands.Bot(intents=(disnake.Intents.all()))
 
 @bot.event
 async def on_ready():
@@ -21,11 +18,9 @@ bot.load_extension("cogs.birthday")
 bot.load_extension("cogs.log_to_server") 
 bot.load_extension("cogs.community") 
 bot.load_extension("cogs.moderation") 
-bot.load_extension("cogs.configuration") 
 bot.load_extension("cogs.modmail") 
 bot.load_extension("cogs.minecraft") 
 bot.load_extension("cogs.leveling") 
-
 
 
 # Running the bot and starting thread

@@ -20,6 +20,7 @@ bot = commands.Bot(intents=intents)
 class Community(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        print("Cog Ad_weer is loaded!")
 
         @bot.slash_command()
         async def weer(inter):

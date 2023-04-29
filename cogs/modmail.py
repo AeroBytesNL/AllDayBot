@@ -12,7 +12,7 @@ from dateutil import relativedelta
 class modmail(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        
+        print("Cog ModMail is loaded!")
 
     # On message
     @commands.Cog.listener()

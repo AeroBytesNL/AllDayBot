@@ -6,6 +6,9 @@ from env import *
 class forum(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        print("Cog Forum is loaded!")
+
+
         @bot.slash_command(description="Markeer dit forum kanaal als opgelost")
         async def opgelost(inter):
                 print(f"User {inter.author.name} gebruikte het command 'opgelost'")

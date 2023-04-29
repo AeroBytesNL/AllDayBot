@@ -11,15 +11,21 @@ import random
 class community(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
+        print("Cog Community is loaded!")
 
         # Commands admin
         @commands.default_member_permissions(moderate_members=True)
         @bot.slash_command(description="Verstuur een announcement naar een kanaal!")
         async def announce(inter, channel: disnake.TextChannel, bericht: str):
             try:
+
+                guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
+        
                 embed=disnake.Embed(title="\n", description=str(bericht), color=0xdf8cfe)
-                embed.set_footer(text=f"Datum: {str(datetime.now(pytz.timezone('Europe/Amsterdam') ))[0:19]}")
+                embed.set_footer(text=f"Deze aankondiging is gemaakt door {inter.author.name}")
+                embed.set_thumbnail(url=guild.icon)
+
+
                 await channel.send(embed=embed)
                 mod_log_to_guild(inter, command="announce", user="Geen")
                 await inter.response.send_message("Announcement is aangemaakt!", ephemeral=True)
@@ -120,7 +126,7 @@ class community(commands.Cog):
         , vraag_5 = None, vraag_6 = None, vraag_7 = None, vraag_8 = None, vraag_9 = None, vraag_10 = None
         , vraag_11 = None, vraag_12 = None, vraag_13 = None, vraag_14 = None, vraag_15 = None):       
 
-                    embed = poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
+                    embed = await poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
                         , vraag_7, vraag_8, vraag_9, vraag_10, vraag_11, vraag_12, vraag_13, vraag_14, vraag_15)
 
                     msg_sended = await inter.response.send_message(embed=embed)
@@ -211,7 +217,7 @@ class community(commands.Cog):
 
         # Functions
         # Creating a poll, 15 options
-        def poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
+        async def poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
                         , vraag_7, vraag_8, vraag_9, vraag_10, vraag_11, vraag_12, vraag_13, vraag_14, vraag_15):
 
             embed=disnake.Embed(title="Poll", description=f"**{poll_vraag}**", color=0xdf8cfe)
@@ -245,6 +251,10 @@ class community(commands.Cog):
             if vraag_15 != None:
                 embed.add_field(name=f"p - {vraag_15}", value="\u200b", inline=False)   
 
+            guild = await bot.fetch_guild(env_variable.GUILD_ID)
+            embed.set_thumbnail(url=guild.icon)
+
+            embed.set_footer(text=f"Deze poll is gemaakt door {inter.author.name}")
 
             return embed
 

@@ -11,6 +11,7 @@ import pytz
 class birthday(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        print("Cog Birthday is loaded!")
 
         # Main birthday command
         @bot.slash_command()
