@@ -16,30 +16,51 @@ class minecraft(commands.Cog):
 
     # Mother Off All Commands
     @commands.slash_command()
-    async def minecraft(inter):
+    async def minecraft(self, inter):
         pass
 
 
     # Server commands
-    @minecraft.sub_command(description="Zie onze server info!")
-    async def server_informatie(self, inter):
+    @minecraft.sub_command(description="Zie de survival info")
+    async def survival_info(self, inter):
+        try:
+            # General info
+            server = JavaServer.lookup(Minecraft.MINECRAFT_DOMAIN)
+            status = server.status()
 
-        # General info
-        server = JavaServer.lookup(secure.MINECRAFT_DOMAIN)
-        status = server.status()
+            # PLayers name info with RCON
+            with Client(Minecraft.MINECRAFT_DOMAIN, 25575, passwd=Minecraft.MINECRAFT_RCON_PW) as client:
+                resp = client.run("/list")
 
-        # PLayers name info with RCON
-        with Client(secure.MINECRAFT_DOMAIN, secure.MINECRAFT_RCON_PORT, passwd=secure.MINECRAFT_RCON_PW) as client:
-            resp = client.run("list")
+            i = re.sub("§.{1}", "", resp)   
+            if "\n" in i:
+                i = i.split("\n")
+            del i[0]
 
-        i = re.sub("§.{1}", "", resp)
-        if "\n" in i:
-            i = i.split("\n")
-        del i[0]
-        
-        await minecraft.server_info_embed(self, inter, status, resp=i)
+            await minecraft.server_info_embed(self, inter, status, resp=i)
+        except Exception as error:
+            await inter.response.send_message(f"Error: {error}")
 
+    # Server commands
+    @minecraft.sub_command(description="Zie de skyblock info")
+    async def skyblock_info(self, inter):
+        try:
+            # General info
+            server = JavaServer.lookup(Minecraft.MINECRAFT_DOMAIN)
+            status = server.status()
 
+            # PLayers name info with RCON
+            with Client(Minecraft.MINECRAFT_DOMAIN, 25576, passwd=Minecraft.MINECRAFT_RCON_PW) as client:
+                resp = client.run("/list")
+
+            i = re.sub("§.{1}", "", resp)
+            if "\n" in i:
+                i = i.split("\n")
+            del i[0]
+
+            await minecraft.server_info_embed(self, inter, status, resp=i)
+        except Exception as error:
+            await inter.response.send_message(f"Error: {error}")
 
 
     # Functions
@@ -55,8 +76,8 @@ class minecraft(commands.Cog):
         member_storage = ""
 
         for item in resp:
-
-            if "Admin" in item:
+            print(item)
+            if "beheerder" in item:
                 item = item.split(": ", 1)[1]
                 users = item.split(" ")
 
@@ -67,7 +88,7 @@ class minecraft(commands.Cog):
                     user_without_prefix = user.split("Admin]")[1]
                     admin_storage = admin_storage + f"{user_without_prefix}\n"
 
-            if "Mod" in item:
+            if "moderator" in item:
                 item = item.split(": ", 1)[1]
                 users = item.split(" ")
 
@@ -78,7 +99,7 @@ class minecraft(commands.Cog):
                     user_without_prefix = user.split("Mod]")[1]
                     moderator_storage = moderator_storage + f"{user_without_prefix}\n"
                     
-            if "member" in item:
+            if "default" in item:
                 item = item.split(": ", 1)[1]
                 users = item.split(" ")
 
