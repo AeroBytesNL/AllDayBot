@@ -611,6 +611,7 @@ bot.load_extension("cogs.modmail")
 bot.load_extension("cogs.minecraft") 
 #bot.load_extension("cogs.leveling") 
 #bot.load_extension("cogs.test") 
+bot.load_extension("cogs.pc_text") 
 
 
 # Running the bot and starting thread
