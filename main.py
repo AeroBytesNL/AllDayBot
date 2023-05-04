@@ -23,7 +23,7 @@ from database import *
 
 # Time stuffies
 tz_AM = pytz.timezone('Europe/Amsterdam') 
-datetime_AM = datetime.now(tz_AM)
+datetime_AM = datetime.now(tz_AM) 
 time_now = datetime_AM.strftime("%H:%M:%S")
 
 intents = disnake.Intents.all()
@@ -612,6 +612,7 @@ bot.load_extension("cogs.minecraft")
 #bot.load_extension("cogs.leveling") 
 #bot.load_extension("cogs.test") 
 bot.load_extension("cogs.pc_text") 
+#bot.load_extension("cogs.configuration") 
 
 
 # Running the bot and starting thread
