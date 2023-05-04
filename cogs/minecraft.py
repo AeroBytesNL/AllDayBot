@@ -10,7 +10,7 @@ from env import secure
 
 class minecraft(commands.Cog):
     def __init__(self, bot: commands.Bot):
-        self.bot = bot
+        self.bot = bot 
         print("Cog Minecraft is loaded!")
 
 
@@ -30,7 +30,7 @@ class minecraft(commands.Cog):
 
             # PLayers name info with RCON
             with Client(Minecraft.MINECRAFT_DOMAIN, 25575, passwd=Minecraft.MINECRAFT_RCON_PW) as client:
-                resp = client.run("/list")
+                resp = client.run("list")
 
             i = re.sub("§.{1}", "", resp)   
             if "\n" in i:
@@ -51,7 +51,7 @@ class minecraft(commands.Cog):
 
             # PLayers name info with RCON
             with Client(Minecraft.MINECRAFT_DOMAIN, 25576, passwd=Minecraft.MINECRAFT_RCON_PW) as client:
-                resp = client.run("/list")
+                resp = client.run("list")
 
             i = re.sub("§.{1}", "", resp)
             if "\n" in i:
@@ -65,6 +65,9 @@ class minecraft(commands.Cog):
 
     # Functions
     async def server_info_embed(self, inter, status, resp):
+
+        print(f"Debug 69: ", resp)
+
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
         
         embed=disnake.Embed(title="AllDayTech&Gaming Minecraft", description="Informatie", color=0xdf8cfe)
@@ -76,8 +79,9 @@ class minecraft(commands.Cog):
         member_storage = ""
 
         for item in resp:
-            print(item)
             if "beheerder" in item:
+                print("83")
+                print(item)
                 item = item.split(": ", 1)[1]
                 users = item.split(" ")
 
@@ -85,10 +89,11 @@ class minecraft(commands.Cog):
                     if "," in user:
                         user = user.replace(",", "")
 
-                    user_without_prefix = user.split("Admin]")[1]
+                    user_without_prefix = user.split("Beheerder]")[1]
                     admin_storage = admin_storage + f"{user_without_prefix}\n"
 
             if "moderator" in item:
+                print("95")
                 item = item.split(": ", 1)[1]
                 users = item.split(" ")
 
@@ -100,6 +105,7 @@ class minecraft(commands.Cog):
                     moderator_storage = moderator_storage + f"{user_without_prefix}\n"
                     
             if "default" in item:
+                print("106")
                 item = item.split(": ", 1)[1]
                 users = item.split(" ")
 
