@@ -21,60 +21,50 @@ import urllib.request
 
 class Leveling(commands.Cog):
     
+
+
     def __init__(self, bot: commands.Bot):
 
+        self.intents = disnake.Intents.all()
         self.bot = bot
-        print("Cog Leveling is loaded!")
 
         # Time stuffies
         self.tz_AM = pytz.timezone('Europe/Amsterdam') 
-        self.datetime_AM = datetime.now(self.tz_AM)
+        self.datetime_AM = datetime.now(self.tz_AM) 
         self.time_now = self.datetime_AM.strftime("%H:%M:%S")
 
         self.users =[]
         self.messaged = []
         self.guild = []
 
-        self.vChannels = [env_variable.V_CHANNEL_ONE, env_variable.V_CHANNEL_TWO, env_variable.V_CHANNEL_THREE]
+        self.vChannels = [env_variable.V_CHANNEL_ONE, env_variable.V_CHANNEL_TWO]
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
-        
 
 
-        Leveling.testing()
-
-    def testing(self):
-        print("Jeeje")
-        try:
-            global vChannels
-            global users
-            threading.Timer(60, self.testing).start()
-
-            self.messaged = []
-
-            for vChannel in self.vChannels:
-                channel = self.bot.get_channel(vChannel)
-                if len(channel.members) > 1:
-                    for member in channel.members:
-                        if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
-                            Leveling.gainXP(self, member.id, 4, 6)
-                            
-        except Exception as error:
-            Leveling.basic_log(self, log=error)
-            pass
 
     @commands.Cog.listener()
     async def on_ready(self):
-        global channel
-        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-        print("The bot is ready!")
+        try:
+            await self.bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
+            global guild    
+            global channel
+            guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
+            print("The bot is ready!")
 
-        Leveling.basic_log(self, log="Reboot")
+        except Exception as error:
+            print(error)
+            pass
+
+        
         Leveling.debug(type="Adje restart", data="No data", error="No error")
+        Leveling.basic_log(self, log="Reboot")
+        await Leveling.Minute.start(self)
 
-
+                
     # On message
     @commands.Cog.listener()
     async def on_message(self, m):
+        global messaged
 
         # Checks if msg is in tech-news
         if m.channel.id == env_variable.TECH_NEWS_ID:
@@ -97,10 +87,10 @@ class Leveling(commands.Cog):
             pass
         else:
             id = m.author.id
-            if id in self.messaged:
+            if id in messaged:
                 return
             else:
-                self.messaged.append(id)
+                messaged.append(id)
                 Leveling.gainXP(self, id, 15, 25)
 
 
@@ -167,9 +157,9 @@ class Leveling(commands.Cog):
 
     @commands.default_member_permissions(moderate_members=True)
     @commands.slash_command(description="clear de db.")
-    async def db_clean(self, inter):
+    async def db_clean(inter):
             print(f"User {inter.author.name} gebruikte het command 'db_clean'")
-            await Leveling.member_leave_dbClean(self)
+            await Leveling.member_leave_dbClean()
 
 
 
@@ -179,9 +169,9 @@ class Leveling(commands.Cog):
 
 
     # Functions
-    async def member_leave_dbClean(self):
+    async def member_leave_dbClean():
         global users
-        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
+        global guild
         presentids = []
         members = await guild.fetch_members(limit=1000).flatten()
         for member in members:
@@ -195,7 +185,7 @@ class Leveling(commands.Cog):
                 print(str(sqlids[i][0]) + " is still here")
             else:
                 print("removing user with ID: " + str(sqlids[i][0]))
-                Leveling.delete_user(self, sqlids[i][0])
+                Leveling.delete_user(sqlids[i][0])
 
             i = i + 1  
 
@@ -208,12 +198,12 @@ class Leveling(commands.Cog):
         val_user = Leveling.validate_user_in_db(self, id) 
         
         if val_user == False:
-            Leveling.create_user(self, id, x)
+            Leveling.create_user(id, x)
             Leveling.debug(type="Creating user", data=str(id), error="None")
 
         else:
             xp = Leveling.get_xp(self, id)
-            level = Leveling.get_level(self, id)
+            level = Leveling.get_level(id)
 
             xp = xp + x
             levelxpcap = int(8.196 * pow(level + 1, 2.65) + 200)
@@ -221,7 +211,7 @@ class Leveling(commands.Cog):
             if xp > levelxpcap:
                 level = level + 1
                 self.bot.loop.create_task(Leveling.gainLevel(self, id, level))
-                Leveling.set_level(self, id, level)
+                Leveling.set_level(id, level)
 
             else:
                 Leveling.set_xp(self, id, xp)
@@ -229,55 +219,59 @@ class Leveling(commands.Cog):
 
 
     async def gainLevel(self, id, level):
-        try:
-            global levelRoles
+        print("Leveling user " + str(id) + " to level " + str(level))
+        channel = self.bot.get_channel(Channel.ALLDAYBOT)
+        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
-            print("Leveling user " + str(id) + " to level " + str(level))
-            channel = self.bot.get_channel(768390290225889280)
+        name = (await self.bot.get_or_fetch_user(id)).name 
+        name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
+        
+        member = await guild.fetch_member(id)
+
+        embed=disnake.Embed(title=f"⚡ Iemand is een level omhoog gegaan!", description=f"{member.mention} gefeliciteerd!", color=0xdf8cfe)
+        
+        if level%5 == 0:
+            rolenum = (level // 5) - 1
+            rolenum_rm = (level // 5) - 2
+
+            role = guild.get_role(self.levelRoles[rolenum])
+            role_to_rm = guild.get_role(self.levelRoles[rolenum_rm])
+
+            await member.add_roles(role)
+            await member.remove_roles(role_to_rm)
             
-            name = (await self.bot.get_or_fetch_user(id)).name 
-            name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
-            
-            member = await self.guild.fetch_member(id)
-            embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je hebt net level " + str(level) + " behaald!")
-            if level%5 == 0:
-                rolenum = (level // 5) - 1
-                rolenum_rm = (level // 5) - 2
+        if level == 69:
+            role = guild.get_role(768382432155533322)
+            await member.add_roles(role)
+            embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je bent een fucking koning, je hebt level 69 gehaald! Mokergeil pik!")
 
-                role = guild.get_role(levelRoles[rolenum])
-                role_to_rm = guild.get_role(levelRoles[rolenum_rm])
+        if level == 70:
+            role = guild.get_role(768382432155533322)
+            await member.remove_roles(role)
 
-                await member.add_roles(role)
-                await member.remove_roles(role_to_rm)
-            if level == 69:
-                role = guild.get_role(768382432155533322)
-                await member.add_roles(role)
-                embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je bent een fucking koning, je hebt level 69 gehaald! Mokergeil pik!")
-            if level == 70:
-                role = guild.get_role(768382432155533322)
-                await member.remove_roles(role)
-            embed.set_author(name=name, icon_url=name_avatar)
-            await channel.send(embed=embed)
+        embed.add_field(name=f"\n", value=f"📈 Nieuw level: {level}", inline=False)
+        embed.add_field(name=f"\n", value=f"📈 Nieuw XP: {Leveling.get_xp(self, id)}", inline=False)
+        embed.set_author(name=name, icon_url=name_avatar)
+        embed.set_thumbnail(url=guild.icon)
+        await channel.send(embed=embed)
 
-        except Exception as error:
-            Leveling.basic_log(self, log=error)
 
 
     async def levelCalc(self, id, level):
+
         totalNeeded = int(8.196 * pow((level), 2.65) + 200)
         xp = Leveling.get_xp(self, id)
-
         userNeeded = int(totalNeeded) - xp     
-
+        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
         name = (await self.bot.get_or_fetch_user(id)).name 
-        
         name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
 
-        embed = disnake.Embed(title='Level berekening voor level: ' + str(level), color=0xdf8cfe)
+        embed = disnake.Embed(title=f"⚡ Level berekening voor {name}",description=f"Voor level: **{level}**", color=0xdf8cfe)
         embed.set_author(name=name, icon_url=name_avatar)
-        embed.add_field(name="XP nodig vanaf 0: ", value = str(totalNeeded), inline=True)
-        embed.add_field(name="Je huidige XP: ", value = str(xp), inline=True)
-        embed.add_field(name="Je hebt dit nog nodig: ", value = str(userNeeded), inline=True)
+        embed.add_field(name="\n", value=f"📈 XP nodig vanaf 0: {totalNeeded}", inline=False)
+        embed.add_field(name="\n", value=f"📈 Je huidige XP: {xp}", inline=False)
+        embed.add_field(name="\n", value=f"📈 Je hebt dit nog nodig: {userNeeded}", inline=False)
+        embed.set_thumbnail(url=guild.icon)
 
         return embed
 
@@ -349,11 +343,12 @@ class Leveling(commands.Cog):
 
     async def levelMessage(self, id):
         xp = Leveling.get_xp(self, id)
-        level = Leveling.get_level(self, id)
-        complements = Leveling.get_complements(self, id)
+        level = Leveling.get_level(id)
+        complements = Leveling.get_complements(id)
 
         user = (await self.bot.get_or_fetch_user(id)).name
         user_avatar = (await self.bot.get_or_fetch_user(id)).avatar
+        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
         if xp == 0 and level == 0:
             embed = disnake.Embed(title="Er ging iets fout.", color=0xdf8cfe)
@@ -363,13 +358,14 @@ class Leveling(commands.Cog):
         needed = int(8.196 * pow((level + 1), 2.65) + 200)
         needed = needed - xp
 
-        embed = disnake.Embed(color=disnake.Color.green())
+        embed=disnake.Embed(title=f"⚡ Het profiel van {user}:", description=f"\n", color=0xdf8cfe)
         embed.set_author(name=user, icon_url=user_avatar)
         
-        embed.add_field(name="Huidig level:   ", value=str(level)+"   ", inline=True)
-        embed.add_field(name="XP nodig:   ", value=str(needed)+"   ", inline=True)
-        embed.add_field(name="Totale XP:   ", value=str(xp)+"   ", inline=True)
-        embed.add_field(name="Complimenten:   ", value=str(complements), inline=True)
+        embed.add_field(name=f"\n", value=f"⚡ Huidig level: {level}", inline=False)
+        embed.add_field(name=f"\n", value=f"📈 XP nodig: {needed}", inline=False)
+        embed.add_field(name=f"\n", value=f"📈 Totale XP: {xp}", inline=False)
+        embed.add_field(name=f"\n", value=f"👍 Complimenten: {complements}", inline=False)
+        embed.set_thumbnail(url=guild.icon)
 
         return embed
 
@@ -389,7 +385,7 @@ class Leveling(commands.Cog):
             e.add_field(name="Wat denk je nou joh", value="Mafklapper!")
             return e
         
-        get_actual_daily_compliments = Leveling.get_dailycomplements(self, inter.author.id)
+        get_actual_daily_compliments = Leveling.get_dailycomplements(inter.author.id)
         if get_actual_daily_compliments > 2:
             e = disnake.Embed(title="Je hebt niet genoeg complimenten over vandaag!", color=0xdf8cfe)
             e.set_author(name=inter.author.name) #, icon_url=m.author.avatar_url
@@ -399,12 +395,12 @@ class Leveling(commands.Cog):
         else:
             user = (await self.bot.get_or_fetch_user(gebruiker.id)).name
             
-            Leveling.set_dailycomplements(self, inter.author.id, get_actual_daily_compliments + 1)
+            Leveling.set_dailycomplements(inter.author.id, get_actual_daily_compliments + 1)
             e = disnake.Embed(title="Complimenten", color=disnake.Color.green())
             e.set_author(name=inter.author.name, icon_url=inter.author.avatar)
 
-            complements = Leveling.get_complements(self, gebruiker.id)
-            Leveling.set_complements(self, gebruiker.id, complements + 1)
+            complements = Leveling.get_complements(gebruiker.id)
+            Leveling.set_complements(gebruiker.id, complements + 1)
             Leveling.gainXP(self, gebruiker.id, 150, 150)
             e.add_field(name="Compliment gegeven aan", value=user)
             e.add_field(name="Reden", value=reden)
@@ -437,18 +433,18 @@ class Leveling(commands.Cog):
 
 
 
-    def set_level(self, id, lvl):
+    def set_level(id, lvl):
 
         try:
             Database.cursor.execute("UPDATE Users SET lvl = " + str(lvl) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as e:
             Leveling.debug(type="set_level database", data=str(id), error=str(e))
-            Leveling.error_logging_to_guild(self, error=e)    
+            Leveling.error_logging_to_guild(error=e)    
 
 
 
-    def get_level(self, id):
+    def get_level(id):
         Database.cursor.execute("SELECT lvl FROM Users WHERE id=" + str(id))
         if Database.cursor.rowcount == 0:
             return 0
@@ -460,22 +456,22 @@ class Leveling(commands.Cog):
 
             except Exception as e:
                 Leveling.debug(type="get_level database", data=str(id, result), error=str(e))
-                Leveling.error_logging_to_guild(self, error=e)
+                Leveling.error_logging_to_guild(error=e)
                 pass
         
 
 
-    def set_complements(self, id, complements):
+    def set_complements(id, complements):
         try:
             Database.cursor.execute("UPDATE Users SET complements = " + str(complements) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as e:
             Leveling.debug(type="set_complements database", data=str(id), error=str(e))
-            Leveling.error_logging_to_guild(self, error=e)
+            Leveling.error_logging_to_guild(error=e)
 
 
 
-    def get_complements(self, id):
+    def get_complements(id):
         Database.cursor.execute("SELECT complements FROM Users WHERE id = " + str(id))
         if Database.cursor.rowcount == 0:
             return 0
@@ -485,23 +481,23 @@ class Leveling(commands.Cog):
                 result = Database.cursor.fetchone()[0]
             except Exception as e:
                 Leveling.debug(type="get_complements database", data=str(id), error=str(e))
-                Leveling.error_logging_to_guild(self, error=e)
+                Leveling.error_logging_to_guild(error=e)
             return result
 
 
 
-    def set_dailycomplements(self, id, dailycomplements):
+    def set_dailycomplements(id, dailycomplements):
 
         try:
             Database.cursor.execute("UPDATE Users SET dailycomplements = " + str(dailycomplements) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as e:
-            Leveling.error_logging_to_guild(self, error=e)
+            Leveling.error_logging_to_guild(error=e)
             Leveling.debug(type="set_dailycomplements database", data=str(id), error=str(e))
 
 
 
-    def get_dailycomplements(self, id):
+    def get_dailycomplements(id):
 
         Database.cursor.execute("SELECT dailycomplements FROM Users WHERE id = " + str(id))
         if Database.cursor.rowcount == 0:
@@ -511,49 +507,49 @@ class Leveling(commands.Cog):
                 result = Database.cursor.fetchone()[0]
             except Exception as e:
                 Leveling.debug(type="get_dailycomplements database", data=str(id), error=str(e))
-                Leveling.error_logging_to_guild(self, error=e)
+                Leveling.error_logging_to_guild(error=e)
             return result
 
 
 
-    def create_user(self, id, xp):
+    def create_user(id, xp):
 
         try:
             Database.cursor.execute("INSERT INTO Users(id, xp, lvl, dailycomplements, complements) VALUES ("+ str(id) + ", " + str(xp) + ", 0, 0, 0);")
             Database.db.commit()
         except Exception as e:
             Leveling.debug(type="create_user database", data=str(id), error=str(e))
-            Leveling.error_logging_to_guild(self, error=e)
+            Leveling.error_logging_to_guild(error=e)
 
 
-    def delete_user(self, id):
+    def delete_user(id):
 
         try:
             Database.cursor.execute("DELETE FROM Users WHERE id = " + str(id))
             Database.db.commit()
         except Exception as e:
             Leveling.debug(type="delete_user database", data=str(id), error=str(e))        
-            Leveling.error_logging_to_guild(self, error=e)
+            Leveling.error_logging_to_guild(error=e)
 
 
-    @tasks.loop(seconds=60)
+
+    @tasks.loop(seconds=60.0)
     async def Minute(self):
-        try:
-            global vChannels
-            global users
-            self.messaged = []
-            print("done")
+        global messaged
+        global vChannels
+        global users
+        threading.Timer(2, Leveling.Minute).start()
+        messaged = []
 
-            for vChannel in self.vChannels:
-                channel = self.bot.get_channel(vChannel)
-                if len(channel.members) > 1:
-                    for member in channel.members:
-                        if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
-                            Leveling.gainXP(self, member.id, 4, 6)
-                            
-        except Exception as error:
-            Leveling.basic_log(self, log=error)
-            pass
+        print("A minute has passed!")
+        for vChannel in self.vChannels:
+            channel = self.bot.get_channel(vChannel)
+            if len(channel.members) > 1:
+                for member in channel.members:
+                    if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
+                        Leveling.gainXP(member.id, 4, 6)
+
+
 
     # DEBUGGING
     def debug(type, data, error):
@@ -585,12 +581,13 @@ class Leveling(commands.Cog):
 
     # Basic log function
     def basic_log(self, log):
-        channel_to_send = self.bot.get_channel(1093873145984860223)
+        channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
 
         embed=disnake.Embed(title="Adje log", description=str(log), color=disnake.Color.green())
         embed.set_footer(text=f"Datum: {str(datetime.now(self.tz_AM))[0:19]}")
 
         self.bot.loop.create_task(channel_to_send.send(embed=embed))
+
 
 
     # Sending stuff to LOG channel
