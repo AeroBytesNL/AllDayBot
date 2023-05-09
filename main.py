@@ -209,15 +209,17 @@ def gainXP(id, minxp, maxxp):
 
 async def gainLevel(id, level):
     global levelRoles
-
     print("Leveling user " + str(id) + " to level " + str(level))
-    channel = bot.get_channel(768390290225889280)
-    
+    channel = bot.get_channel(Channel.ALLDAYBOT)
+    guild = await bot.fetch_guild(env_variable.GUILD_ID)
+
     name = (await bot.get_or_fetch_user(id)).name 
     name_avatar = (await bot.get_or_fetch_user(id)).avatar
     
     member = await guild.fetch_member(id)
-    embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je hebt net level " + str(level) + " behaald!")
+
+    embed=disnake.Embed(title=f"⚡ Iemand is een level omhoog gegaan!", description=f"{member.mention} gefeliciteerd!", color=0xdf8cfe)
+    
     if level%5 == 0:
         rolenum = (level // 5) - 1
         rolenum_rm = (level // 5) - 2
@@ -227,33 +229,39 @@ async def gainLevel(id, level):
 
         await member.add_roles(role)
         await member.remove_roles(role_to_rm)
+        
     if level == 69:
         role = guild.get_role(768382432155533322)
         await member.add_roles(role)
         embed = disnake.Embed(title="Gefeliciteerd!", color=0xdf8cfe, description="Je bent een fucking koning, je hebt level 69 gehaald! Mokergeil pik!")
+
     if level == 70:
         role = guild.get_role(768382432155533322)
         await member.remove_roles(role)
+
+    embed.add_field(name=f"\n", value=f"📈 Nieuw level: {level}", inline=False)
+    embed.add_field(name=f"\n", value=f"📈 Nieuw XP: {get_xp(id)}", inline=False)
     embed.set_author(name=name, icon_url=name_avatar)
+    embed.set_thumbnail(url=guild.icon)
     await channel.send(embed=embed)
 
 
 
 async def levelCalc(id, level):
+
     totalNeeded = int(8.196 * pow((level), 2.65) + 200)
     xp = get_xp(id)
-
     userNeeded = int(totalNeeded) - xp     
-
+    guild = await bot.fetch_guild(env_variable.GUILD_ID)
     name = (await bot.get_or_fetch_user(id)).name 
-    
     name_avatar = (await bot.get_or_fetch_user(id)).avatar
 
-    embed = disnake.Embed(title='Level berekening voor level: ' + str(level), color=0xdf8cfe)
+    embed = disnake.Embed(title=f"⚡ Level berekening voor {name}",description=f"Voor level: **{level}**", color=0xdf8cfe)
     embed.set_author(name=name, icon_url=name_avatar)
-    embed.add_field(name="XP nodig vanaf 0: ", value = str(totalNeeded), inline=True)
-    embed.add_field(name="Je huidige XP: ", value = str(xp), inline=True)
-    embed.add_field(name="Je hebt dit nog nodig: ", value = str(userNeeded), inline=True)
+    embed.add_field(name="\n", value=f"📈 XP nodig vanaf 0: {totalNeeded}", inline=False)
+    embed.add_field(name="\n", value=f"📈 Je huidige XP: {xp}", inline=False)
+    embed.add_field(name="\n", value=f"📈 Je hebt dit nog nodig: {userNeeded}", inline=False)
+    embed.set_thumbnail(url=guild.icon)
 
     return embed
 
@@ -330,6 +338,7 @@ async def levelMessage(id):
 
     user = (await bot.get_or_fetch_user(id)).name
     user_avatar = (await bot.get_or_fetch_user(id)).avatar
+    guild = await bot.fetch_guild(env_variable.GUILD_ID)
 
     if xp == 0 and level == 0:
         embed = disnake.Embed(title="Er ging iets fout.", color=0xdf8cfe)
@@ -339,13 +348,14 @@ async def levelMessage(id):
     needed = int(8.196 * pow((level + 1), 2.65) + 200)
     needed = needed - xp
 
-    embed = disnake.Embed(color=disnake.Color.green())
+    embed=disnake.Embed(title=f"⚡ Het profiel van {user}:", description=f"\n", color=0xdf8cfe)
     embed.set_author(name=user, icon_url=user_avatar)
     
-    embed.add_field(name="Huidig level:   ", value=str(level)+"   ", inline=True)
-    embed.add_field(name="XP nodig:   ", value=str(needed)+"   ", inline=True)
-    embed.add_field(name="Totale XP:   ", value=str(xp)+"   ", inline=True)
-    embed.add_field(name="Complimenten:   ", value=str(complements), inline=True)
+    embed.add_field(name=f"\n", value=f"⚡ Huidig level: {level}", inline=False)
+    embed.add_field(name=f"\n", value=f"📈 XP nodig: {needed}", inline=False)
+    embed.add_field(name=f"\n", value=f"📈 Totale XP: {xp}", inline=False)
+    embed.add_field(name=f"\n", value=f"👍 Complimenten: {complements}", inline=False)
+    embed.set_thumbnail(url=guild.icon)
 
     return embed
 
@@ -613,6 +623,7 @@ bot.load_extension("cogs.minecraft")
 #bot.load_extension("cogs.test") 
 bot.load_extension("cogs.pc_text") 
 #bot.load_extension("cogs.configuration") 
+bot.load_extension("cogs.test") 
 
 
 # Running the bot and starting thread
