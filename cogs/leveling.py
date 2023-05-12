@@ -41,7 +41,6 @@ class Leveling(commands.Cog):
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
 
 
-
     @commands.Cog.listener()
     async def on_ready(self):
         try:
@@ -58,9 +57,13 @@ class Leveling(commands.Cog):
         
         Leveling.debug(type="Adje restart", data="No data", error="No error")
         Leveling.basic_log(self, log="Reboot")
-        await Leveling.Minute.start(self)
+        
 
-                
+
+        self.minute.start()
+
+
+
     # On message
     @commands.Cog.listener()
     async def on_message(self, m):
@@ -533,12 +536,12 @@ class Leveling(commands.Cog):
 
 
 
+    
     @tasks.loop(seconds=60.0)
-    async def Minute(self):
+    async def minute(self):
         global messaged
         global vChannels
         global users
-        threading.Timer(2, Leveling.Minute).start()
         messaged = []
 
         print("A minute has passed!")
