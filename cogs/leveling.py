@@ -552,7 +552,7 @@ class Leveling(commands.Cog):
                 if len(channel.members) > 1:
                     for member in channel.members:
                         if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
-                            Leveling.gainXP(member.id, 4, 6)
+                            Leveling.gainXP(self, member.id, 4, 6)
         except Exception as error:
             print(error)
 
