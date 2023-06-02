@@ -164,7 +164,7 @@ class birthday(commands.Cog):
             now_time = datetime_AM.strftime("%H%M")
             now_date = datetime_AM.strftime("%d-%m")
 
-            if now_time == "1030" and bd_counter[0] < 1:
+            if now_time == "1045" and bd_counter[0] < 1:
                 bd_counter[0] = 1
 
                 try:

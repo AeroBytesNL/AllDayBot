@@ -29,6 +29,18 @@ async def on_ready():
     print("The bot is ready!")
 
 
+
+
+@tasks.loop(seconds=30) 
+async def keep_sql_active():
+    Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
+    res = Database.cursor.fetchone()
+    print("Just keeping the data-slut active!")
+
+    
+keep_sql_active.start()
+
+
             
 # Loading different cogs
 bot.load_extension("cogs.ad_weer") 
