@@ -14,6 +14,8 @@ class modmail(commands.Cog):
         self.bot = bot
         print("Cog ModMail is loaded!")
 
+
+
     # On message
     @commands.Cog.listener()
     async def on_message(self, message):

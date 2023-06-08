@@ -196,6 +196,7 @@ class Community(commands.Cog):
                 complete_url = base_url + "appid=" + api_key + "&q=" + stadnaam + units
                 response = requests.get(complete_url)
                 response_api_json = response.json()   
+                
                 if response_api_json['cod'] == "404":
                     await inter.response.send_message("Er ging iets mis! Foutcode: Stad_niet_gevonden!")
                 else:
