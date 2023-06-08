@@ -19,20 +19,20 @@ class news(commands.Cog):
 
 
     class Confirm(disnake.ui.View):
-        def __init__(self, page):
+        def __init__(self, page, url):
             super().__init__(timeout=0)
             self.current_page = page
-
+            self.url = url
 
         @disnake.ui.button(label="Pagina verder", style=disnake.ButtonStyle.blurple)
         async def confirm(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-            await news.nu(self, inter, page=self.current_page + 1)
+            await news.nu_and_tweakers(self, self.url, inter, page=self.current_page + 1)
             self.value = True
 
         @disnake.ui.button(label="Pagina terug", style=disnake.ButtonStyle.red)
         async def cancel(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
 
-            await news.nu(self, inter, page=self.current_page - 1)
+            await news.nu_and_tweakers(self, self.url, inter, page=self.current_page - 1)
             self.value = False
 
 
@@ -44,29 +44,38 @@ class news(commands.Cog):
 
 
 
-    # Commands pc
     @nieuws.sub_command(description= "Zie het tech nieuws van nu")
     async def nu(self, inter, pagina:int = 1):
-        await news.nu(self, inter, page=pagina)
+        url = "https://www.nu.nl/rss/Tech"
+        await news.nu_and_tweakers(self, url, inter, page=pagina)
+
+
+    @nieuws.sub_command(description= "Zie het tech nieuws van nu")
+    async def tweakers(self, inter, pagina:int = 1):
+        url = "http://feeds.feedburner.com/tweakers/mixed"
+        await news.nu_and_tweakers(self, url, inter, page=pagina)
 
 
 
     # Functions
-    async def nu(self, inter, page):
-
+    async def nu_and_tweakers(self, url, inter, page):
 
         
+        
         pagina = page
-        view = news.Confirm(page)
+        view = news.Confirm(page, url)
 
-        data = requests.get("https://www.nu.nl/rss/Tech").text
+        data = requests.get(str(url)).text
 
         data_dict = xmltodict.parse(data)
         json_data = json.dumps(data_dict)
         json_data = json.loads(json_data)
 
-        embed=disnake.Embed(title="Nieuws", description="Van Nu.nl", color=0xdf8cfe)
-        
+        if "nu" in url:
+            embed=disnake.Embed(title="Nieuws", description="Van Nu.nl", color=0xdf8cfe)
+        elif "tweakers" in url:
+                embed=disnake.Embed(title="Nieuws", description="Van Tweakers.nl", color=0xdf8cfe)
+
         count_items = 0
 
         for item in json_data["rss"]["channel"]["item"]:
@@ -102,5 +111,11 @@ class news(commands.Cog):
         await inter.response.send_message(embed=embed, view=view, ephemeral=True)
 
 
+
+
+    async def tweakers(inter):
+        data = requests.get("https://www.nu.nl/rss/Tech").text
+
+    
 def setup(bot: commands.Bot):
     bot.add_cog(news(bot))
