@@ -3,6 +3,7 @@ from database import Database
 
 
 def check_restriction(user_id, command):
+    print("Debug")
     try:
         Database.cursor.execute(f"SELECT * FROM command_restriction WHERE user_id = {user_id} LIMIT 1")
         res = Database.cursor.fetchone() 
