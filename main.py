@@ -23,6 +23,7 @@ intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
 
 
+
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
@@ -31,7 +32,7 @@ async def on_ready():
 
 
 
-@tasks.loop(seconds=30) 
+@tasks.loop(seconds=120) 
 async def keep_sql_active():
     Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
     res = Database.cursor.fetchone()

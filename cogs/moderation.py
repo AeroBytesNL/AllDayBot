@@ -3,7 +3,7 @@ from disnake.ext import commands, tasks
 from env import *
 from datetime import datetime
 import pytz
-
+from helpers.command_restriction import *
 
 
 class moderation(commands.Cog):
@@ -88,6 +88,56 @@ class moderation(commands.Cog):
             await inter.response.send_message(f"Ik heb {berichten_aantal} berichten verwijderd!", delete_after=4.0)  
             # Logging
             info_logging_to_guild(inter, log="Bulk berichten verwijderd", user=inter.author.name, channel=inter.channel.name, command="`verwijder`")
+
+
+
+
+        # Command restriction
+        @commands.default_member_permissions(moderate_members=True)
+        @bot.slash_command()
+        async def command_restriction(inter):
+            pass
+
+
+
+        @command_restriction.sub_command(description = "Voeg command restricties toe aan een user")
+        async def toevoegen(inter, gebruiker: disnake.Member,
+
+            command_one = commands.Param(name="command_1", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
+            command_two = commands.Param(name="command_2", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
+            command_three = commands.Param(name="command_3", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
+            command_four = commands.Param(name="command_4", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
+            command_five = commands.Param(name="command_5", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"})):
+
+            # inserting / updating
+            insert_command_restriction(user_id=int(gebruiker.id), command_one=command_one, command_two=command_two, command_three=command_three, command_four=command_four, command_five=command_five)
+
+            await inter.response.send_message("Done")
+
+
+
+        @command_restriction.sub_command(description = "Verwijder command restricties can een user")
+        async def verwijderen(inter, gebruiker: disnake.Member,):
+
+            # Delete entry
+            delete_command_restriction(user_id=gebruiker.id)
+
+            await inter.response.send_message("Done")
+
+
+
+        @command_restriction.sub_command(description = "Zie restricted gebruikers!")
+        async def lijst(inter):
+
+            users = see_restricted_users()
+            embed=disnake.Embed(title="Restricted users", description="xx KelvinCodes", color=disnake.Color.red())
+
+            for user in users:
+                username = await bot.fetch_user(int(user[0]))
+
+                embed.add_field(name=f"Gebruiker {username.display_name}", value=f"Restricties: {user[1]}, {user[2]}, {user[3]}, {user[4]}, {user[5]}", inline=False)
+
+            await inter.response.send_message(embed=embed)
 
 
 

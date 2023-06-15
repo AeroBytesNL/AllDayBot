@@ -6,6 +6,8 @@ import pytz
 import numpy as np
 from database import Database
 import random
+from helpers.command_restriction import *
+
 
 
 class community(commands.Cog):
@@ -69,6 +71,11 @@ class community(commands.Cog):
         @commands.cooldown(1, 5.0, commands.BucketType.member)
         @bot.slash_command(description="Kijk of ik nog online ben!")
         async def kapot(inter):
+                
+                if check_restriction(user_id = inter.author.id, command="/kapot") == False:
+                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        return
+
                 print(f"User {inter.author.name} gebruikte het command 'kapot'")
                 await inter.response.send_message("Ik ben nog online!")            
                 await log_command(author=inter.author, command="`/kapot`", channel=inter.channel)
@@ -77,6 +84,11 @@ class community(commands.Cog):
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Stuur: Stel gewoon je vraag...")
         async def vraag_om_te_vragen(inter, user: disnake.User):
+                
+                if check_restriction(user_id = inter.author.id, command="/vraag_om_te_vragen") == False:
+                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        return
+
                 print(f"User {inter.author.name} gebruikte het command 'ask'")
                 await inter.send("Verzonden", ephemeral=True)
                 channel = bot.get_channel(inter.channel.id)
@@ -88,6 +100,11 @@ class community(commands.Cog):
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Stuur: Dat hoeft niet in DM....")
         async def dm(inter, gebruiker: disnake.User):
+                
+                if check_restriction(user_id = inter.author.id, command="/dm") == False:
+                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        return                
+
                 print(f"User {inter.author.name} gebruikte het command 'dm'")
                 await inter.send("Verzonden", ephemeral=True)
                 channel = bot.get_channel(inter.channel.id)        
@@ -98,6 +115,11 @@ class community(commands.Cog):
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Stuur: Niet zo moeilijk doen...")
         async def moeilijk_doen(inter):
+                
+                if check_restriction(user_id = inter.author.id, command="/moeilijk_doen") == False:
+                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        return
+
                 print(f"User {inter.author.name} gebruikte het command 'fok'")
                 await inter.send("Verzonden", ephemeral=True)
                 channel = bot.get_channel(inter.channel.id)        
@@ -108,6 +130,11 @@ class community(commands.Cog):
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Wijs een lid erop dat het juiste kanaal gebruikt moet worden")
         async def kanaal(inter, user: disnake.User, chnl: disnake.channel.TextChannel):
+                
+                if check_restriction(user_id = inter.author.id, command="/kanaal") == False:
+                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        return
+
                 print(f"User {inter.author.name} gebruikte het command 'kanaal'")
                 await inter.send("Verzonden", ephemeral=True)
                 channel = bot.get_channel(inter.channel.id)
@@ -125,6 +152,10 @@ class community(commands.Cog):
         async def toevoegen(inter, poll_vraag, vraag_1, vraag_2, vraag_3 = None, vraag_4 = None
         , vraag_5 = None, vraag_6 = None, vraag_7 = None, vraag_8 = None, vraag_9 = None, vraag_10 = None
         , vraag_11 = None, vraag_12 = None, vraag_13 = None, vraag_14 = None, vraag_15 = None):       
+
+                    if check_restriction(user_id = inter.author.id, command="/verjaardag_toevoegen") == False:
+                            await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                            return
 
                     embed = await poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
                         , vraag_7, vraag_8, vraag_9, vraag_10, vraag_11, vraag_12, vraag_13, vraag_14, vraag_15)

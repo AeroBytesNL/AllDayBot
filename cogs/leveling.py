@@ -17,6 +17,8 @@ import random
 import asyncio
 from database import *
 import urllib.request
+from helpers.command_restriction import *
+
 
 
 class Leveling(commands.Cog):
