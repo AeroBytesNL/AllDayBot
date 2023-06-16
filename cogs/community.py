@@ -73,7 +73,7 @@ class community(commands.Cog):
         async def kapot(inter):
                 
                 if check_restriction(user_id = inter.author.id, command="/kapot") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                         return
                 else:
                     print(f"User {inter.author.name} gebruikte het command 'kapot'")
@@ -86,7 +86,7 @@ class community(commands.Cog):
         async def vraag_om_te_vragen(inter, user: disnake.User):
                 
                 if check_restriction(user_id = inter.author.id, command="/vraag_om_te_vragen") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                         return
                 else: 
                     print(f"User {inter.author.name} gebruikte het command 'ask'")
@@ -102,7 +102,7 @@ class community(commands.Cog):
         async def dm(inter, gebruiker: disnake.User):
                 
                 if check_restriction(user_id = inter.author.id, command="/dm") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                         return                
                 else:
                     print(f"User {inter.author.name} gebruikte het command 'dm'")
@@ -117,7 +117,7 @@ class community(commands.Cog):
         async def moeilijk_doen(inter):
                 
                 if check_restriction(user_id = inter.author.id, command="/moeilijk_doen") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                         return
                 else:
                     print(f"User {inter.author.name} gebruikte het command 'fok'")
@@ -132,7 +132,7 @@ class community(commands.Cog):
         async def kanaal(inter, user: disnake.User, chnl: disnake.channel.TextChannel):
                 
                 if check_restriction(user_id = inter.author.id, command="/kanaal") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                         return
                 else:
                     print(f"User {inter.author.name} gebruikte het command 'kanaal'")
@@ -154,7 +154,7 @@ class community(commands.Cog):
         , vraag_11 = None, vraag_12 = None, vraag_13 = None, vraag_14 = None, vraag_15 = None):       
 
                     if check_restriction(user_id = inter.author.id, command="/verjaardag_toevoegen") == False:
-                            await inter.response.send_message("Je hebt geen toegang tot dit command. Voor vragen stuur onze bot een DM.",ephemeral=True)
+                            await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                             return
                     else:
                         embed = await poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
