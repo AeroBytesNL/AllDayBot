@@ -516,6 +516,19 @@ class Leveling(commands.Cog):
             return result
 
 
+    @tasks.loop(seconds=30) 
+    async def reset_daily_comps():
+            datetime_AM = datetime.now(pytz.timezone('Europe/Amsterdam') )
+            now_time = datetime_AM.strftime("%H%M")
+
+            if now_time == "0300":
+                Database.cursor.execute("UPDATE Users SET dailycomplements=0")
+                Database.db.commit()
+                print("Daily comp reset")
+
+    reset_daily_comps.start()
+
+
 
     def create_user(id, xp):
 
@@ -555,6 +568,8 @@ class Leveling(commands.Cog):
                     for member in channel.members:
                         if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
                             Leveling.gainXP(self, member.id, 4, 6)
+
+
         except Exception as error:
             print(error)
 
