@@ -138,12 +138,21 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Bedank iemand!")
     async def bedank(self, inter, gebruiker: disnake.User, reden: str = "Geen reden opgegeven"):
-                print(f"User {inter.author.name} gebruikte het command 'thank'")
-                e = await Leveling.thank(self, inter, gebruiker, reden)
-                if e is None:
-                    await inter.response.send_message("Er ging iets mis. Oepsie!")
-                else:
-                    await inter.response.send_message(embed=e)
+                
+                if gebruiker == self.bot or gebruiker == self.bot.user:
+                    await inter.response.send_message(f"{inter.author.name}, je mag de bot niet bedanken. Gebruik deze functie niet voor onnodige bedankjes!")
+                    return
+
+                if check_restriction(user_id = inter.author.id, command="/bedank") == False:
+                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
+                        return
+                else: 
+                    print(f"User {inter.author.name} gebruikte het command 'thank'")
+                    e = await Leveling.thank(self, inter, gebruiker, reden)
+                    if e is None:
+                        await inter.response.send_message("Er ging iets mis. Oepsie!")
+                    else:
+                        await inter.response.send_message(embed=e)
 
 
     @commands.slash_command(description="Comp-leaderboard")
