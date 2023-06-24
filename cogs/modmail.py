@@ -10,10 +10,11 @@ from dateutil import relativedelta
 # TODO change user.name to general name to prefend errors
 
 class modmail(commands.Cog):
+
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog ModMail is loaded!")
-
 
 
     # On message
@@ -68,7 +69,6 @@ class modmail(commands.Cog):
             def __init__(self):
                 super().__init__(timeout=0)
 
-            
             @disnake.ui.button(label="Verstuur", style=disnake.ButtonStyle.green)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
                 await inter.response.send_message("Ik heb het verstuurd!")
@@ -81,11 +81,19 @@ class modmail(commands.Cog):
                 await inter.response.send_message("Ik heb het geannuleert!")
                 self_inside_button.stop()
 
+
         # Creating instance
         view = Confirm()
 
+        if message.attachments:
+            embed=disnake.Embed(title="Contact ADT&G beheer", description="Wil je dit versturen?", color=disnake.Color.green())
+            embed.set_image(url=message.attachments[0].url)
+            await message.channel.send(embed=embed, view=view)
+            return
+
+
         # Embed
-        embed=disnake.Embed(title="Contact ADT&G beheer", description="\n", color=disnake.Color.green())
+        embed=disnake.Embed(title="Contact ADT&G beheer", description="Wil je dit versturen?", color=disnake.Color.green())
         embed.add_field(name=f"Vraag:", value=str(message.clean_content), inline=True)
         await message.channel.send(embed=embed, view=view)
 
@@ -115,17 +123,28 @@ class modmail(commands.Cog):
                 await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
                 await modmail.accept_or_deny(self, message, type=False, by_user=inter.author.name)
 
+
         # Creating instance
         view = Confirm()
+
 
         # Get admin and mod roles
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
         role_admin = guild.get_role(Role_ids.ADMIN)
         role_moderator = guild.get_role(Role_ids.MODERATOR)
 
+
         channel = self.bot.get_channel(env_variable.MODMAIL_ID)
         msg = await channel.send(f"Nieuwe ModMail ticket") # , allowed_mentions=disnake.AllowedMentions(roles=True)
         thread  = await channel.create_thread(name=f"{str(message.author.name)}&&MM", reason=f"ModMail for {message.author.name}", type=None, message=msg)
+
+                    
+        if message.attachments:
+            embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Van user: {message.author.name}", color=disnake.Color.red())
+            embed.set_image(url=message.attachments[0].url)
+            await thread.send(embed=embed)
+            return
+        
 
         # Embed 
         embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Van user: {message.author.name}", color=disnake.Color.red())
@@ -136,7 +155,7 @@ class modmail(commands.Cog):
 
     # Deny or accept request from user
     async def accept_or_deny(self, message, type, by_user):
-            
+
         if type == True:
             embed=disnake.Embed(title="Contact ADT&G beheer", description=f"Verzoek geaccepteerd door `{by_user}`! Het kan even duren voor je antwoord krijgt.", color=disnake.Color.green())
         else:
@@ -179,8 +198,10 @@ class modmail(commands.Cog):
                 await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
                 self_inside_button.stop()
 
+
         # Creating instance
         view = Confirm()        
+
 
         embed=disnake.Embed(title="Je hebt dit gestuurd:", description=str(message.clean_content), color=disnake.Color.green())
         await message.channel.send(embed=embed, view=view)
@@ -207,8 +228,18 @@ class modmail(commands.Cog):
                 await thread_to_close.edit(name=f"(gesloten){name_thread}", locked=True, archived=True)
                 self_inside_button.stop()
 
+
         # Creating instance
         view = Confirm()  
+
+
+        if message.attachments:
+            print("Jeej")
+            embed=disnake.Embed(title="User reageerde met de afbeelding:", description=str(message.clean_content), color=disnake.Color.red())
+            embed.set_image(url=message.attachments[0].url)
+
+            await thread_to_send.send(embed=embed, view=view)
+            return
 
 
         embed=disnake.Embed(title="User reageerde:", description=str(message.clean_content), color=disnake.Color.red())
