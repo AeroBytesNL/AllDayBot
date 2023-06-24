@@ -15,6 +15,8 @@ class community(commands.Cog):
         self.bot = bot
         print("Cog Community is loaded!")
 
+
+
         # Commands admin
         @commands.default_member_permissions(moderate_members=True)
         @bot.slash_command(description="Verstuur een announcement naar een kanaal!")

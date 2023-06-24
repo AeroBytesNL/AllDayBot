@@ -31,7 +31,6 @@ async def on_ready():
 
 
 
-
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
     Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
@@ -58,7 +57,7 @@ bot.load_extension("cogs.leveling")
 bot.load_extension("cogs.it_admin") 
 #bot.load_extension("cogs.buy_sell") #
 bot.load_extension("cogs.news") 
-
+#bot.load_extension("cogs.reminder") 
 
 
 # Running the bot and starting thread
