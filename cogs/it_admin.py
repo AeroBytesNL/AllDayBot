@@ -42,39 +42,6 @@ class it_admin(commands.Cog):
             await inter.response.send_message("Gelukt!", ephemeral=True)
 
 
-    # Commands pc
-    @commands.slash_command()
-    async def resource_monitoring(self, inter):
-        pass
-
-    # advice
-    @resource_monitoring.sub_command(description = "Zie de resources van de BHM VPS")
-    async def bothostmanager(self, inter):
-        if not await it_admin.role_checking_it(self, inter):
-            await inter.response.send_message("Je bent geen IT beheer, sorry!", ephemeral=True)
-
-
-    # advice
-    @resource_monitoring.sub_command(description = "Zie de resources van AllDayBot")
-    async def alldaybot(self, inter):
-        if not await it_admin.role_checking_it(self, inter):
-            await inter.response.send_message("Je bent geen IT beheer, sorry!", ephemeral=True)
-
-
-    # advice
-    @resource_monitoring.sub_command(description = "Zie de resources van de Minecraft server")
-    async def minecraft(self, inter, server):
-        # todo maak server list kiestbaar
-        if not await it_admin.role_checking_it(self, inter):
-            await inter.response.send_message("Je bent geen IT beheer, sorry!", ephemeral=True)
-
-
-    # advice
-    @resource_monitoring.sub_command(description = "Zie de resources van WebHostManager")
-    async def webhostmanager(self, inter):
-        if not await it_admin.role_checking_it(self, inter):
-            await inter.response.send_message("Je bent geen IT beheer, sorry!", ephemeral=True)
-
 
 
 def setup(bot: commands.Bot):
