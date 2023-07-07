@@ -127,6 +127,7 @@ class log_to_server(commands.Cog):
             embed.add_field(name="Bericht was van:", value=str(entry.target), inline=True)
             await channel_to_send.send(embed=embed)
 
+
     
     # Emoji 
     @commands.Cog.listener()
@@ -135,7 +136,38 @@ class log_to_server(commands.Cog):
 
 
 
+    # Reaction emojis
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
+        await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
 
+
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload):
+        print("Reactie verwijderd", payload.emoji, payload.message_id, payload.user_id)
+        await log_to_server.log_reactions(self, payload, type_embed="verwijderd")
+
+
+
+    # Threads
+    @commands.Cog.listener()
+    async def on_thread_create(self, thread):
+            await log_to_server.log_threads(self, thread, type_embed="aangemaakt")
+
+
+
+    @commands.Cog.listener()
+    async def on_thread_delete(self, thread):
+            await log_to_server.log_threads(self, thread, type_embed="verwijderd")
+
+
+
+
+    #
+    # Functions
+    #
     async def member_guild_embed(self, member, type):
 
         date_created_at = str(member.created_at).split(" ")[0]
@@ -217,6 +249,7 @@ class log_to_server(commands.Cog):
 
         channel_name = (await self.bot.fetch_channel(channel)).mention
         embed=disnake.Embed(title=f"\n", description=f"**Bulk berichten verwijderd in {channel_name} - Aantal: {count}**", color=disnake.Color.red())
+
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
 
@@ -226,6 +259,7 @@ class log_to_server(commands.Cog):
         embed.add_field(name="Voor het bewerken:", value=str(before_content), inline=False)
         embed.add_field(name="Na het bewerken:", value=str(after_content), inline=False)
         embed.add_field(name=f"Ga naar het bericht:", value=str(jump_to_msg), inline=False)
+
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
 
@@ -241,6 +275,7 @@ class log_to_server(commands.Cog):
             case "verwijderd":
                 embed_color = disnake.Color.red()
         embed=disnake.Embed(title=f"Rol {type}: {role}", description="\n", color=embed_color)
+
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
     
@@ -249,6 +284,7 @@ class log_to_server(commands.Cog):
             embed=disnake.Embed(title=f"Rol bewerkt", description="\n", color=disnake.Color.orange())
             embed.add_field(name="Voor het bewerken:", value=str(before), inline=False)
             embed.add_field(name="Na het bewerken:", value=str(after), inline=False)
+
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)
         else:
@@ -258,6 +294,7 @@ class log_to_server(commands.Cog):
             embed=disnake.Embed(title=f"Rol {before.name} kleur bewerkt", description="\n", color=disnake.Color.orange())
             embed.add_field(name="Voor het bewerken:", value=str(before.color), inline=False)
             embed.add_field(name="Na het bewerken:", value=str(after.color), inline=False)
+
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)
 
@@ -279,6 +316,7 @@ class log_to_server(commands.Cog):
             embed=disnake.Embed(title=f"Kanaal bewerkt", description="\n", color=disnake.Color.orange())
             embed.add_field(name="Voor het bewerken:", value=str(before), inline=False)
             embed.add_field(name="Na het bewerken:", value=str(after), inline=False)
+
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)            
     
@@ -291,11 +329,39 @@ class log_to_server(commands.Cog):
             embed.set_author(name=inter.author, icon_url=inter.author.avatar)
             embed.add_field(name="Command:", value=str(command), inline=False)
             embed.add_field(name="Op gebruiker:", value=str(on_user), inline=False)
+
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             self.bot.loop.create_task(channel_to_send.send(embed=embed))
             
+    
+
+    async def log_reactions(self, payload, type_embed):
+            user = self.bot.get_user(payload.user_id)
+            message = self.bot.get_message(payload.message_id)
+
+            embed=disnake.Embed(title=f"Reactie {type_embed}", description="\n", color=disnake.Color.orange())
+            embed.add_field(name=f"Emoji:", value=f"{payload.emoji}", inline=True)
+            embed.add_field(name="Bericht:", value=f"{message.jump_url}", inline=True)
+            embed.add_field(name="Door user:", value=f"{user.name}", inline=True)
+
+            channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+            await channel_to_send.send(embed=embed)            
+    
 
 
+
+    async def log_threads(self, thread, type_embed):
+            print(f"Thread {type_embed}",thread.name, thread.category, thread.jump_url, thread.owner)
+
+
+            embed=disnake.Embed(title=f"Thread {type_embed}", description="\n", color=disnake.Color.orange())
+            embed.add_field(name=f"Threadnaam:", value=f"{thread.name}", inline=True)
+            embed.add_field(name="In category:", value=f"{thread.category}", inline=True)
+            embed.add_field(name="Van gebruiker:", value=f"{thread.owner}", inline=True)
+
+            channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+            await channel_to_send.send(embed=embed)            
+    
 
 def setup(bot: commands.Bot):
     bot.add_cog(log_to_server(bot))
