@@ -229,9 +229,9 @@ class moderation(commands.Cog):
         embed.add_field(name=f"Actie uitgevoerd:", value=str(punishment), inline=False)
         embed.add_field(name=f"Reden:", value=str(reason), inline=False)
         if "Mute" in punishment:
-            embed.add_field(name=f"Niet eens met deze actie?", value="Vul het formulier in op: https://kelvincodes.nl/jemoeder of stuur onze bot een DM.", inline=False)
+            embed.add_field(name=f"Niet eens met deze actie?", value="Vul het formulier in op: https://alldaytechandgaming.nl/moderatie-actie-aanvechten-2/ of stuur onze bot een DM.", inline=False)
         else:
-            embed.add_field(name=f"Niet eens met deze actie?", value="Vul het formulier in op: https://kelvincodes.nl/jemoeder", inline=False)
+            embed.add_field(name=f"Niet eens met deze actie?", value="Vul het formulier in op: https://alldaytechandgaming.nl/moderatie-actie-aanvechten-2/", inline=False)
 
         await user.send(embed=embed)
 
