@@ -6,7 +6,6 @@ import datetime
 from datetime import timedelta
 import mysql.connector
 import random
-import time, schedule
 from datetime import datetime
 import threading 
 from threading import Timer
