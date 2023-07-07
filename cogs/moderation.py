@@ -1,222 +1,265 @@
 import disnake
-from disnake.ext import commands, tasks
+from disnake.ext import commands
 from env import *
-from datetime import datetime
-import pytz
 from helpers.command_restriction import *
 
 
+# TODO: Make unban system
+# Make user notification system
+
 class moderation(commands.Cog):
+
+
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog Moderation is loaded!")
-
-        tz_AM = pytz.timezone('Europe/Amsterdam') 
-
-
-        # Commands 
-        @commands.default_member_permissions(moderate_members=True)
-        @bot.slash_command()
-        async def mod(inter):
-            pass
-
-
-        # Warn a member
-        @mod.sub_command(description = "Unmute een lid")
-        async def warning(inter, gebruiker: disnake.Member, reden: str):
-
-            embed=disnake.Embed(title=f"Waarschuwing voor {gebruiker.name}", description=f"Reden: {reden}", color=disnake.Color.red())
-            await inter.response.send_message(embed=embed)
-
-            await event_dm_user(id=gebruiker.id, type="warning", reason=reden)
-            # Logging
-            usr_name = gebruiker.name
-            await mod_log_to_guild(inter, command="mod warning", user=usr_name)
-
-
-        # Muting member
-        @mod.sub_command(description = "Mute een lid")
-        async def mute(inter, gebruiker: disnake.Member, reden: str, time: int = commands.Param(name="tijd", choices= {"1 uur": 3600,
-            "12 uur": 43200, "1 dag": 86400, "2 dagen": 172800, "3 dagen": 259200})
-            ):
-            await gebruiker.timeout(duration=time, reason=reden)
-            await event_dm_user(id=gebruiker.id, type="time_out_added", reason=reden)
-            await inter.response.send_message(f"Met mijn superkrachten heb ik {gebruiker.name} een timeout kunnen geven van {time} seconden!", ephemeral=True)
-            # Logging
-            usr_name = gebruiker.name
-            await mod_log_to_guild(inter=inter, command="mod mute", user=usr_name)
-
-
-        # Unmutem a member
-        @mod.sub_command(description = "Unmute een lid")
-        async def unmute(inter, gebruiker: disnake.Member):
-            await gebruiker.edit(timeout=False)
-            await inter.response.send_message(f"Met mijn superpowwaaah heb ik van {gebruiker.name} de timeout verwijderd!", ephemeral=True)
-            await event_dm_user(id= gebruiker.id, type="time_out_removed", reason=None)
-            # Logging
-            usr_name = gebruiker.name
-            await mod_log_to_guild(inter, command="mod unmute", user=usr_name)
-
-
-        # Member ban
-        @mod.sub_command(description = "Ban een lid van de guild!")
-        async def ban(inter, gebruiker: disnake.Member, reden: str, verwijder_berichten_dagen: int = commands.Param(name="dagen", choices={"Niks": 0, "1 dag": 1, "2 dagen": 2, 
-            "3 dagen": 3, "4 dagen": 4, "5 dagen": 5, "6 dagen": 6, "7 dagen": 7})):
-            await event_dm_user(id=gebruiker.id, type="ban_added", reason=reden)
-            await gebruiker.ban(reason=reden)
-            await inter.response.send_message(f"Met mijn botpowwerrtttt heb ik {gebruiker.name}= gebanned!", ephemeral=True)
-            usr_name = gebruiker.name
-            await mod_log_to_guild(inter, command="mod ban", user=usr_name)
-            await add_user_to_ban_log(inter, usr_name, reden)
-
-
-        # member unban
-        @mod.sub_command(description = "Unban een lid van de guild!")
-        async def unban(inter, gebruiker):
-            await (await bot.fetch_guild(int(env_variable.GUILD_ID))).unban(gebruiker)
-            await inter.response.send_message(f"Met mijn magische krachten heb ik {gebruiker.name}= un-banned!", ephemeral=True)
-            #await event_dm_user(id=gebruiker, type="ban_added", reason=None)
-            await mod_log_to_guild(inter, command="mod unban", user=gebruiker)
-
-
-        # Delete multiple messages
-        @commands.default_member_permissions(moderate_members=True)
-        @bot.slash_command(description="Verwijder meerdere berichten tegelijk!")
-        async def verwijder(inter, berichten_aantal: int):
-
-            await inter.channel.purge(limit=berichten_aantal)
-            await inter.response.send_message(f"Ik heb {berichten_aantal} berichten verwijderd!", delete_after=4.0)  
-            # Logging
-            info_logging_to_guild(inter, log="Bulk berichten verwijderd", user=inter.author.name, channel=inter.channel.name, command="`verwijder`")
-
-
-
-
-        # Command restriction
-        @commands.default_member_permissions(moderate_members=True)
-        @bot.slash_command()
-        async def command_restriction(inter):
-            pass
-
-
-
-        @command_restriction.sub_command(description = "Voeg command restricties toe aan een user")
-        async def toevoegen(inter, gebruiker: disnake.Member,
-
-            command_one = commands.Param(name="command_1", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
-            command_two = commands.Param(name="command_2", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
-            command_three = commands.Param(name="command_3", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
-            command_four = commands.Param(name="command_4", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"}),
-            command_five = commands.Param(name="command_5", choices={"geen": "geen", "/poll toevoegen": "/poll_toevoegen", "/verjaardag toevoegen": "/verjaardag_toevoegen", "vraag_om_te_vragen ": "/vraag_om_te_vragen", "moeilijk_doen ": "/moeilijk_doen", "/kanaal": "/kanaal", "/dm": "/dm", "/bedank": "/bedank", "/kapot": "/kapot"})):
-
-            # inserting / updating
-            insert_command_restriction(user_id=int(gebruiker.id), command_one=command_one, command_two=command_two, command_three=command_three, command_four=command_four, command_five=command_five)
-
-            await inter.response.send_message("Done")
-
-
-
-        @command_restriction.sub_command(description = "Verwijder command restricties can een user")
-        async def verwijderen(inter, gebruiker: disnake.Member,):
-
-            # Delete entry
-            delete_command_restriction(user_id=gebruiker.id)
-
-            await inter.response.send_message("Done")
-
-
-
-        @command_restriction.sub_command(description = "Zie restricted gebruikers!")
-        async def lijst(inter):
-
-            users = see_restricted_users()
-            embed=disnake.Embed(title="Restricted users", description="xx KelvinCodes", color=disnake.Color.red())
-
-            for user in users:
-                username = await bot.fetch_user(int(user[0]))
-
-                embed.add_field(name=f"Gebruiker {username.display_name}", value=f"Restricties: {user[1]}, {user[2]}, {user[3]}, {user[4]}, {user[5]}", inline=False)
-
-            await inter.response.send_message(embed=embed)
-
-
-
-
-        # Functions
-        async def event_dm_user(id, type, reason=None):
-            # Getting user
-            user = bot.get_user(id)
-
-            match type:
-                
-                case "time_out_added":
-                    embed=disnake.Embed(title="Je hebt een timeout ontvangen", description=f"Server: AllDayTechAndGaming", color=disnake.Color.red())
-                    if reason != None:
-                        embed.add_field(name=f"Reden:", value=str(reason), inline=False)
-                    embed.add_field(name=f"Wil je de moderatie-actie aanvechten, dan kan je het volgende formulier gebruiken:", value="https://alldaytechandgaming.nl/moderatie-actie-aanvechten-2/", inline=False)
-                    embed.set_footer(text=f"Datum: {str(datetime.now(pytz.timezone('Europe/Amsterdam') ))[0:19]}")
-                    await user.send(embed=embed)
-
-                case "time_out_removed":
-                    embed=disnake.Embed(title="De timeout is eraf gehaald!", description=f"Server: AllDayTechAndGaming", color=disnake.Color.dark_green())
-                    embed.set_footer(text=f"Datum: {str(datetime.now(pytz.timezone('Europe/Amsterdam') ))[0:19]}")
-                    await user.send(embed=embed)
-
-                case "ban_added":
-                    embed=disnake.Embed(title="Je bent gebanned!", description=f"Server: AllDayTechAndGaming", color=disnake.Color.red())
-                    if reason != None:
-                        embed.add_field(name=f"Reden:", value=str(reason), inline=False)                    
-                    embed.add_field(name=f"Wil je de moderatie-actie aanvechten, dan kan je het volgende formulier gebruiken:", value="https://alldaytechandgaming.nl/moderatie-actie-aanvechten-2/", inline=False)
-                    embed.set_footer(text=f"Datum: {str(datetime.now(pytz.timezone('Europe/Amsterdam') ))[0:19]}")
-                    await user.send(embed=embed)
-
-                case "warning":
-                    embed=disnake.Embed(title="Je hebt een waarschuwing gekregen!", description=f"Server: AllDayTechAndGaming", color=disnake.Color.red())
-                    embed.add_field(name=f"Reden:", value=str(reason), inline=False)             
-                    embed.add_field(name=f"Wil je de moderatie-actie aanvechten, dan kan je het volgende formulier gebruiken:", value="https://alldaytechandgaming.nl/moderatie-actie-aanvechten-2/", inline=False)
-                    embed.set_footer(text=f"Datum: {str(datetime.now(pytz.timezone('Europe/Amsterdam') ))[0:19]}")
-                    await user.send(embed=embed)
-
-
-
-        # Sending stuff to LOG channel
-        def mod_log_to_guild(inter, command, user):
-            channel_to_send = bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
-
-            embed=disnake.Embed(title="Adje log", description=f"Op gebruiker: {user}", color=disnake.Color.dark_green())
-            embed.set_author(name=inter.author.name, icon_url=inter.author.avatar)
-            embed.add_field(name=f"Command gebruikt:", value=str(command), inline=True)
-            embed.add_field(name=f"Kanaal:", value=str(inter.channel.name), inline=True)
-            embed.set_footer(text=f"Datum: {str(datetime.now(pytz.timezone('Europe/Amsterdam') ))[0:19]}")
-
-            bot.loop.create_task(channel_to_send.send(embed=embed))
-
-
-
-        async def add_user_to_ban_log(inter, usr_name, reden):
-            embed=disnake.Embed(title=f"User '{usr_name}' gebanned", description=f"Door: {inter.author.mention}", color=disnake.Color.purple())
-            embed.add_field(name="Reden:", value=str(reden), inline=False)
-            channel_to_send = bot.get_channel(env_variable.BAN_LOG)
-            await channel_to_send.send(embed=embed)
         
 
 
-        # Sending stuff to LOG channel
-        def info_logging_to_guild(log, user, channel, command=None, inter=None):
-            channel_to_send = bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+    # Commands 
+    @commands.default_member_permissions(moderate_members=True)
+    @commands.slash_command()
+    async def moderatie(self, inter):
+        pass
 
-            embed=disnake.Embed(title="Adje log", description="Info", color=0xdf8cfe)
 
-            if inter != None:
-                embed.set_author(name=user, icon_url=inter.author.avatar)
-            embed.add_field(name=f"Log gebeurtenis:", value=str(log), inline=True)
-            if command != None:
-                embed.add_field(name=f"Command:", value=str(command), inline=True)
 
-            embed.add_field(name=f"Kanaal:", value=str(channel), inline=True)
-            embed.set_footer(text=f"Datum: {str(datetime.now(tz_AM))[0:19]}")
+    # Get action menu
+    @moderatie.sub_command(description = "Voer een moderatie actie uit")
+    async def actie(self, inter, gebruiker: disnake.Member, reden:str):
+        try:
+            await moderation.embed_controller(self, inter, user=gebruiker, reason=reden)
 
-            bot.loop.create_task(channel_to_send.send(embed=embed))
+        except Exception as error:
+            await inter.response.send_message(str(error), ephemeral=True)
+
+
+
+    # Get menu list
+    @moderatie.sub_command(description = "Krijg van een gebruiker alle moderatie acties te zien")
+    async def lijst(self, inter, gebruiker: disnake.Member = None, gebruiker_id = None):
+        try:
+
+            if gebruiker == None and gebruiker_id == None:
+                await inter.response.send_message("Je moet een gebruiker invullen bij de optionele opties!", ephemeral=True)
+                return                 
+
+            if gebruiker != None:
+                data = moderation.get_warning_info_by_user_id(user_id=gebruiker.id)
+            else:
+                data = moderation.get_warning_info_by_user_id(user_id=gebruiker_id)
+            
+            await moderation.user_info_embed(inter, data)
+
+        except Exception as error:
+            await inter.response.send_message(str(error), ephemeral=True)
+
+
+
+    # Delete entry
+    @moderatie.sub_command(description = "Verwijder een moderatie actie uit de log")
+    async def verwijder(self, inter, entry_id):
+
+            moderation.delete_entry(entry_id)
+            await inter.response.send_message(f"Klaar! Entry {entry_id} is deleted!", ephemeral=True)
+
+
+
+    # Manual add entry
+    @moderatie.sub_command(description = "Voeg handmatig een entry toe aan de log")
+    async def toevoegen(self, inter, reden:str, actie_uitgevoerd: str, gebruiker: disnake.Member = None, gebruiker_id = None):
+        try:
+
+            if gebruiker == None and gebruiker_id == None:
+                await inter.response.send_message("Je moet een gebruiker invullen bij de optionele opties!", ephemeral=True)
+                return 
+            
+            if gebruiker != None:
+                moderation.insert_entry_manual(user=gebruiker.id, inter=inter, reason=reden, action=actie_uitgevoerd)
+            else:
+                moderation.insert_entry_manual(user=gebruiker_id, inter=inter, reason=reden, action=actie_uitgevoerd)
+
+            await inter.response.send_message("De log is toegevoegd!")
+
+        except Exception as error:
+            await inter.response.send_message(str(error), ephemeral=True)
+
+
+
+    # Main controller
+    async def embed_controller(self, inter, user, reason):
+
+        # Get data from user in warning system
+        user_data = moderation.get_warning_info_by_user_id(user_id=user.id)
+
+        # Send first embed with data
+        await moderation.action_embed(self, inter, user, reason, user_data)
+
+
+
+    # Second controller
+    async def punishment_execution_controller(self, inter, callback_reaction, user, user_data, reason):
+
+        # Get guild object
+        guild = self.bot.get_guild(env_variable.GUILD_ID)
+
+        # Execute punishment
+        # Mute
+        if callback_reaction == "Mute 30 minuten":
+            # Send notification to end yser
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.timeout(disnake.Object(user.id), duration=1800)
+            # Insert action into DB
+            moderation.insert_action(user_id=user.id, action="Mute 30 minuten", inter=inter, violation=reason)
+        elif callback_reaction == "Mute 1 uur":
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.timeout(disnake.Object(user.id), duration=3600)
+            moderation.insert_action(user_id=user.id, action="Mute 1 uur", inter=inter, violation=reason)
+        elif callback_reaction == "Mute 12 uur":
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.timeout(disnake.Object(user.id), duration=43200)
+            moderation.insert_action(user_id=user.id, action="Mute 12 uur", inter=inter, violation=reason)
+        elif callback_reaction == "Mute 24 uur":
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.timeout(disnake.Object(user.id), duration=86400)
+            moderation.insert_action(user_id=user.id, action="Mute 24 uur", inter=inter, violation=reason)            
+
+        # Ban
+        elif callback_reaction == "Ban voor 1 dag":
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.ban(user=user, reason=reason, clean_history_duration=0)
+            moderation.insert_action(user_id=user.id, action="Ban 1 dag", inter=inter, violation=reason)
+        elif callback_reaction == "Ban voor 1 week":
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.ban(user=user, reason=reason, clean_history_duration=0)
+            moderation.insert_action(user_id=user.id, action="Ban 1 week", inter=inter, violation=reason)
+        elif callback_reaction == "Ban voor altijd":
+            await moderation.user_notification_embed_dm(self, user_id=user.id, admin=inter.author.name, punishment=callback_reaction, reason=reason)
+            await guild.ban(user=user, reason=reason, clean_history_duration=0)
+            moderation.insert_action(user_id=user.id, action="Ban altijd", inter=inter, violation=reason)
+
+
+
+    # Main functions
+    async def action_embed(self, inter, user, reason, user_data):
+        
+        second_self = self
+        
+        # Embed with user info
+        embed=disnake.Embed(title="Gebruiker actie informatie", description=f"Aantal acties: {len(user_data)}", color=0xdf8cfe)
+        
+        for action in user_data: 
+            embed.add_field(name=f"Admin: {action[1]} **-** ID: {action[4]}", value=f"Actie: {action[2]} **-** Reden: {action[3]}", inline=False)
+
+        # Select menu
+        class Dropdown(disnake.ui.StringSelect):
+            def __init__(self):
+                # Define the options that will be presented inside the dropdown
+                options = [
+
+                    disnake.SelectOption(
+                        label="Mute 30 minuten", description="Mute iemand voor 30 minuten", emoji="🔊"
+                    ),
+                    disnake.SelectOption(
+                        label="Mute 1 uur", description="Mute iemand voor 1 uur", emoji="🔊"
+                    ),
+                    disnake.SelectOption(
+                        label="Mute 12 uur", description="Mute iemand voor 12 uur", emoji="🔊"
+                    ),
+                    disnake.SelectOption(
+                        label="Mute 24 uur", description="Mute iemand voor 24 uur", emoji="🔊"
+                    ),
+                    disnake.SelectOption(
+                        label="Ban voor 1 dag", description="Ban iemand voor 1 dag", emoji="❗"
+                    ),
+                    disnake.SelectOption(
+                        label="Ban voor 1 week", description="Ban iemand voor 1 week", emoji="❗"
+                    ),
+                    disnake.SelectOption(
+                        label="Ban voor altijd", description="Ban iemand voor altijd", emoji="❗"
+                    )                                                                                                                                         
+                ]
+
+                super().__init__(
+                    placeholder="Voer een actie uit op de overstreder",
+                    min_values=1,
+                    max_values=1,
+                    options=options,
+                )
+
+            # Callback
+            async def callback(self, inter: disnake.MessageInteraction):
+                await inter.response.send_message(f"Je hebt {self.values[0]} gekozen!", ephemeral=True)
+                callback_reaction = self.values[0]
+                await moderation.punishment_execution_controller(second_self, inter, callback_reaction, user, user_data, reason)
+
+        class DropdownView(disnake.ui.View):
+
+            def __init__(self):
+                super().__init__()
+
+                # Add the dropdown to our view object.
+                self.add_item(Dropdown())
+
+        view = DropdownView()
+
+        await inter.response.send_message(embed=embed,view=view, ephemeral=True)
+
+
+
+    async def user_info_embed(inter, data):
+
+        # Embed with user info
+        embed=disnake.Embed(title="Gebruiker actie informatie", description=f"Aantal acties: **{len(data)}**", color=0xdf8cfe)
+        
+        for action in data: 
+            embed.add_field(name=f"Admin: {action[1]} **-** ID: {action[4]}", value=f"**Actie:** {action[2]} **Reden:** {action[3]} **Tijd:** {action[5]}", inline=False)
+
+        await inter.response.send_message(embed=embed, ephemeral=True)
+
+
+
+    async def user_notification_embed_dm(self, user_id, admin, punishment, reason):
+
+        # Getting user
+        user = await self.bot.get_or_fetch_user(user_id)
+
+        embed=disnake.Embed(title="Moderatie actie van ADT&G", description=f"Door admin: {admin}", color=0xdf8cfe)
+        embed.add_field(name=f"Actie uitgevoerd:", value=str(punishment), inline=False)
+        embed.add_field(name=f"Reden:", value=str(reason), inline=False)
+        if "Mute" in punishment:
+            embed.add_field(name=f"Niet eens met deze actie?", value="Vul het formulier in op: https://kelvincodes.nl/jemoeder of stuur onze bot een DM.", inline=False)
+        else:
+            embed.add_field(name=f"Niet eens met deze actie?", value="Vul het formulier in op: https://kelvincodes.nl/jemoeder", inline=False)
+
+        await user.send(embed=embed)
+
+
+
+    # Database querys
+    def get_warning_info_by_user_id(user_id):
+        Database.cursor.execute(f"SELECT * FROM warning_system WHERE user_id = {user_id}")
+        return Database.cursor.fetchall()
+    
+
+
+    def insert_action(user_id, action, inter, violation):
+        Database.cursor.execute(f"INSERT INTO warning_system (user_id, warning_maker, action, violation) VALUES ({user_id}, '{inter.author.name}', '{action}', '{violation}')")
+        Database.db.commit()
+
+
+
+    def delete_entry(entry_id):
+        Database.cursor.execute(f"DELETE FROM warning_system WHERE entry_id = {entry_id}")
+        Database.db.commit()
+
+
+
+    def insert_entry_manual(user, inter, reason, action):
+        Database.cursor.execute(f"INSERT INTO warning_system (user_id, warning_maker, action, violation) VALUES ({user}, '{inter.author.name}', '{action}', '{reason}')")
+        Database.db.commit()
+
 
 
 

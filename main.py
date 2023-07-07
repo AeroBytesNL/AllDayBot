@@ -6,13 +6,11 @@ import datetime
 from datetime import timedelta
 import mysql.connector
 import random
-import time, schedule
 from datetime import datetime
 import threading 
 from threading import Timer
 from env import *
 from datetime import datetime
-import pytz
 import random
 import asyncio
 from database import *
@@ -36,7 +34,6 @@ async def keep_sql_active():
     Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
     res = Database.cursor.fetchone()
     print("Just keeping the data-slut active!")
-
     
 keep_sql_active.start()
 
@@ -58,6 +55,7 @@ bot.load_extension("cogs.it_admin")
 #bot.load_extension("cogs.buy_sell") #
 bot.load_extension("cogs.news") 
 #bot.load_extension("cogs.reminder") 
+
 
 
 # Running the bot and starting thread
