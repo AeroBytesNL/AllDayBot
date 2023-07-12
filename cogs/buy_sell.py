@@ -20,6 +20,8 @@ class buy_sell(commands.Cog):
     @tasks.loop(seconds=360) 
     async def buy_sell_cleaner_9000(self):
 
+        print("Doing an #koopverkoop scan")
+
         try:
             
             buy_sell_channel = self.bot.get_channel(env_variable.KOOP_VERKOOP_ID)
@@ -34,8 +36,11 @@ class buy_sell(commands.Cog):
                 date_object = datetime.strptime(splitted_string_datetime, "%Y-%m-%d %H:%M:%S")
                 date_diff = datetime.now().date() - date_object.date()
 
-                if date_diff.days >= 31 and message.id != 952697829237862420 or message.id != 952697829237862420 or message.author != self.bot.user:
-
+                if date_diff.days <= 31:
+                    return
+                if message.author == self.bot.user:
+                    return
+                else:
                     await message.delete()
                     print("Message in buy sell deleted")
 
