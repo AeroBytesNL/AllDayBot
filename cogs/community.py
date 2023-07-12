@@ -11,31 +11,12 @@ from helpers.command_restriction import *
 
 
 class community(commands.Cog):
+
+
+    
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog Community is loaded!")
-
-
-
-        # Commands admin
-        @commands.default_member_permissions(moderate_members=True)
-        @bot.slash_command(description="Verstuur een announcement naar een kanaal!")
-        async def announce(inter, channel: disnake.TextChannel, bericht: str):
-            try:
-
-                guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-        
-                embed=disnake.Embed(title="\n", description=str(bericht), color=0xdf8cfe)
-                embed.set_footer(text=f"Deze aankondiging is gemaakt door {inter.author.name}")
-                embed.set_thumbnail(url=guild.icon)
-
-
-                await channel.send(embed=embed)
-                mod_log_to_guild(inter, command="announce", user="Geen")
-                await inter.response.send_message("Announcement is aangemaakt!", ephemeral=True)
-                await log_command(author=inter.author, command="`/announce`", channel=inter.channel)
-            except Exception as error:
-                await inter.response.send_message(str(error), ephemeral=True)
 
 
 

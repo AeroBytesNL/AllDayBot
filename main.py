@@ -54,6 +54,8 @@ bot.load_extension("cogs.leveling")
 bot.load_extension("cogs.it_admin") 
 bot.load_extension("cogs.buy_sell") #
 bot.load_extension("cogs.news") 
+bot.load_extension("cogs.announce") 
+
 #bot.load_extension("cogs.reminder") 
 
 
