@@ -1,31 +1,43 @@
 import disnake
 from disnake.ext import commands, tasks
-from disnake.enums import ButtonStyle
 from env import *
-from database import Database
 from datetime import datetime
-import pytz
 
-# TODO change month string to int
+
 
 class buy_sell(commands.Cog):
+
+
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog buy/sell is loaded!")
         buy_sell.buy_sell_cleaner_9000.start(self)
 
-    # making loop
-    # TODO change to 240 minutes
-    @tasks.loop(seconds=1) 
+
+
+    #  loop
+    @tasks.loop(seconds=360) 
     async def buy_sell_cleaner_9000(self):
-        print("Running ")
+
         try:
-            buy_sell_channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+            
+            buy_sell_channel = self.bot.get_channel(env_variable.KOOP_VERKOOP_ID)
 
             messages = await buy_sell_channel.history(limit=200).flatten()
             
             for message in messages:
-                print(message)
+
+                string_datetime = str(message.created_at)
+                splitted_string_datetime = string_datetime.split(".")[0]
+
+                date_object = datetime.strptime(splitted_string_datetime, "%Y-%m-%d %H:%M:%S")
+                date_diff = datetime.now().date() - date_object.date()
+
+                if date_diff.days >= 31 and message.id != 952697829237862420 or message.id != 952697829237862420 or message.author != self.bot.user:
+
+                    await message.delete()
+                    print("Message in buy sell deleted")
 
         except Exception as error:
             print(error)
