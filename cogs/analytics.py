@@ -85,7 +85,7 @@ class analytics(commands.Cog):
         Database.db.commit()
 
         # Clear storage
-        self.msg_storage.clear
+        self.msg_storage.clear()
 
 
     

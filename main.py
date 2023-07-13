@@ -56,6 +56,7 @@ bot.load_extension("cogs.buy_sell") #
 bot.load_extension("cogs.news") 
 bot.load_extension("cogs.announce") 
 bot.load_extension("cogs.analytics") 
+bot.load_extension("cogs.user_saver") 
 
 #bot.load_extension("cogs.reminder") 
 
