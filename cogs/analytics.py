@@ -89,7 +89,7 @@ class analytics(commands.Cog):
 
         except Exception as error:
             print(error)
-
+            pass
     
 def setup(bot: commands.Bot):
     bot.add_cog(analytics(bot))
