@@ -1,18 +1,6 @@
 import disnake
 from disnake.ext import commands, tasks
-from disnake.ext.commands import MissingPermissions
-from disnake.enums import ButtonStyle
-import datetime
-from datetime import timedelta
-import mysql.connector
-import random
-from datetime import datetime
-import threading 
-from threading import Timer
 from env import *
-from datetime import datetime
-import random
-import asyncio
 from database import *
 
 
@@ -47,18 +35,13 @@ bot.load_extension("cogs.log_to_server")
 bot.load_extension("cogs.community") 
 bot.load_extension("cogs.moderation") 
 bot.load_extension("cogs.modmail") 
-bot.load_extension("cogs.minecraft") 
-bot.load_extension("cogs.pc_text") 
-#bot.load_extension("cogs.configuration") 
+#bot.load_extension("cogs.minecraft") 
 bot.load_extension("cogs.leveling") 
 bot.load_extension("cogs.it_admin") 
-bot.load_extension("cogs.buy_sell") #
+bot.load_extension("cogs.buy_sell") 
 bot.load_extension("cogs.news") 
 bot.load_extension("cogs.announce") 
 bot.load_extension("cogs.analytics") 
-bot.load_extension("cogs.user_saver") 
-
-#bot.load_extension("cogs.reminder") 
 
 
 
