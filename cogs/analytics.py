@@ -14,7 +14,7 @@ class analytics(commands.Cog):
         print("Cog Analytics is loaded!")
 
         # Starting loopies
-        #self.member_statistics.start()
+        self.member_statistics.start()
         self.save_general_statistics_to_db.start()
 
         # Storage global
@@ -42,10 +42,10 @@ class analytics(commands.Cog):
 
 
     # Updating total members
-    @tasks.loop(seconds=5)
+    @tasks.loop(seconds=28)
     async def member_statistics(self):
 
-        await self.wait_until_ready()  # wait until the cache is populated
+        print("Getting guild statistics....")
 
         # Getting guild
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
@@ -114,6 +114,6 @@ class analytics(commands.Cog):
             pass
     
 
-    
+
 def setup(bot: commands.Bot):
     bot.add_cog(analytics(bot))
