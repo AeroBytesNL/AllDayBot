@@ -6,7 +6,7 @@ from database import *
 
 
 intents = disnake.Intents.all()
-bot = commands.Bot(intents=intents)
+bot = commands.Bot(intents=intents, command_prefix="!")
 
 
 
@@ -26,6 +26,7 @@ async def keep_sql_active():
 keep_sql_active.start()
 
 
+
             
 # Loading different cogs
 bot.load_extension("cogs.ad_weer") 
@@ -42,6 +43,7 @@ bot.load_extension("cogs.buy_sell")
 bot.load_extension("cogs.news") 
 bot.load_extension("cogs.announce") 
 bot.load_extension("cogs.analytics") 
+#bot.load_extension("cogs.test") 
 
 
 
