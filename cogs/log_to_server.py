@@ -18,27 +18,32 @@ class log_to_server(commands.Cog):
     # Member guild
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        print("Welcome! ", member)
-        await self.member_guild_embed(member, type="joinde de keet!")
+        if log_to_server.get_settings(setting="member_join_leave"):
+            print("Welcome! ", member)
+            await self.member_guild_embed(member, type="joinde de keet!")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        print("Aaaah! er is een member/memberina weg!")
-        await self.member_guild_embed(member, type="verliet de keet!")
+        if log_to_server.get_settings(setting="member_join_leave"):
+            print("Aaaah! er is een member/memberina weg!")
+            await self.member_guild_embed(member, type="verliet de keet!")
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
-        print(f"Aaaah! User: {member} is gebanned van guild: {guild}.")
-        await self.member_guild_embed(member, type="is verbannen van deze keet!")
+        if log_to_server.get_settings(setting="mod_ban_unban"):
+            print(f"Aaaah! User: {member} is gebanned van guild: {guild}.")
+            await self.member_guild_embed(member, type="is verbannen van deze keet!")
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):
-        print(f"Aaaah! User: {member} is ungebanned van guild: {guild}.")
-        await self.member_guild_embed(member, type="is un-banned van deze keet!")    
+        if log_to_server.get_settings(setting="mod_ban_unban"):
+            print(f"Aaaah! User: {member} is ungebanned van guild: {guild}.")
+            await self.member_guild_embed(member, type="is un-banned van deze keet!")    
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if before.nick != after.nick:
+        if log_to_server.get_settings(setting="member_nickname"):
+            if before.nick != after.nick:
                 name_before = before.nick
                 name_after = after.nick
                 if name_after == None:
@@ -49,37 +54,43 @@ class log_to_server(commands.Cog):
     # Voice 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        # member joins voice
-        if before.channel is None and after.channel is not None: 
-            await self.log_voice_state(member, vc_channel=after.channel, type="Joinde")
-        # Member leaves voice
-        elif after.channel is None and before.channel is not None:
-            await self.log_voice_state(member, vc_channel=before.channel, type="Verliet")
-        # Member switches voice channels
-        elif before.channel != after.channel:
-            await self.log_voice_state(member, vc_channel=after.channel, type="Veranderde")
-        
+        if log_to_server.get_settings(setting="voice_join_leave"):
+            # member joins voice
+            if before.channel is None and after.channel is not None: 
+                await self.log_voice_state(member, vc_channel=after.channel, type="Joinde")
+            # Member leaves voice
+            elif after.channel is None and before.channel is not None:
+                await self.log_voice_state(member, vc_channel=before.channel, type="Verliet")
+
+        if log_to_server.get_settings(setting="voice_change"):
+            # Member switches voice channels
+            if before.channel != after.channel:
+                await self.log_voice_state(member, vc_channel=after.channel, type="Veranderde")
+            
 
     # Messages in guild
     @commands.Cog.listener()
     async def on_message_delete(self, payload):
-        await self.message_deleted(payload, message=payload.content, channel=payload.channel)
+        if log_to_server.get_settings(setting="message_deleted"):
+            await self.message_deleted(payload, message=payload.content, channel=payload.channel)
             
     @commands.Cog.listener()
     async def on_raw_bulk_message_delete(self, messages):
-        bulk_deleted_count = len(messages.message_ids)
-        bulk_deleted_channel = messages.channel_id
-        await self.message_bulk_deleted(count=bulk_deleted_count, channel=bulk_deleted_channel)
-        
+        if log_to_server.get_settings(setting="message_deleted"):
+            bulk_deleted_count = len(messages.message_ids)
+            bulk_deleted_channel = messages.channel_id
+            await self.message_bulk_deleted(count=bulk_deleted_count, channel=bulk_deleted_channel)
+            
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        channel = after.channel.mention
-        author = before.author
-        if before.clean_content != after.clean_content:
-            before_content = before.clean_content
-            after_content = after.clean_content
-            jump_to_msg = after.jump_url
-            await self.message_edited(before_content, after_content, channel, author, jump_to_msg)
+        if log_to_server.get_settings(setting="message_edited"):
+            channel = after.channel.mention
+            author = before.author
+            if before.clean_content != after.clean_content:
+                before_content = before.clean_content
+                after_content = after.clean_content
+                jump_to_msg = after.jump_url
+                await self.message_edited(before_content, after_content, channel, author, jump_to_msg)
 
 
     # Changes in guild and roles
@@ -139,27 +150,31 @@ class log_to_server(commands.Cog):
     # Reaction emojis
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
-        await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
+        if log_to_server.get_settings(setting="message_reaction"):
+            print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
+            await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
 
 
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        print("Reactie verwijderd", payload.emoji, payload.message_id, payload.user_id)
-        await log_to_server.log_reactions(self, payload, type_embed="verwijderd")
+        if log_to_server.get_settings(setting="message_reaction"):
+            print("Reactie verwijderd", payload.emoji, payload.message_id, payload.user_id)
+            await log_to_server.log_reactions(self, payload, type_embed="verwijderd")
 
 
 
     # Threads
     @commands.Cog.listener()
     async def on_thread_create(self, thread):
+        if log_to_server.get_settings(setting="threads"):            
             await log_to_server.log_threads(self, thread, type_embed="aangemaakt")
 
 
 
     @commands.Cog.listener()
     async def on_thread_delete(self, thread):
+        if log_to_server.get_settings(setting="threads"):            
             await log_to_server.log_threads(self, thread, type_embed="verwijderd")
 
 
@@ -362,6 +377,19 @@ class log_to_server(commands.Cog):
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)            
     
+
+
+    def get_settings(setting):
+
+            Database.cursor.execute(f"SELECT {setting} FROM bot_settings LIMIT 1")
+            res = Database.cursor.fetchone()[0]
+
+            if res == 1:
+                return True
+            else:
+                return False
+         
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(log_to_server(bot))
