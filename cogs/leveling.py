@@ -612,14 +612,12 @@ class Leveling(commands.Cog):
 
 
     def get_xp_amount_value(msg_or_vc):
-        print(msg_or_vc)
         if msg_or_vc == "message":
             Database.cursor.execute("SELECT xp_messages FROM bot_settings LIMIT 1")
         else:
             Database.cursor.execute("SELECT xp_voicechat FROM bot_settings LIMIT 1")
 
         res = Database.cursor.fetchone()[0]
-        print(res)
         return res
 
 
