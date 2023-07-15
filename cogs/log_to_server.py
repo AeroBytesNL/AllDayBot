@@ -62,11 +62,11 @@ class log_to_server(commands.Cog):
             elif after.channel is None and before.channel is not None:
                 await self.log_voice_state(member, vc_channel=before.channel, type="Verliet")
 
-        if log_to_server.get_settings(setting="voice_change"):
-            # Member switches voice channels
-            if before.channel != after.channel:
-                await self.log_voice_state(member, vc_channel=after.channel, type="Veranderde")
-            
+            elif log_to_server.get_settings(setting="voice_change"):
+                # Member switches voice channels
+                if before.channel != after.channel:
+                    await self.log_voice_state(member, vc_channel=after.channel, type="Veranderde")
+                
 
     # Messages in guild
     @commands.Cog.listener()
