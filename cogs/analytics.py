@@ -59,7 +59,7 @@ class analytics(commands.Cog):
         print("Saving new total analytics....")
 
         # Get current analytics
-        Database.cursor.execute("SELECT * FROM statistic LIMIT 1")
+        Database.cursor.execute("SELECT * FROM statistics LIMIT 1")
         res = Database.cursor.fetchone()
 
         # Assign vars to statistics
@@ -76,7 +76,7 @@ class analytics(commands.Cog):
         textchannel_games_media = self.msg_storage.count("games-media")
 
         # Update analytics 
-        Database.cursor.execute(f"""UPDATE statistic SET total_members={self.total_members}, total_members_online={self.members_online}, 
+        Database.cursor.execute(f"""UPDATE statistics SET total_members={self.total_members}, total_members_online={self.members_online}, 
         total_messages={int(res[2]) + total_messages}, textchannel_general={int(res[3]) + textchannel_general}, textchannel_memes={int(res[4]) + textchannel_memes},
         textchannel_nsfw={int(res[5]) + textchannel_nsfw}, textchannel_tech_talk={int(res[6]) + textchannel_tech_talk},
         textchannel_development_coding={int(res[7]) + textchannel_development_coding}, textchannel_games_talk={int(res[8]) + textchannel_games_talk},
