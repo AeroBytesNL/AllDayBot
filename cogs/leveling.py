@@ -95,7 +95,7 @@ class Leveling(commands.Cog):
                 return
             else:
                 messaged.append(id)
-                Leveling.gainXP(self, id, 15, 25)
+                Leveling.gainXP(self, id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="message"))
 
 
     # Slash commands
@@ -204,9 +204,9 @@ class Leveling(commands.Cog):
 
 
 
-    def gainXP(self, id, minxp, maxxp):
+    def gainXP(self, id, xp_amount):
         print("gaining XP for user: " + str(id))
-        x = random.randint(minxp, maxxp)
+        x = xp_amount
 
         val_user = Leveling.validate_user_in_db(self, id) 
         
@@ -414,7 +414,7 @@ class Leveling(commands.Cog):
 
             complements = Leveling.get_complements(gebruiker.id)
             Leveling.set_complements(gebruiker.id, complements + 1)
-            Leveling.gainXP(self, gebruiker.id, 150, 150)
+            Leveling.gainXP(self, gebruiker.id, xp_amount=150)
             e.add_field(name="Compliment gegeven aan", value=user)
             e.add_field(name="Reden", value=reden)
 
@@ -575,7 +575,7 @@ class Leveling(commands.Cog):
                 if len(channel.members) > 1:
                     for member in channel.members:
                         if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
-                            Leveling.gainXP(self, member.id, 4, 6)
+                            Leveling.gainXP(self, member.id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="voicechat"))
 
 
         except Exception as error:
@@ -609,6 +609,17 @@ class Leveling(commands.Cog):
             Leveling.error_logging_to_guild(self, error=e)
             pass
         
+
+
+    def get_xp_amount_value(msg_or_vc):
+        if msg_or_vc == "message":
+            Database.cursor.execute("SELECT xp_messages FROM bot_settings LIMIT 1")
+        else:
+            Database.cursor.execute("SELECT xp_voicechat FROM bot_settings LIMIT 1")
+
+        res = Database.cursor.fetchone()[0]
+        return res
+
 
 
     # Basic log function

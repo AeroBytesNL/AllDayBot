@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands, tasks
 from env import *
 from database import Database
-
+from time import sleep
 
 class analytics(commands.Cog):
 
@@ -21,6 +21,10 @@ class analytics(commands.Cog):
         self.msg_storage = []
         self.total_members = 0
         self.members_online = 0
+        self.text_channels = 0
+        self.voice_channels = 0
+        self.categories = 0
+        self.created_at = ""
 
 
 
@@ -38,9 +42,11 @@ class analytics(commands.Cog):
 
 
     # Updating total members
-    @tasks.loop(seconds=5)
+    @tasks.loop(seconds=28)
     async def member_statistics(self):
-        
+
+        print("Getting guild statistics....")
+
         # Getting guild
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
@@ -49,21 +55,35 @@ class analytics(commands.Cog):
 
         # Getting total online members and save it to storage
         self.members_online = int(guild.approximate_presence_count)
+        
+        try:
+            sleep(1)
+            # Getting guild
+            for guild in self.bot.guilds:
+                guild = guild
+            
+            self.text_channels = len(guild.text_channels)
+            self.voice_channels = len(guild.voice_channels)
+            self.categories = len(guild.categories)
+            self.created_at = str(guild.created_at)
 
-    
+        except Exception as error:
+            pass
+            
+
 
     # Saving stuff from self.storage to DB
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=30)
     async def save_general_statistics_to_db(self):
-
-        print("Saving new total analytics....")
+        try:
+            print("Saving new total analytics....")
 
         # Get current analytics
-        Database.cursor.execute("SELECT * FROM statistics LIMIT 1")
+        Database.cursor.execute("SELECT * FROM analytics LIMIT 1")
         res = Database.cursor.fetchone()
 
-        # Assign vars to statistics
-        total_messages = len(self.msg_storage)
+            # Assign vars to statistics
+            total_messages = len(self.msg_storage)
 
         # Most populair channels statistics
         textchannel_general = self.msg_storage.count("general")
@@ -76,7 +96,7 @@ class analytics(commands.Cog):
         textchannel_games_media = self.msg_storage.count("games-media")
 
         # Update analytics 
-        Database.cursor.execute(f"""UPDATE statistics SET total_members={self.total_members}, total_members_online={self.members_online}, 
+        Database.cursor.execute(f"""UPDATE analytics SET total_members={self.total_members}, total_members_online={self.members_online}, 
         total_messages={int(res[2]) + total_messages}, textchannel_general={int(res[3]) + textchannel_general}, textchannel_memes={int(res[4]) + textchannel_memes},
         textchannel_nsfw={int(res[5]) + textchannel_nsfw}, textchannel_tech_talk={int(res[6]) + textchannel_tech_talk},
         textchannel_development_coding={int(res[7]) + textchannel_development_coding}, textchannel_games_talk={int(res[8]) + textchannel_games_talk},
@@ -84,10 +104,14 @@ class analytics(commands.Cog):
         """)
         Database.db.commit()
 
-        # Clear storage
-        self.msg_storage.clear()
+            # Clear storage
+            self.msg_storage.clear()
 
-
+        except Exception as error:
+            print(error)
+            pass
     
+
+
 def setup(bot: commands.Bot):
     bot.add_cog(analytics(bot))

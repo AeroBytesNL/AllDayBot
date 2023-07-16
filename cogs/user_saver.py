@@ -1,42 +1,78 @@
 import disnake
 from disnake.ext import commands, tasks
 from env import *
-from database import *
+from database import Database
+from time import sleep
+
+class User_saver(commands.Cog):
 
 
 
-class Reminder(commands.Cog):
-    
-    
     def __init__(self, bot: commands.Bot):
-        self.bot = bot
-        self.user_saver.start()
-        print("Cog User saver is loaded!")
 
+        self.bot = bot
+        print("Cog User saver is loaded!")
+        self.user_saver_9000.start()
+    
 
 
     @tasks.loop(seconds=60)
-    async def user_saver(self):
-        print("debugg")
+    async def user_saver_9000(self):
+        user_db_dict = {}
 
-        # Getting guild and users
-        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-        members = await guild.fetch_members(limit=2000).flatten()
+        users_to_insert_in_db = {}
+        users_to_update_username = {}
 
-        # Getting current member list
-        Database.cursor.execute("SELECT * FROM guild_users")
-        res = Database.cursor.fetchall()
+        for user in User_saver.get_users_from_db():
+            user_db_dict[user[0]] = str(user[1])
+        
+        try:
 
-        user_id_in_db = []
+            guild = self.bot.get_guild(env_variable.GUILD_ID)
+            
+            for user in guild.members:
+                
+                if user.id not in user_db_dict:
+                    users_to_insert_in_db[user.id] = str(user.name)
+                
+                if user.id in user_db_dict and user_db_dict.get(user.id) != user.name:
+                    users_to_update_username[user.id] = str(user.name)
 
-        for entry in res:
-            user_id_in_db.append(int(entry[0]))
+            User_saver.insert_user_in_db(users_to_insert_in_db)
+            User_saver.update_username_in_db(users_to_update_username)
 
-        for user in members:
-            if user.id not in user_id_in_db:
-                Database.cursor.execute(f"INSERT INTO guild_users (user_id, user_display_name, user_name, created_at, joined_at) VALUES ({user.id}, '{user.display_name}', '{user.name}', '{str(user.created_at).split('.')[0]}', '{str(user.joined_at).split('.')[0]}')")
-                Database.db.commit()
+        except Exception as error:
+            print(error)
+            pass
+
+    
+
+    def get_users_from_db():
+        Database.cursor.execute("SELECT * FROM user_saver")
+        return Database.cursor.fetchall()
+
+
+
+    def insert_user_in_db(users_to_insert_in_db):
+        
+        for user in users_to_insert_in_db:
+            user_name = users_to_insert_in_db.get(user)
+            print(user_name)
+            Database.cursor.execute(f"INSERT INTO user_saver (user_id, user_name) VALUES ({user}, '{user_name}')")
+
+        Database.db.commit()
+
+
+    
+    def update_username_in_db(users_to_update_username):
+
+        for user in users_to_update_username:
+            user_name = users_to_update_username.get(user)
+            Database.cursor.execute(f"UPDATE user_saver SET user_name='{user_name}' WHERE user_id={user}")
+
+        Database.db.commit()
+
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(Reminder(bot))
+    bot.add_cog(User_saver(bot))
