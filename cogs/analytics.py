@@ -82,8 +82,8 @@ class analytics(commands.Cog):
         Database.cursor.execute("SELECT * FROM statistics LIMIT 1")
         res = Database.cursor.fetchone()
 
-            # Assign vars to statistics
-            total_messages = len(self.msg_storage)
+        # Assign vars to statistics
+        total_messages = len(self.msg_storage)
 
         # Most populair channels statistics
         textchannel_general = self.msg_storage.count("general")
