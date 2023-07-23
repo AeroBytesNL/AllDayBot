@@ -58,10 +58,12 @@ class User_saver(commands.Cog):
         for user in users_to_insert_in_db:
             user_name = users_to_insert_in_db.get(user)
             print(user_name)
-            Database.cursor.execute(f"INSERT INTO user_saver (user_id, user_name) VALUES ({user}, '{user_name}')")
-
-        Database.db.commit()
-
+            try:
+                Database.cursor.execute(f"INSERT INTO user_saver (user_id, user_name) VALUES ({user}, '{user_name}')")
+                Database.db.commit()
+            except Exception as error:
+                print(error)
+                pass
 
     
     def update_username_in_db(users_to_update_username):
