@@ -27,7 +27,6 @@ keep_sql_active.start()
 
 
 
-            
 # Loading different cogs
 bot.load_extension("cogs.ad_weer") 
 bot.load_extension("cogs.forum") 
@@ -46,6 +45,7 @@ bot.load_extension("cogs.analytics")
 #bot.load_extension("cogs.test") 
 bot.load_extension("cogs.user_saver")
 #bot.load_extension("cogs.website")
+#bot.load_extension("cogs.quiz")
 
 
 
