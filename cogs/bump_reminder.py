@@ -20,7 +20,7 @@ class Bump_reminder(commands.Cog):
             return
 
         # If bump command has executed succesfully
-        if str(message.interaction.name) == "bump":
+        if hasattr(message.interaction, "name") and message.interaction.name == "bump":
             # Start timer for 120 minutes  
             # After timer send bump remind message
             await Bump_reminder.bump_remind_embed(self)
