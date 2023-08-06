@@ -23,19 +23,10 @@ class Website(commands.Cog):
 
 
 
-    @website.sub_command(description="Maak een account aan op de ADB site")
-    async def account_maken(self, inter):
+    @website.sub_command(description="Krijg de URL van de ADT&G site!")
+    async def url(self, inter):
+        await inter.response.send_message("https://alldaytechandgaming.nl/", ephemeral=True)
         
-        token = secrets.token_hex(10)
-        Website.insert_token_in_db(token)
-        print(f"User {inter.author.name} made a adb website account creation code")
-        await inter.response.send_message(f"Je kunt een account maken d.m.v de volgende link: https://alldaybot.alldaytechandgaming.nl/account-maken-token/{token}", ephemeral=True)
-
-
-    def insert_token_in_db(token):
-        Database.cursor.execute(f"INSERT INTO account_creation_tokens (token) VALUES ('{token}')")
-        Database.db.commit()
-
 
 
 def setup(bot: commands.Bot):
