@@ -150,7 +150,12 @@ class log_to_server(commands.Cog):
     # Reaction emojis
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        # If reaction is from adb then do nothing
+        if payload.member == self.bot.user or self.bot:
+            return
+
         if log_to_server.get_settings(setting="sw_message_reaction"):
+            
             print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
             await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
 
