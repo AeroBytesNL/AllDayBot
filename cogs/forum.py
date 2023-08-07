@@ -22,15 +22,16 @@ class Forum(commands.Cog):
 
 
     # Not responding age checker
-    @tasks.loop(seconds=5)
+    @tasks.loop(seconds=60)
     async def not_responding_checker(self):
 
         channel = self.bot.get_channel(Channel.TECH_SUPPORT)
 
-        try:
+ 
 
-            for thread in channel.threads:
+        for thread in channel.threads:
 
+            try:
                 # If thread is locked then do nothing (the same as the person who have written this)
                 if thread.locked == True:
                     return
@@ -57,11 +58,11 @@ class Forum(commands.Cog):
                     # Lock thead
                     await thread.edit(locked=True, archived=True)   
 
-        except Exception as error:
-            print(error)
-            pass
+            except Exception as error:
+                print(error)
+                pass
 
-    
+        
 
     # Empty list  
     @tasks.loop(hours=24)
