@@ -22,19 +22,15 @@ class Forum(commands.Cog):
 
 
     # Not responding age checker
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=60)
     async def not_responding_checker(self):
+
+        print("Scanning for forum posts that doesn't have a response")
 
         channel = self.bot.get_channel(Channel.TECH_SUPPORT)
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
         for thread in channel.threads:
-            
-            # DEBUG
-            print(f"DEBUG 0 {thread.archived}")
-
-            # DEBUG
-            print(f"DEBUG 1 {thread.name}")
 
             try:
                 # If thread is locked then do nothing (the same as the person who have written this)
@@ -48,13 +44,7 @@ class Forum(commands.Cog):
                 i = self.bot.get_channel(thread.id)
                 x = await guild.fetch_channel(thread.id)
 
-                # DEBUG
-                print(f"DEBUG 2 {x.name}")
-
                 last_message = await x.fetch_message(thread.last_message_id)
-
-                # DEBUG
-                print(f"DEBUG {last_message.created_at}")
 
                 last_msg_time_object = datetime.strptime(str(last_message.created_at).split(".")[0], "%Y-%m-%d %H:%M:%S")
                 days_different = str(datetime.now() - last_msg_time_object).split(" ")[0]
