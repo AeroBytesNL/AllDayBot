@@ -67,11 +67,9 @@ class Forum(commands.Cog):
                     await thread.edit(locked=True, archived=True)   
 
             except Exception as error:
-                print(error)
                 pass
 
         
-
     # Empty list  
     @tasks.loop(hours=24)
     async def empty_list(self):
