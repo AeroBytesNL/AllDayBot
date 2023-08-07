@@ -47,7 +47,7 @@ bot.load_extension("cogs.analytics")
 bot.load_extension("cogs.website")
 #bot.load_extension("cogs.quiz")
 bot.load_extension("cogs.bump_reminder")
-
+bot.load_extension("cogs.introduce_remover")
 
 
 # Running the bot and starting thread
