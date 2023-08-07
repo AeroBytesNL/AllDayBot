@@ -31,11 +31,18 @@ class Forum(commands.Cog):
         for thread in channel.threads:
             
             # DEBUG
+            print(f"DEBUG 0 {thread.archived}")
+
+            # DEBUG
             print(f"DEBUG 1 {thread.name}")
 
             try:
                 # If thread is locked then do nothing (the same as the person who have written this)
                 if thread.locked == True:
+                    return 
+                
+                # If thread is archived then do nothing
+                if thread.archived == True:
                     return
 
                 i = self.bot.get_channel(thread.id)
@@ -53,14 +60,14 @@ class Forum(commands.Cog):
                 days_different = str(datetime.now() - last_msg_time_object).split(" ")[0]
                                 
                 # IF last message is older then 3 days
-                if "3 day" in days_different and thread.owner.id not in self.is_notified:
+                if "3 day" in days_different and thread.owner.id not in self.is_notified and thread.owner.id == 632677231113666601: # Remove and thread.owner.id == 632677231113666601 after testing
                     # Send reminder to thread owner in DM
                     print(f"Sending {thread.owner} a reminder inside DM!")
                     await Forum.reminder_thread_in_dm(self, thread_name=thread.name, thread_owner=thread.owner)
                     self.is_notified.append(int(thread.owner.id))
 
                 # IF last message is older then 5 days
-                if "5 day" in days_different and thread.owner.id not in self.is_notified:
+                if "5 day" in days_different and thread.owner.id not in self.is_notified and thread.owner.id == 632677231113666601: # Remove and thread.owner.id == 632677231113666601 after testing
                     # Send reminder to thread owner in DM
                     print(f"Thread of {thread.owner.display_name} has been closed due to inactivity!")
                     # Adding tag "No reaction"
