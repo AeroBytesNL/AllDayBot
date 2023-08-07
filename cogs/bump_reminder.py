@@ -40,6 +40,7 @@ class Bump_reminder(commands.Cog):
                                 time_difference = str(datetime_object_now - datetime_object_message - timedelta(hours=2)).split(":")[0]
                                 
                                 if time_difference == "2":
+                                    print("Bump ready!")
                                     await channel.send("De server kan weer gebumped worden! Dit kan d.m.w het command `/bump`. Dit helpt de server groeien!")
                                     self.bumped_messages.append(message.id)
                         except Exception as error:
