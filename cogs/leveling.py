@@ -42,6 +42,7 @@ class Leveling(commands.Cog):
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
 
 
+
     @commands.Cog.listener()
     async def on_ready(self):
         try:
@@ -96,6 +97,16 @@ class Leveling(commands.Cog):
             else:
                 messaged.append(id)
                 Leveling.gainXP(self, id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="message"))
+
+
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        print("Cleaning User and birthday_users tables!")
+        # If member leaves, clear DB
+        await Leveling.member_leave_dbClean()
+        # If member leaves, remove from birthday
+        await Leveling.member_leave_birthday_clear(user_id=member.id)
 
 
     # Slash commands
@@ -168,19 +179,6 @@ class Leveling(commands.Cog):
 
 
 
-    @commands.default_member_permissions(moderate_members=True)
-    @commands.slash_command(description="clear de db.")
-    async def db_clean(inter):
-            print(f"User {inter.author.name} gebruikte het command 'db_clean'")
-            await Leveling.member_leave_dbClean()
-
-
-
-
-
-
-
-
     # Functions
     async def member_leave_dbClean():
         global users
@@ -201,6 +199,15 @@ class Leveling(commands.Cog):
                 Leveling.delete_user(sqlids[i][0])
 
             i = i + 1  
+
+
+
+    async def member_leave_birthday_clear(user_id):
+        try:
+            Database.cursor.execute(f"DELETE FROM birthday_users WHERE user_id={user_id}")
+            Database.db.commit()
+        except Exception as error:
+            pass
 
 
 

@@ -50,6 +50,7 @@ bot.load_extension("cogs.bump_reminder")
 bot.load_extension("cogs.introduce_remover")
 
 
+
 # Running the bot and starting thread
 if __name__ == '__main__':
         bot.run(secure.BOT_TOKEN)
