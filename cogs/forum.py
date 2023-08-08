@@ -15,14 +15,16 @@ class Forum(commands.Cog):
         self.is_notified = []
 
 
+
     @commands.Cog.listener()
     async def on_ready(self):
         self.not_responding_checker.start()
         self.empty_list.start()
 
 
+
     # Not responding age checker
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=30)
     async def not_responding_checker(self):
 
         print("Scanning for forum posts that doesn't have a response")
@@ -69,10 +71,12 @@ class Forum(commands.Cog):
             except Exception as error:
                 pass
 
+
         
     # Empty list  
     @tasks.loop(hours=24)
     async def empty_list(self):
+
         self.is_notified.clear()
         print("Is notified list is cleared!")
 
@@ -147,6 +151,7 @@ class Forum(commands.Cog):
 
     # Send reminder of answering thread to owner 
     async def reminder_thread_in_dm(self, thread_name, thread_owner):
+
         user = await self.bot.get_or_fetch_user(thread_owner.id)
         await user.send(f"""
 Beste {thread_owner.display_name}, onlangs heb je een forumpost voor tech-support geopend in All Day Tech & Gaming. Tot op heden hebben wij geen verdere reactie van jou ontvangen op de antwoorden die je hebt gekregen naar aanvang jou vraag. Middels dit bericht willen wij je graag herrineren te reageren op je forumpost. 
