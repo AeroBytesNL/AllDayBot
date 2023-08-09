@@ -112,7 +112,7 @@ class Leveling(commands.Cog):
     # Slash commands
     @commands.slash_command(description="Zie de level van de members van ADT&G!")
     async def scorebord(self, inter, pagina: int = 1):
-                print(f"User {inter.author.name} gebruikte het command 'leaderboard'")
+                print(f"User {inter.author.display_name} gebruikte het command 'leaderboard'")
                 p = 0
                 p = pagina
                 p = p - 1
@@ -126,7 +126,7 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Zie je eigen level!")
     async def level(self, inter):
-                print(f"User {inter.author.name} gebruikte het command 'level'")
+                print(f"User {inter.author.display_name} gebruikte het command 'level'")
                 id = inter.author.id
                 e = await Leveling.levelMessage(self, id)
                 if e is None:
@@ -137,7 +137,7 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Bereken je level!")
     async def level_calc(self, inter, level: int):
-                print(f"User {inter.author.name} gebruikte het command 'level_calc'")
+                print(f"User {inter.author.display_name} gebruikte het command 'level_calc'")
                 lvl = level
                 e = await Leveling.levelCalc(self, inter.author.id, lvl)
                 if e is None:
@@ -150,14 +150,14 @@ class Leveling(commands.Cog):
     async def bedank(self, inter, gebruiker: disnake.User, reden: str = "Geen reden opgegeven"):
                 
                 if gebruiker == self.bot or gebruiker == self.bot.user:
-                    await inter.response.send_message(f"{inter.author.name}, je mag de bot niet bedanken. Gebruik deze functie niet voor onnodige bedankjes!")
+                    await inter.response.send_message(f"{inter.author.display_name}, je mag de bot niet bedanken. Gebruik deze functie niet voor onnodige bedankjes!")
                     return
 
                 if check_restriction(user_id = inter.author.id, command="/bedank") == False:
                         await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
                         return
                 else: 
-                    print(f"User {inter.author.name} gebruikte het command 'thank'")
+                    print(f"User {inter.author.display_name} gebruikte het command 'thank'")
                     e = await Leveling.thank(self, inter, gebruiker, reden)
                     if e is None:
                         await inter.response.send_message("Er ging iets mis. Oepsie!")
@@ -167,7 +167,7 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Comp-leaderboard")
     async def comp_scorebord(self, inter, pagina: int):
-                print(f"User {inter.author.name} gebruikte het command 'compleaderboard'")
+                print(f"User {inter.author.display_name} gebruikte het command 'compleaderboard'")
 
                 p = pagina
                 p = p - 1
@@ -212,7 +212,7 @@ class Leveling(commands.Cog):
 
 
     def gainXP(self, id, xp_amount):
-        print("gaining XP for user: " + str(id))
+        print("Gaining XP for user: " + str(id))
         x = xp_amount
 
         val_user = Leveling.validate_user_in_db(self, id) 
@@ -243,7 +243,7 @@ class Leveling(commands.Cog):
         channel = self.bot.get_channel(Channel.ALLDAYBOT)
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
-        name = (await self.bot.get_or_fetch_user(id)).name 
+        name = (await self.bot.get_or_fetch_user(id)).display_name 
         name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
         
         member = await guild.fetch_member(id)
@@ -283,7 +283,7 @@ class Leveling(commands.Cog):
         xp = Leveling.get_xp(self, id)
         userNeeded = int(totalNeeded) - xp     
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-        name = (await self.bot.get_or_fetch_user(id)).name 
+        name = (await self.bot.get_or_fetch_user(id)).display_name 
         name_avatar = (await self.bot.get_or_fetch_user(id)).avatar
 
         embed = disnake.Embed(title=f"⚡ Level berekening voor {name}",description=f"Voor level: **{level}**", color=0xdf8cfe)
@@ -315,13 +315,10 @@ class Leveling(commands.Cog):
         
         while i < p and i < len(users):
             text = "Level: " + str(users[i][1]) + ", totale xp: " + str(users[i][2])
-            if len(users) >=3:
-                postition_count = postition_count + 1
-                user_id = users[i][0]
-                name = (await self.bot.get_or_fetch_user(user_id)).name             
-                embed.add_field(name=f"#{postition_count} - {name}", value=text, inline=False)
-            else:
-                embed.add_field(name="Onbekend", value=text, inline=False)
+            postition_count = postition_count + 1
+            user_id = users[i][0]
+            name = (await self.bot.get_or_fetch_user(user_id)).display_name             
+            embed.add_field(name=f"#{postition_count} - {name}", value=text, inline=False)
             i = i + 1
         
         return embed
@@ -348,13 +345,11 @@ class Leveling(commands.Cog):
         while i < p and i < len(users):
 
             text = "complimenten: " + str(users[i][1])
-            if len(users) >=3:
-                user_id = users[i][0]
-                name = (await self.bot.get_or_fetch_user(user_id)).name 
-                
-                embed.add_field(name=name, value=text, inline=False)
-            else:
-                embed.add_field(name="Onbekend", value=text, inline=False)
+            user_id = users[i][0]
+            name = (await self.bot.get_or_fetch_user(user_id)).display_name 
+            
+            embed.add_field(name=name, value=text, inline=False)
+
             i = i + 1
         
         return embed
@@ -366,7 +361,7 @@ class Leveling(commands.Cog):
         level = Leveling.get_level(id)
         complements = Leveling.get_complements(id)
 
-        user = (await self.bot.get_or_fetch_user(id)).name
+        user = (await self.bot.get_or_fetch_user(id)).display_name
         user_avatar = (await self.bot.get_or_fetch_user(id)).avatar
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
@@ -401,14 +396,14 @@ class Leveling(commands.Cog):
         if inter.author.id == gebruiker.id:
             
             e = disnake.Embed(title="Je kan jezelf niet bedanken, pannekoek!", color=0xdf8cfe)
-            e.set_author(name=inter.author.name, icon_url=inter.author.avatar)
+            e.set_author(name=inter.author.display_name, icon_url=inter.author.avatar)
             e.add_field(name="Wat denk je nou joh", value="Mafklapper!")
             return e
         
         get_actual_daily_compliments = Leveling.get_dailycomplements(inter.author.id)
         if get_actual_daily_compliments > 2:
             e = disnake.Embed(title="Je hebt niet genoeg complimenten over vandaag!", color=0xdf8cfe)
-            e.set_author(name=inter.author.name) #, icon_url=m.author.avatar_url
+            e.set_author(name=inter.author.display_name) #, icon_url=m.author.avatar_url
             e.add_field(name="Complimenten over vandaag: ", value=get_actual_daily_compliments - 3, inline=True)
             e.add_field(name="Gecomplimenteerde users: ", value=get_actual_daily_compliments, inline=True)
             
@@ -417,7 +412,7 @@ class Leveling(commands.Cog):
             
             Leveling.set_dailycomplements(inter.author.id, get_actual_daily_compliments + 1)
             e = disnake.Embed(title="Complimenten", color=disnake.Color.green())
-            e.set_author(name=inter.author.name, icon_url=inter.author.avatar)
+            e.set_author(name=inter.author.display_name, icon_url=inter.author.avatar)
 
             complements = Leveling.get_complements(gebruiker.id)
             Leveling.set_complements(gebruiker.id, complements + 1)
