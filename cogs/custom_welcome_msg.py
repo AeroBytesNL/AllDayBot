@@ -5,7 +5,6 @@ import random
 
 class Custom_welcome_msg(commands.Cog):
 
-    
 
     def __init__(self, bot: commands.Bot):
 

@@ -150,7 +150,12 @@ class log_to_server(commands.Cog):
     # Reaction emojis
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        # If reaction is from adb then do nothing
+        if payload.member == self.bot.user or self.bot:
+            return
+
         if log_to_server.get_settings(setting="sw_message_reaction"):
+            
             print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
             await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
 
@@ -214,7 +219,7 @@ class log_to_server(commands.Cog):
                 embed_color = disnake.Color.dark_red()
 
         embed=disnake.Embed(title="\n", description=f"**{member.mention} {type}**", color=embed_color)
-        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_author(name=member.display_name, icon_url=member.avatar)
         embed.add_field(name="Account leeftijd:", value=str(i), inline=False)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
@@ -241,7 +246,7 @@ class log_to_server(commands.Cog):
                 embed_color = disnake.Color.orange()
 
         embed=disnake.Embed(title=f"\n", description=f"**{member.mention} {type} voice kanaal: {vc_channel.mention}**", color=embed_color)
-        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_author(name=member.display_name, icon_url=member.avatar)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
 
@@ -250,7 +255,7 @@ class log_to_server(commands.Cog):
     async def message_deleted(self, payload, message, channel):
 
         embed=disnake.Embed(title=f"\n", description=f"{payload.author.mention} verwijderde een bericht in {channel.mention}", color=disnake.Color.red())
-        embed.set_author(name=payload.author.name, icon_url=payload.author.avatar)
+        embed.set_author(name=payload.author.display_name, icon_url=payload.author.avatar)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         try:
             if payload.attachments[0] != None:
@@ -270,7 +275,7 @@ class log_to_server(commands.Cog):
 
     async def message_edited(self, before_content, after_content, channel, author, jump_to_msg):
         embed=disnake.Embed(title=f"\n", description=f"**Bericht bewerkt in {channel} - Door: {author.mention}**", color=disnake.Color.orange())
-        embed.set_author(name=author, icon_url=author.avatar)
+        embed.set_author(name=author.display_name, icon_url=author.avatar)
         embed.add_field(name="Voor het bewerken:", value=str(before_content), inline=False)
         embed.add_field(name="Na het bewerken:", value=str(after_content), inline=False)
         embed.add_field(name=f"Ga naar het bericht:", value=str(jump_to_msg), inline=False)
@@ -341,7 +346,7 @@ class log_to_server(commands.Cog):
     # Logging commands to log channel
     def log_commands(self, inter, command, on_user):
             embed=disnake.Embed(title=f"Adje log", description="\n", color=disnake.Color.dark_green())
-            embed.set_author(name=inter.author, icon_url=inter.author.avatar)
+            embed.set_author(name=inter.author.display_name, icon_url=inter.author.avatar)
             embed.add_field(name="Command:", value=str(command), inline=False)
             embed.add_field(name="Op gebruiker:", value=str(on_user), inline=False)
 
@@ -357,7 +362,7 @@ class log_to_server(commands.Cog):
             embed=disnake.Embed(title=f"Reactie {type_embed}", description="\n", color=disnake.Color.orange())
             embed.add_field(name=f"Emoji:", value=f"{payload.emoji}", inline=True)
             embed.add_field(name="Bericht:", value=f"{message.jump_url}", inline=True)
-            embed.add_field(name="Door user:", value=f"{user.name}", inline=True)
+            embed.add_field(name="Door user:", value=f"{user.display_name}", inline=True)
 
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)            
