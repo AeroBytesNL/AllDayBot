@@ -306,7 +306,7 @@ class Leveling(commands.Cog):
         except Exception as e:
             Leveling.debug(type="lvlboard database", data=str(id), error=str(e))
             Leveling.error_logging_to_guild(self, error=e)
-        embed = disnake.Embed(title='ADTG XP Leaderboard, page ' + str(p + 1), color=0xdf8cfe)
+        embed = disnake.Embed(title='ADT&G XP scorebord, pagina ' + str(p + 1), color=0xdf8cfe)
             
         i = 0;
         i = i + 10 * p
@@ -334,7 +334,7 @@ class Leveling(commands.Cog):
             Leveling.debug(type="compleaderboard database", data=str(id), error=str(e))
             Leveling.error_logging_to_guild(self, error=e)
 
-        embed = disnake.Embed(title='ADTG XP Levelbord, pagina ' + str(p + 1), color=0xdf8cfe)
+        embed = disnake.Embed(title='ADT&G complimenten scorebord, pagina ' + str(p + 1), color=0xdf8cfe)
         i = 0;
         i = i + 10 * p
         p = (p+1) * 10
