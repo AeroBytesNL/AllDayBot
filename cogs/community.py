@@ -41,13 +41,16 @@ class community(commands.Cog):
                 list_roles.append(role.mention)
 
                 for perm_name, value in role.permissions:
-                    if role.permissions.administrator == True or role.permissions.moderate_members == True  or role.permissions.manage_guild == True and value == True:
+                    #if role.permissions.administrator == True or role.permissions.moderate_members == True or role.permissions.manage_guild == True and value == True:
+                    if value == True:
                         perm_roles.append(perm_name)
 
             embed.add_field(name=f"Rollen ({len(gebruiker.roles)})", value=str(' '.join(list_roles)), inline=False)
             embed.add_field(name=f"XP", value=str(res[0]), inline=True)
             embed.add_field(name=f"Level", value=str(res[1]), inline=True)
-            
+            await inter.response.send_message(embed=embed, ephemeral=True)
+
+            print(perm_roles)
 
 
         # Commands users
