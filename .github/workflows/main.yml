@@ -34,12 +34,12 @@ jobs:
       run: |
         echo gamemanager_ptero_url=${{secrets.GAMEMANAGER_PTERO_URL}} >> ./.env
         echo client_api_key="${{secrets.CLIENT_API_KEY}}" >> ./.env
-        echo webhook_url_moderator_only="${{secrets.webhook_url_moderator_only}}" >> ./.env
+        echo webhook_url_moderator_only="${{secrets.WEBHOOK_URL_MODERATOR_ONLY}}" >> ./.env
 
         cat .env
         ls -l
         ls -l ../
-    - name: Executing stuffies
+    - name: Executing scripts
       working-directory: ./GitHubAction    
       run: |
         python3 GitHubPteroScript.py
