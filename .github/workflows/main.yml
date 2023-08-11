@@ -46,5 +46,4 @@ jobs:
       working-directory: ./GitHubAction    
       run: |
         python3 GitHubNewReleaseMSG.py
-
-#python3 GitHubPteroScript.py
+        python3 GitHubPteroScript.py
