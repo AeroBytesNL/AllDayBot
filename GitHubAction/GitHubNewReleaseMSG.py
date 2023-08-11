@@ -21,7 +21,7 @@ for item in changes:
         item = item.replace("https://github.com/kelvin-codes-stuff/AllDayBot/pull/", "pull request ")
         list_changes = list_changes + f"- {item}"
 
-list_changes = list_changes.replace(f"- - Full Changelog- - : https://github.com/kelvin-codes-stuff/AllDayBot/commits/{github_release_repo['tag_name']}", "")
+list_changes = list_changes.replace(f"- - Full Changelog- - :", "- Alle wijzigingen:")
 
 
 #
