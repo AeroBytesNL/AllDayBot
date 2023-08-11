@@ -6,7 +6,7 @@ name: Python application
 
 on:
   release:
-    types: [published]
+    types: [created, published]
 
 #permissions:
 #  contents: read
