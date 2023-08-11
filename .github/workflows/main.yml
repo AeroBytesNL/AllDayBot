@@ -45,5 +45,6 @@ jobs:
     - name: Executing scripts
       working-directory: ./GitHubAction    
       run: |
-#python3 GitHubPteroScript.py # Redo
         python3 GitHubNewReleaseMSG.py
+
+#python3 GitHubPteroScript.py
