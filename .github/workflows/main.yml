@@ -8,6 +8,9 @@ on:
   release:
     types: [published]
 
+env:
+  webhook_url_moderator_only: ${{ secrets.WEBHOOK_URL_MODERATOR_ONLY }}
+
 #permissions:
 #  contents: read
 

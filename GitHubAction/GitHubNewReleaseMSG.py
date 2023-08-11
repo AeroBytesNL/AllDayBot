@@ -2,7 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os
 
-webhook_url_moderator_only = os.getenv("webhook_url_moderator_only")
+webhook_url_moderator_only = os.environ["webhook_url_moderator_only"]
 github_release_url = "https://api.github.com/repos/kelvin-codes-stuff/AllDayBot/releases/latest"
 
 
