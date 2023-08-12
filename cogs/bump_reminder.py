@@ -15,6 +15,7 @@ class Bump_reminder(commands.Cog):
         self.last_processed_bump = 0
 
 
+
     @commands.Cog.listener()
     async def on_ready(self):
 
@@ -41,16 +42,16 @@ class Bump_reminder(commands.Cog):
         if last_bump.id == self.last_processed_bump: return
 
         # Check if the last bump happened more than 2 hours ago
-        bump_time = datetime.fromtimestamp((last_bump.id >> 22) + 1420070400000)
+        bump_time = datetime.fromtimestamp(((last_bump.id >> 22) + 1420070400000) / 1000.0)
         diff = int((datetime.now() - bump_time).seconds)
+        
+        if diff >= 7192 and diff < 7200: 
+            # Send the reminder
+            #await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
+            print("Server ready to be bumped")
+            self.last_processed_bump = last_bump.id
+        
 
-        if diff > 7200: return
-
-        # Send the reminder
-        #await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
-        print("Server ready to be bumped")
-        self.last_processed_bump = last_bump.id
-    
 
 def setup(bot: commands.Bot):
     bot.add_cog(Bump_reminder(bot))
