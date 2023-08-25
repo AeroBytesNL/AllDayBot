@@ -27,7 +27,7 @@ class Bump_reminder(commands.Cog):
     async def check_if_bump_is_ready(self):
 
         # Get the bot channel
-        channel = self.bot.get_channel(Channel.ALLDAYBOT)
+        channel = self.bot.get_channel(Channel.BUMP)
 
         # Find the last bump
         messages = list(
@@ -47,7 +47,7 @@ class Bump_reminder(commands.Cog):
         
         if diff >= 7192 and diff < 7200: 
             # Send the reminder
-            #await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
+            await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
             print("Server ready to be bumped")
             self.last_processed_bump = last_bump.id
         

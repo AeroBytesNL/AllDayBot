@@ -4,6 +4,11 @@ from env import *
 import time
 import random
 from database import Database
+from datetime import datetime, timedelta
+import random
+
+# Quiz start tijd: 1 min (static)
+# Quiz doorloop tijd: 2.5 minuten
 
 class Quiz(commands.Cog):
 
@@ -13,106 +18,101 @@ class Quiz(commands.Cog):
 
         self.bot = bot
         print("Cog Quiz is loaded!")
-        self.ongoing_quizes_ids = []
-        self.quiz_storage = {}
+        self.ongoing_quizes = []
+        self.icons = ["🇦", "🇧", "🇨", "🇩", "🇪", "🇫"]
+        self.quiz_answers_icons = {}
+        self.quiz_answers = {}
 
 
 
-    # Listening to ongoing quized
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
 
-        # check if reaction is from bot, if it is return
-        if user == self.bot.user:
-            return
+        if reaction.message.id not in self.ongoing_quizes: return
         
-        # If quiz in storage
-        if reaction.message.id in self.ongoing_quizes_ids:
-            pass
+        if user.id == self.bot.user.id: return
+
+        if user.id in self.quiz_answers.keys(): return
+
+        self.quiz_answers[int(user.id)] = {
+            "emoticon": str(reaction.emoji)
+        }
 
 
 
     # Mother Of All Commands
     @commands.slash_command()
     async def quiz(self, inter):
+
         pass
 
 
 
     # Quiz make command
     @quiz.sub_command(description="Maak een quiz aan")
-    async def aanmaken(self, inter, quiz_titel, quiz_vraag, juiste_antwoord, antwoord_1, antwoord_2, quiz_start_tijd:commands.option_enum({"Geen vertraging": 0, "5 seconden": 5, "10 seconden": 10, "15 seconden": 15, "20 seconden": 10, "30 seconden": 10, "45 seconden": 10, "1 minuut": 10, "2 minuten": 120, "3 minuten": 180}), quiz_sluit_tijd:int = 15, antwoord_3 = None, antwoord_4 = None):
+    async def aanmaken(self, inter, vraag: str, juiste_antwoord_1: str, verkeerd_antwoord_1: str, 
+        juiste_antwoord_2: str = None, verkeerd_antwoord_2: str = None, verkeerd_antwoord_3: str = None, verkeerd_antwoord_4: str = None 
+        ):
 
-        # Generate quiz ID
-        quiz_id = random.randint(0, 10000)
+        # Saving user input in list
+        input_values = []
+        for item in juiste_antwoord_1, verkeerd_antwoord_1, juiste_antwoord_2, verkeerd_antwoord_2, verkeerd_antwoord_3, verkeerd_antwoord_4:
+            if item != None:
+                input_values.append(str(item))
 
-        # Save to DB!
+        random.shuffle(input_values)
 
-        if quiz_start_tijd != 0:
-            await Quiz.quiz_first_embed(self, inter, quiz_titel, antwoord_1, antwoord_2, antwoord_3, antwoord_4, quiz_start_tijd, quiz_sluit_tijd, quiz_id)
+        i = 0
+        for item in input_values:
+            self.quiz_answers_icons[str(item)] = {"emoji": str(self.icons[i])}
+            i = i + 1
 
-            time.sleep(quiz_start_tijd)
+        # Send embed quiz starts over 1 minute
+        await Quiz.quiz_embed_starts_over(inter)
 
-        second_embed = await Quiz.quiz_second_embed(self, inter, quiz_titel, quiz_vraag, antwoord_1, antwoord_2, antwoord_3, antwoord_4, quiz_sluit_tijd, channel=inter.channel, quiz_id=quiz_id)
+        # Wait 1 minute (change to 1 min later)
+        time.sleep(3)
 
-        # Saving quid id in ongoing quizes
-        self.ongoing_quizes_ids.append(second_embed.message.id)
+        await Quiz.quiz_embed_started(self, inter, quiz_question = vraag)
 
-        time.sleep(quiz_sluit_tijd)
-
-
-
-    # Quiz embed
-    async def quiz_first_embed(self, inter, quiz_titel, antwoord_1, antwoord_2, antwoord_3, antwoord_4, quiz_start_tijd, quiz_sluit_tijd, quiz_id):
-
-        embed=disnake.Embed(title="Quiz!", description=f"**{quiz_titel}**", color=0xdf8cfe)
-        embed.add_field(name=f"Quiz begint", value=disnake.utils.format_dt(time.time() + quiz_start_tijd, 'R'), inline=False)
-        embed.add_field(name=f"Quiz antwoord tijd", value=f"{quiz_sluit_tijd}s", inline=False)
-        embed.add_field(name=f"Quiz is gemaakt door:", value=inter.author.mention, inline=False)
-
-        embed.set_footer(text=f"Quiz ID: {quiz_id}")
-
-        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-        embed.set_thumbnail(url=guild.icon)
-
-        msg = await inter.response.send_message(embed=embed)
-        return msg
-
-
-
-    async def quiz_second_embed(self, inter, quiz_titel, quiz_vraag, antwoord_1, antwoord_2, antwoord_3, antwoord_4, quiz_sluit_tijd, channel, quiz_id):
-
-        embed=disnake.Embed(title=f"Quiz! - {quiz_titel}", description=f"**{quiz_vraag}**", color=0xdf8cfe)
+        # wait for quiz to close (2.5 min)
+        time.sleep(5)
         
-        if antwoord_3 == None and antwoord_4 == None:
-            embed.add_field(name="Antwoorden:", value=f"🇦 {antwoord_1}\n🇧 {antwoord_2}")
-
-        elif antwoord_3 != None and antwoord_4 == None:
-            embed.add_field(name="Antwoorden:", value=f"🇦 {antwoord_1}\n🇧 {antwoord_2}\n🇨 {antwoord_3}")
+        print(self.quiz_answers_icons)
         
-        elif antwoord_3 != None and antwoord_4 != None:
-            embed.add_field(name="Antwoorden:", value=f"🇦 {antwoord_1}\n🇧 {antwoord_2}\n🇨 {antwoord_3}\n🇩 {antwoord_4}")
+        #check winner
+        #for quiz_user in self.quiz_answers.items():
+            #if quiz_user[1]["emoticon"]
 
-        embed.add_field(name="Deze quiz verloopt:", value=disnake.utils.format_dt(time.time() + quiz_sluit_tijd, 'R'), inline=False)
 
-        embed.set_footer(text=f"Quiz ID: {quiz_id}")
+
+    async def quiz_embed_starts_over(inter):
+
+        embed=disnake.Embed(title="Quiz tijd!", description=f"Hij start {disnake.utils.format_dt(datetime.now() + timedelta(seconds=60), 'R')}")
+        await inter.response.send_message(embed=embed)
+
+
+
+    async def quiz_embed_started(self, inter, quiz_question):
+
+        channel = self.bot.get_channel(inter.channel.id)
+
+        embed=disnake.Embed(title=f"Quiz! - {quiz_question}", description=f"Hij verloopt {disnake.utils.format_dt(datetime.now() + timedelta(seconds=150), 'R')}", color=0xdf8cfe)
+        embed.add_field(name="Let op!", value="Je 1e antwoord geld! Je reactie verwijderen/wijzigen wordt niet meegerekend! De 1e wint!", inline=False)
+        answers = ""
+
+        for item in self.quiz_answers_icons:
+            answers = answers + f"{item[0]} - {item[1]}\n"
+        embed.add_field(name="Antwoorden:", value=f"**{answers}**", inline=False)
+        embed.set_footer(text=f"Quiz gemaakt door {inter.author.display_name}")
 
         msg = await channel.send(embed=embed)
 
-        await msg.add_reaction("🇦")
-        await msg.add_reaction("🇧")
-        
-        if antwoord_3 != None:
-            await msg.add_reaction("🇨")
-        if antwoord_4 != None:
-            await msg.add_reaction("🇩")
+        self.ongoing_quizes.append(int(msg.id))
 
-        return msg
+        for item in self.quiz_answers_icons:
+            await msg.add_reaction(str(item[0]))
 
-
-
-    def insert_quiz_in_db(quiz_id, msg_id, quiz_titel, quiz_vraag, antwoord_1, antwoord_2, antwoord_3, antwoord_4, quiz_sluit_tijd):
-        Database.cursor.execute("INSERT INTO quizes ()")
 
 
 def setup(bot: commands.Bot):
