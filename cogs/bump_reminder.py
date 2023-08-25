@@ -27,7 +27,7 @@ class Bump_reminder(commands.Cog):
     async def check_if_bump_is_ready(self):
 
         # Get the bot channel
-        channel = self.bot.get_channel(Channel.ALLDAYBOT)
+        channel = self.bot.get_channel(Channel.BUMP)
 
         # Find the last bump
         messages = list(
