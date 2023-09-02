@@ -10,6 +10,7 @@ on:
 
 env:
   webhook_url_moderator_only: ${{ secrets.WEBHOOK_URL_MODERATOR_ONLY }}
+  webhook_url_alldaybot: ${{ secrets.WEBHOOK_URL_ALLDAYBOT }}
 
 #permissions:
 #  contents: read
@@ -38,6 +39,7 @@ jobs:
         echo gamemanager_ptero_url=${{secrets.GAMEMANAGER_PTERO_URL}} >> ./.env
         echo client_api_key="${{secrets.CLIENT_API_KEY}}" >> ./.env
         echo webhook_url_moderator_only="${{secrets.WEBHOOK_URL_MODERATOR_ONLY}}" >> ./.env
+        echo webhook_url_alldaybot="${{secrets.WEBHOOK_URL_ALLDAYBOT}}" >> ./.env
 
         cat .env
         ls -l
