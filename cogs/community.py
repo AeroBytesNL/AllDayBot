@@ -94,7 +94,7 @@ class community(commands.Cog):
                     print(f"User {inter.author.name} gebruikte het command 'dm'")
                     await inter.send("Verzonden", ephemeral=True)
                     channel = bot.get_channel(inter.channel.id)        
-                    await channel.send(f"{gebruiker.mention}, dat hoeft helemaal niet in een dus doe maar gewoon hier... kunnen andere mensen ook helpen.")
+                    await channel.send(f"{gebruiker.mention}, dat hoeft helemaal niet in een DM dus doe maar gewoon hier... kunnen andere mensen ook helpen.")
                     await log_command(author=inter.author, command="`/dm`", channel=inter.channel)
 
 
