@@ -57,75 +57,56 @@ class community(commands.Cog):
         @commands.cooldown(1, 5.0, commands.BucketType.member)
         @bot.slash_command(description="Kijk of ik nog online ben!")
         async def kapot(inter):
+
+            print(f"User {inter.author.name} gebruikte het command 'kapot'")
+            await inter.response.send_message("Ik ben nog online!")            
+            await log_command(author=inter.author, command="`/kapot`", channel=inter.channel)
                 
-                if check_restriction(user_id = inter.author.id, command="/kapot") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
-                        return
-                else:
-                    print(f"User {inter.author.name} gebruikte het command 'kapot'")
-                    await inter.response.send_message("Ik ben nog online!")            
-                    await log_command(author=inter.author, command="`/kapot`", channel=inter.channel)
-                        
 
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Stuur: Stel gewoon je vraag...")
         async def vraag_om_te_vragen(inter, user: disnake.User):
                 
-                if check_restriction(user_id = inter.author.id, command="/vraag_om_te_vragen") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
-                        return
-                else: 
-                    print(f"User {inter.author.name} gebruikte het command 'ask'")
-                    await inter.send("Verzonden", ephemeral=True)
-                    channel = bot.get_channel(inter.channel.id)
-                    await channel.send(f"{user.mention}, stel gewoon je vraag, vraag niet om te vragen.")
-                    await log_command(author=inter.author, command="`/vraag_om_te_vragen`", channel=inter.channel)
-                    return
+            print(f"User {inter.author.name} gebruikte het command 'ask'")
+            await inter.send("Verzonden", ephemeral=True)
+            channel = bot.get_channel(inter.channel.id)
+            await channel.send(f"{user.mention}, stel gewoon je vraag, vraag niet om te vragen.")
+            await log_command(author=inter.author, command="`/vraag_om_te_vragen`", channel=inter.channel)
+            return
 
 
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Stuur: Dat hoeft niet in DM....")
         async def dm(inter, gebruiker: disnake.User):
                 
-                if check_restriction(user_id = inter.author.id, command="/dm") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
-                        return                
-                else:
-                    print(f"User {inter.author.name} gebruikte het command 'dm'")
-                    await inter.send("Verzonden", ephemeral=True)
-                    channel = bot.get_channel(inter.channel.id)        
-                    await channel.send(f"{gebruiker.mention}, dat hoeft helemaal niet in een DM dus doe maar gewoon hier... kunnen andere mensen ook helpen.")
-                    await log_command(author=inter.author, command="`/dm`", channel=inter.channel)
+            print(f"User {inter.author.name} gebruikte het command 'dm'")
+            await inter.send("Verzonden", ephemeral=True)
+            channel = bot.get_channel(inter.channel.id)        
+            await channel.send(f"{gebruiker.mention}, dat hoeft helemaal niet in een DM dus doe maar gewoon hier... kunnen andere mensen ook helpen.")
+            await log_command(author=inter.author, command="`/dm`", channel=inter.channel)
 
 
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Stuur: Niet zo moeilijk doen...")
         async def moeilijk_doen(inter):
                 
-                if check_restriction(user_id = inter.author.id, command="/moeilijk_doen") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
-                        return
-                else:
-                    print(f"User {inter.author.name} gebruikte het command 'fok'")
-                    await inter.send("Verzonden", ephemeral=True)
-                    channel = bot.get_channel(inter.channel.id)        
-                    await channel.send("Niet zo moeilijk doen, we helpen je als we kunnen. Totdat we een mooi contract tekenen en je ons gaat betalen, zijn we je niets verplicht.")    
-                    await log_command(author=inter.author, command="`/moeilijk_doen`", channel=inter.channel)
+            print(f"User {inter.author.name} gebruikte het command 'fok'")
+            await inter.send("Verzonden", ephemeral=True)
+            channel = bot.get_channel(inter.channel.id)        
+            await channel.send("Niet zo moeilijk doen, we helpen je als we kunnen. Totdat we een mooi contract tekenen en je ons gaat betalen, zijn we je niets verplicht.")    
+            await log_command(author=inter.author, command="`/moeilijk_doen`", channel=inter.channel)
 
 
         @commands.cooldown(1, 10.0, commands.BucketType.member)
         @bot.slash_command(description="Wijs een lid erop dat het juiste kanaal gebruikt moet worden")
         async def kanaal(inter, user: disnake.User, chnl: disnake.channel.TextChannel):
                 
-                if check_restriction(user_id = inter.author.id, command="/kanaal") == False:
-                        await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
-                        return
-                else:
-                    print(f"User {inter.author.name} gebruikte het command 'kanaal'")
-                    await inter.send("Verzonden", ephemeral=True)
-                    channel = bot.get_channel(inter.channel.id)
-                    await channel.send(f"{user.mention}, gelieve het juiste kanaal te gebruik, in dit geval is dat {chnl.mention}.")
-                    await log_command(author=inter.author, command="`/kanaal`", channel=inter.channel)
+            print(f"User {inter.author.name} gebruikte het command 'kanaal'")
+            await inter.send("Verzonden", ephemeral=True)
+            channel = bot.get_channel(inter.channel.id)
+            await channel.send(f"{user.mention}, gelieve het juiste kanaal te gebruik, in dit geval is dat {chnl.mention}.")
+            await log_command(author=inter.author, command="`/kanaal`", channel=inter.channel)
+
 
 
         # ADT&G poll functie
@@ -139,47 +120,43 @@ class community(commands.Cog):
         , vraag_5 = None, vraag_6 = None, vraag_7 = None, vraag_8 = None, vraag_9 = None, vraag_10 = None
         , vraag_11 = None, vraag_12 = None, vraag_13 = None, vraag_14 = None, vraag_15 = None):       
 
-                    if check_restriction(user_id = inter.author.id, command="/verjaardag_toevoegen") == False:
-                            await inter.response.send_message("Je hebt geen toegang tot dit commando. Voor vragen stuur onze bot een direct bericht.",ephemeral=True)
-                            return
-                    else:
-                        embed = await poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
-                            , vraag_7, vraag_8, vraag_9, vraag_10, vraag_11, vraag_12, vraag_13, vraag_14, vraag_15)
+                embed = await poll(inter, poll_vraag, vraag_1, vraag_2, vraag_3, vraag_4, vraag_5, vraag_6
+                    , vraag_7, vraag_8, vraag_9, vraag_10, vraag_11, vraag_12, vraag_13, vraag_14, vraag_15)
 
-                        msg_sended = await inter.response.send_message(embed=embed)
-                        msg = await inter.original_message()
+                msg_sended = await inter.response.send_message(embed=embed)
+                msg = await inter.original_message()
 
-                        await msg.add_reaction("🇦")
-                        await msg.add_reaction("🇧")
-                        
-                        if vraag_3 != None:
-                            await msg.add_reaction("🇨")
-                        if vraag_4 != None:
-                            await msg.add_reaction("🇩")
-                        if vraag_5 != None:
-                            await msg.add_reaction("🇪")
-                        if vraag_6 != None:
-                            await msg.add_reaction("🇫")
-                        if vraag_7 != None:
-                            await msg.add_reaction("🇬")
-                        if vraag_8 != None:
-                            await msg.add_reaction("🇭")      
-                        if vraag_9 != None:
-                            await msg.add_reaction("🇮")
-                        if vraag_10 != None:
-                            await msg.add_reaction("🇯")
-                        if vraag_11 != None:
-                            await msg.add_reaction("🇰")
-                        if vraag_12 != None:
-                            await msg.add_reaction("🇱")
-                        if vraag_13 != None:
-                            await msg.add_reaction("🇲")
-                        if vraag_14 != None:
-                            await msg.add_reaction("🇴")       
-                        if vraag_15 != None:
-                            await msg.add_reaction("🇵")                                                                                              
-                        
-                        await log_command(author=inter.author, command="`/poll toevoegen`", channel=inter.channel)
+                await msg.add_reaction("🇦")
+                await msg.add_reaction("🇧")
+                
+                if vraag_3 != None:
+                    await msg.add_reaction("🇨")
+                if vraag_4 != None:
+                    await msg.add_reaction("🇩")
+                if vraag_5 != None:
+                    await msg.add_reaction("🇪")
+                if vraag_6 != None:
+                    await msg.add_reaction("🇫")
+                if vraag_7 != None:
+                    await msg.add_reaction("🇬")
+                if vraag_8 != None:
+                    await msg.add_reaction("🇭")      
+                if vraag_9 != None:
+                    await msg.add_reaction("🇮")
+                if vraag_10 != None:
+                    await msg.add_reaction("🇯")
+                if vraag_11 != None:
+                    await msg.add_reaction("🇰")
+                if vraag_12 != None:
+                    await msg.add_reaction("🇱")
+                if vraag_13 != None:
+                    await msg.add_reaction("🇲")
+                if vraag_14 != None:
+                    await msg.add_reaction("🇴")       
+                if vraag_15 != None:
+                    await msg.add_reaction("🇵")                                                                                              
+                
+                await log_command(author=inter.author, command="`/poll toevoegen`", channel=inter.channel)
 
 
         @poll.sub_command(description="Krijg alle reacties te zien!")
@@ -317,11 +294,6 @@ class community(commands.Cog):
         
 
 
-
-
-
-
-
         # Cooldown message
         @moeilijk_doen.error
         @dm.error
@@ -335,8 +307,6 @@ class community(commands.Cog):
                 return await inter.response.send_message(
                     f"Deze command heeft een cooldown, probeer het over `{new_error}` opnieuw.", ephemeral=True
                 )
-
-
 
 
 
