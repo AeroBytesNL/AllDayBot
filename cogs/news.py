@@ -117,5 +117,6 @@ class news(commands.Cog):
         data = requests.get("https://www.nu.nl/rss/Tech").text
 
     
+    
 def setup(bot: commands.Bot):
     bot.add_cog(news(bot))
