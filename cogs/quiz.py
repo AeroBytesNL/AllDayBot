@@ -6,6 +6,7 @@ import random
 from database import Database
 from datetime import datetime, timedelta
 import random
+import threading
 
 # Quiz start tijd: 1 min (static)
 # Quiz doorloop tijd: 2.5 minuten
@@ -20,23 +21,23 @@ class Quiz(commands.Cog):
         print("Cog Quiz is loaded!")
         self.ongoing_quizes = []
         self.icons = ["🇦", "🇧", "🇨", "🇩", "🇪", "🇫"]
+        self.answers_randomized_with_icons = []
+        self.quiz_data = {}
         self.quiz_answers_icons = {}
-        self.quiz_answers = {}
+        self.quiz_answers = []
 
 
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
+    async def on_raw_reaction_add(self, reaction):
 
-        if reaction.message.id not in self.ongoing_quizes: return
-        
-        if user.id == self.bot.user.id: return
+        print("JEeej")
+        #if reaction.member == self.bot.user or self.bot: return
 
-        if user.id in self.quiz_answers.keys(): return
+        #answer_user = [int(reaction.member.id), str(reaction.emoji)]
+        #self.quiz_answers.append(answer_user)
 
-        self.quiz_answers[int(user.id)] = {
-            "emoticon": str(reaction.emoji)
-        }
+        #print(f"DEBUG: {reaction.member.id} - {reaction.emoji}")
 
 
 
@@ -53,36 +54,67 @@ class Quiz(commands.Cog):
     async def aanmaken(self, inter, vraag: str, juiste_antwoord_1: str, verkeerd_antwoord_1: str, 
         juiste_antwoord_2: str = None, verkeerd_antwoord_2: str = None, verkeerd_antwoord_3: str = None, verkeerd_antwoord_4: str = None 
         ):
-
-        # Saving user input in list
-        input_values = []
-        for item in juiste_antwoord_1, verkeerd_antwoord_1, juiste_antwoord_2, verkeerd_antwoord_2, verkeerd_antwoord_3, verkeerd_antwoord_4:
-            if item != None:
-                input_values.append(str(item))
-
-        random.shuffle(input_values)
-
-        i = 0
-        for item in input_values:
-            self.quiz_answers_icons[str(item)] = {"emoji": str(self.icons[i])}
-            i = i + 1
-
-        # Send embed quiz starts over 1 minute
-        await Quiz.quiz_embed_starts_over(inter)
-
-        # Wait 1 minute (change to 1 min later)
-        time.sleep(3)
-
-        await Quiz.quiz_embed_started(self, inter, quiz_question = vraag)
-
-        # wait for quiz to close (2.5 min)
-        time.sleep(5)
         
-        print(self.quiz_answers_icons)
-        
-        #check winner
-        #for quiz_user in self.quiz_answers.items():
-            #if quiz_user[1]["emoticon"]
+        try:
+            
+            self.quiz_answers.clear()
+
+            quiz_id = random.randint(0, 6969)
+
+            # Save values in list to randommize        
+            i = []
+            for item in juiste_antwoord_1, juiste_antwoord_2, verkeerd_antwoord_1, verkeerd_antwoord_2, verkeerd_antwoord_3, verkeerd_antwoord_4:
+                if item != None:
+                    i.append(item)
+
+            i = random.sample(i, len(i))
+            
+            icon_count = 0 
+            for item in i:
+                x = [item, self.icons[icon_count]]
+                self.answers_randomized_with_icons.append(x)
+                icon_count = icon_count + 1
+
+            # Save right icons to list
+            icons_with_right_answer = []
+            for item in self.answers_randomized_with_icons:
+                if item[0] == juiste_antwoord_1 or item[0] == juiste_antwoord_2:
+                    icons_with_right_answer.append(str(item[1]))
+
+            if len(icons_with_right_answer) == 1:
+                icons_with_right_answer.append(None)
+
+            # Save quiz data
+            self.quiz_data = {
+                int(quiz_id): {
+                "quiz_maker": str(inter.author.name),
+                "right_answer_1": str(juiste_antwoord_1),
+                "right_answer_2": str(juiste_antwoord_2),
+                "right_answer_1_icon": icons_with_right_answer[0],
+                "right_answer_2_icon": icons_with_right_answer[1],
+                "wrong_answer_1": str(verkeerd_antwoord_1),
+                "wrong_answer_2": str(verkeerd_antwoord_2),
+                "wrong_answer_3": str(verkeerd_antwoord_3),
+                "wrong_answer_4": str(verkeerd_antwoord_4)
+                }
+            }
+            
+            await Quiz.quiz_embed_starts_over(inter)
+
+            # Wait 60 seconds
+            time.sleep(60)
+            
+            await Quiz.quiz_embed_started(self, inter, quiz_question=vraag)
+
+            # Check for if a user has won
+            x = threading.Thread(target=Quiz.check_quiz_outcome_thread, args=(self,))
+            x.start()
+
+            await Quiz.check_quiz_outcome(self, inter)
+
+        except Exception as error:
+            print(error)
+            pass
 
 
 
@@ -101,8 +133,9 @@ class Quiz(commands.Cog):
         embed.add_field(name="Let op!", value="Je 1e antwoord geld! Je reactie verwijderen/wijzigen wordt niet meegerekend! De 1e wint!", inline=False)
         answers = ""
 
-        for item in self.quiz_answers_icons:
-            answers = answers + f"{item[0]} - {item[1]}\n"
+        for item in self.answers_randomized_with_icons:
+            answers = answers + f"{item[1]} - {item[0]}\n"
+
         embed.add_field(name="Antwoorden:", value=f"**{answers}**", inline=False)
         embed.set_footer(text=f"Quiz gemaakt door {inter.author.display_name}")
 
@@ -110,8 +143,18 @@ class Quiz(commands.Cog):
 
         self.ongoing_quizes.append(int(msg.id))
 
-        for item in self.quiz_answers_icons:
-            await msg.add_reaction(str(item[0]))
+        for item in self.answers_randomized_with_icons:
+            await msg.add_reaction(str(item[1]))
+
+    
+
+    def check_quiz_outcome_thread(self):
+        print("Started!")
+        # Wait 2.5 minutes
+        time.sleep(150)
+        i = 0
+        print("Jeeej done")
+        self.ongoing_quizes.clear()
 
 
 
