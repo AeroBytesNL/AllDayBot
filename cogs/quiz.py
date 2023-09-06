@@ -6,8 +6,7 @@ import random
 from database import Database
 from datetime import datetime, timedelta
 import random
-import threading
-
+import asyncio
 # Quiz start tijd: 1 min (static)
 # Quiz doorloop tijd: 2.5 minuten
 
@@ -25,19 +24,22 @@ class Quiz(commands.Cog):
         self.quiz_data = {}
         self.quiz_answers_icons = {}
         self.quiz_answers = []
+        self.quiz_winners = []
+        self.quiz_losers = []
 
 
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction):
 
-        print("JEeej")
-        #if reaction.member == self.bot.user or self.bot: return
-
-        #answer_user = [int(reaction.member.id), str(reaction.emoji)]
-        #self.quiz_answers.append(answer_user)
-
-        #print(f"DEBUG: {reaction.member.id} - {reaction.emoji}")
+        if reaction.member == self.bot.user: return
+        
+        if len(self.quiz_answers) > 0:
+            for item in self.quiz_answers:
+                if reaction.member.id == item[0]: return
+                
+        answer_user = [int(reaction.member.id), str(reaction.emoji)]
+        self.quiz_answers.append(answer_user)
 
 
 
@@ -86,7 +88,6 @@ class Quiz(commands.Cog):
 
             # Save quiz data
             self.quiz_data = {
-                int(quiz_id): {
                 "quiz_maker": str(inter.author.name),
                 "right_answer_1": str(juiste_antwoord_1),
                 "right_answer_2": str(juiste_antwoord_2),
@@ -96,7 +97,6 @@ class Quiz(commands.Cog):
                 "wrong_answer_2": str(verkeerd_antwoord_2),
                 "wrong_answer_3": str(verkeerd_antwoord_3),
                 "wrong_answer_4": str(verkeerd_antwoord_4)
-                }
             }
             
             await Quiz.quiz_embed_starts_over(inter)
@@ -107,10 +107,8 @@ class Quiz(commands.Cog):
             await Quiz.quiz_embed_started(self, inter, quiz_question=vraag)
 
             # Check for if a user has won
-            x = threading.Thread(target=Quiz.check_quiz_outcome_thread, args=(self,))
-            x.start()
+            await Quiz.check_quiz_outcome_thread(self, inter, right_answer_1=juiste_antwoord_1, right_answer_2=juiste_antwoord_2, quiz_answers=self.quiz_answers)
 
-            await Quiz.check_quiz_outcome(self, inter)
 
         except Exception as error:
             print(error)
@@ -148,13 +146,77 @@ class Quiz(commands.Cog):
 
     
 
-    def check_quiz_outcome_thread(self):
-        print("Started!")
+    async def check_quiz_outcome_thread(self, inter, right_answer_1, right_answer_2, quiz_answers):
+
+        # Get channel to send
+        channel = self.bot.get_channel(inter.channel.id)
+
         # Wait 2.5 minutes
-        time.sleep(150)
-        i = 0
-        print("Jeeej done")
-        self.ongoing_quizes.clear()
+        await asyncio.sleep(150)
+
+        for quiz_reaction in quiz_answers:
+            if quiz_reaction[1] == self.quiz_data["right_answer_1_icon"] or quiz_reaction[1] == self.quiz_data["right_answer_2_icon"]:
+                self.quiz_winners.append(int(quiz_reaction[0]))
+            else:
+                self.quiz_losers.append(int(quiz_reaction[0]))
+
+        if len(self.quiz_winners) > 0:
+            embed=disnake.Embed(title=f"Quiz! - We hebben winnaars!", description=f"Aantal deelnemers: {len(self.quiz_winners) + len(self.quiz_losers)}", color=0xdf8cfe)
+        else:
+            embed=disnake.Embed(title=f"Quiz! - We hebben geen winnaars", description=f"Aantal deelnemers: {len(self.quiz_winners) + len(self.quiz_losers)}", color=0xdf8cfe)
+
+        embed.add_field(name="Voor de spelers:", value="Hoe sneller je bent hoe hoger dichterbij je bij #1 bent.", inline=False)
+
+        if len(self.quiz_winners) == 0:
+            embed.add_field(name=f"Er zijn geen winnaars! ", value="\n", inline=False)        
+
+        position_number = 1
+        for winner in self.quiz_winners:
+            name = (await self.bot.get_or_fetch_user(int(winner))).display_name
+            embed.add_field(name=f"#{position_number}", value=str(name), inline=False)
+            position_number += 1
+
+        if len(self.quiz_losers) == 0:
+            embed.add_field(name=f"Er zijn geen verliezers!", value="\n", inline=False)
+
+        for loser in self.quiz_losers:
+            name = (await self.bot.get_or_fetch_user(int(loser))).display_name
+            embed.add_field(name=f"Verliezer {position_number}:", value=str(name), inline=False)
+            position_number += 1
+
+        await channel.send(embed=embed)
+
+        # Add XP to user
+        # Give xp to #1
+        if len(self.quiz_winners) > 0:
+            Quiz.add_xp_to_winner(player=self.quiz_winners[0], XP=1000)        
+
+        # Save to log
+        log_channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+        await log_channel.send(f"User {self.quiz_winners[0]} heeft XP gekregen!")
+
+
+        # End stage
+        print("Quiz checking done!")
+        
+
+        
+        # CLeaning
+        self.answers_randomized_with_icons.clear()
+        self.quiz_data.clear()
+        self.quiz_answers_icons.clear()
+        self.quiz_answers.clear()
+        self.quiz_winners.clear()
+        self.quiz_losers.clear()
+
+
+
+    def add_xp_to_winner(player, XP):
+        Database.cursor.execute(f"SELECT * FROM Users WHERE id={player} LIMIT 1")
+        res = Database.cursor.fetchone()
+        Database.cursor.execute(f"UPDATE Users SET xp={int(res[1] + XP)} WHERE id={player}")
+        Database.db.commit()
+        print(f"User {player} has recieved {XP} XP!")
 
 
 

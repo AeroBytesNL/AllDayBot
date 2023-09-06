@@ -1,7 +1,6 @@
 import disnake
 from disnake.ext import commands
 from env import *
-from helpers.command_restriction import *
 
 
 # TODO: Make unban system
