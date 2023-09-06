@@ -6,7 +6,6 @@ import pytz
 import numpy as np
 from database import Database
 import random
-from helpers.command_restriction import *
 
 
 
