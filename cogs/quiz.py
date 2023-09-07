@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import random
 import asyncio
 # Quiz start tijd: 1 min (static)
-# Quiz doorloop tijd: 2.5 minuten
+# Quiz doorloop tijd: 1.5 minuten
 
 class Quiz(commands.Cog):
 
@@ -71,6 +71,24 @@ class Quiz(commands.Cog):
 
 
 
+    # Quiz info command
+    @quiz.sub_command(description="Zie info over de quiz!")
+    async def info(self, inter):
+
+        embed=disnake.Embed(title="Quiz informatie", description="\n", color=0xdf8cfe)
+        embed.add_field(name=f"Regels:", value="""
+- De 1e die het juiste antwoord aanklikt wint de quiz.                        
+- Je kunt geen quiz aanmaken terwijl een andere quiz nog loopt.
+- Je kunt zelf niet reageren (reacties worden automatisch verwijderd.
+- Emojis die niet in de quiz zitten worden automatisch verwijderd.
+- Tot 2 antwoorden kunnen juist zijn! Tot 4 onjuiste antwoorden mogelijk.                
+- Als winnaar op plaats #1 krijg je 1000XP.
+- Elke verliezer verliest 1000XP.
+- Wanneer je een icoon aanklikt staat je reactie vast!""", inline=True)
+        await inter.response.send_message(embed=embed, ephemeral=True)
+
+
+
     # Quiz make command
     @quiz.sub_command(description="Maak een quiz aan")
     async def aanmaken(self, inter, vraag: str, juiste_antwoord_1: str, verkeerd_antwoord_1: str, 
@@ -81,7 +99,7 @@ class Quiz(commands.Cog):
 
         if len(self.ongoing_quizes) > 0:
             await inter.response.send_message("Je kunt geen 2e quiz maken, de 1e quiz is nog bezig!", ephemeral=True)
-        
+            return
         try:
             
             self.quiz_answers.clear()
@@ -127,15 +145,30 @@ class Quiz(commands.Cog):
                 "wrong_answer_4": str(verkeerd_antwoord_4)
             }
             
-            await Quiz.quiz_embed_starts_over(inter)
+            await Quiz.quiz_embed_starts_over(self, inter)
 
             # Wait 60 seconds
-            time.sleep(2)
+            time.sleep(60)
             
             await Quiz.quiz_embed_started(self, inter, quiz_question=vraag)
+            
+            # Wait 2.5 minutes
+            await asyncio.sleep(90)
 
             # Check for if a user has won
             await Quiz.check_quiz_outcome_thread(self, inter, right_answer_1=juiste_antwoord_1, right_answer_2=juiste_antwoord_2, quiz_answers=self.quiz_answers)
+
+            # Cleaning
+            self.ongoing_quizes.clear()
+            print(self.ongoing_quizes)
+            self.answers_randomized_with_icons.clear()
+            self.quiz_data.clear()
+            self.quiz_answers_icons.clear()
+            self.quiz_answers.clear()
+            self.quiz_winners.clear()
+            self.quiz_losers.clear()
+            self.quiz_maker = 0
+
 
         except Exception as error:
             print(error)
@@ -143,10 +176,22 @@ class Quiz(commands.Cog):
 
 
 
-    async def quiz_embed_starts_over(inter):
+    async def quiz_embed_starts_over(self, inter):
+
+        channel = self.bot.get_channel(inter.channel.id)
 
         embed=disnake.Embed(title="Quiz tijd!", description=f"Hij start {disnake.utils.format_dt(datetime.now() + timedelta(seconds=60), 'R')}", color=0xdf8cfe)
-        await inter.response.send_message(embed=embed)
+        embed.add_field(name=f"Regels:", value="""
+- Je kunt geen quiz aanmaken terwijl een andere quiz nog loopt.
+- Je kunt zelf niet reageren (reacties worden automatisch verwijderd.
+- Emojis die niet in de quiz zitten worden automatisch verwijderd.
+- Tot 2 antwoorden kunnen juist zijn! Tot 4 onjuiste antwoorden mogelijk.                
+- Als winnaar op plaats #1 krijg je 1000 XP.
+- Elke verliezer verliest 1000 XP.
+- Wanneer je een icoon aanklikt staat je reactie vast!""", inline=True)      
+        embed.set_footer(text=f"Quiz gemaakt door {inter.author.display_name}")
+        await inter.response.send_message("Quiz is aangemaakt!", ephemeral=True)
+        await channel.send(embed=embed)
 
 
 
@@ -154,8 +199,7 @@ class Quiz(commands.Cog):
 
         channel = self.bot.get_channel(inter.channel.id)
 
-        embed=disnake.Embed(title=f"Quiz! - {quiz_question}", description=f"Hij verloopt {disnake.utils.format_dt(datetime.now() + timedelta(seconds=150), 'R')}", color=0xdf8cfe)
-        embed.add_field(name="Let op!", value="Je 1e antwoord geld! Je reactie verwijderen/wijzigen wordt niet meegerekend! De 1e wint!", inline=False)
+        embed=disnake.Embed(title=f"Quiz! - {quiz_question}", description=f"Hij verloopt {disnake.utils.format_dt(datetime.now() + timedelta(seconds=90), 'R')}", color=0xdf8cfe)
         answers = ""
 
         for item in self.answers_randomized_with_icons:
@@ -178,9 +222,6 @@ class Quiz(commands.Cog):
         # Get channel to send
         channel = self.bot.get_channel(inter.channel.id)
 
-        # Wait 2.5 minutes
-        await asyncio.sleep(5)
-
         for quiz_reaction in quiz_answers:
             if quiz_reaction[1] == self.quiz_data["right_answer_1_icon"] or quiz_reaction[1] == self.quiz_data["right_answer_2_icon"]:
                 self.quiz_winners.append(int(quiz_reaction[0]))
@@ -195,12 +236,13 @@ class Quiz(commands.Cog):
         if len(self.quiz_losers) == 0:
             embed.add_field(name=f"Er zijn geen verliezers!", value="\n", inline=False)
 
-        embed.add_field(name="Voor de spelers:", value="Hoe sneller je bent hoe hoger dichterbij je bij #1 bent.", inline=False)
-
         if len(self.quiz_winners) == 0:
             embed.add_field(name=f"Er zijn geen winnaars! ", value="\n", inline=False)     
-            embed.add_field(name=f"Juiste antwoorden waren: ", value=f"**- {self.quiz_data['right_answer_1']}\n- {self.quiz_data['right_answer_2']}**", inline=False)        
-   
+            if self.quiz_data["right_answer_2"] != "None":
+                embed.add_field(name=f"Juiste antwoorden waren: ", value=f"**- {self.quiz_data['right_answer_1']}\n- {self.quiz_data['right_answer_2']}**", inline=False)        
+            else:
+                embed.add_field(name=f"Juiste antwoord was: ", value=f"**- {self.quiz_data['right_answer_1']}**", inline=False)        
+
         position_number = 1
         for winner in self.quiz_winners:
             name = (await self.bot.get_or_fetch_user(int(winner))).display_name
@@ -219,32 +261,24 @@ class Quiz(commands.Cog):
         # Give xp to #1
         if len(self.quiz_winners) > 0:
             Quiz.add_xp_to_winner(player=self.quiz_winners[0], XP=1000)        
+            # Save quiz winner to DB
 
         # Removes XP from losers
-        for loser in self.quiz_losers:
-            Quiz.remove_xp_from_losers(player=loser, XP=1000)
-            
-
+        if len(self.quiz_winners) > 0:
+            for loser in self.quiz_losers:
+                Quiz.remove_xp_from_losers(player=loser, XP=1000)
+                
         # Save to log
         log_channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
-        await log_channel.send(f"User {self.quiz_winners[0]} heeft XP gekregen!")
+        await log_channel.send(f"Quiz - User {self.quiz_winners[0]} heeft XP gekregen!")
 
         # End stage
         print("Quiz checking done!")
         
-        # CLeaning
-        self.ongoing_quizes.clear()
-        self.answers_randomized_with_icons.clear()
-        self.quiz_data.clear()
-        self.quiz_answers_icons.clear()
-        self.quiz_answers.clear()
-        self.quiz_winners.clear()
-        self.quiz_losers.clear()
-        self.quiz_maker = 0
-
 
 
     def add_xp_to_winner(player, XP):
+
         Database.cursor.execute(f"SELECT * FROM Users WHERE id={player} LIMIT 1")
         res = Database.cursor.fetchone()
         Database.cursor.execute(f"UPDATE Users SET xp={int(res[1] + XP)} WHERE id={player}")
@@ -252,12 +286,16 @@ class Quiz(commands.Cog):
         print(f"Quiz - User {player} has recieved {XP} XP!")
 
 
+
     def remove_xp_from_losers(player, XP):
+
         Database.cursor.execute(f"SELECT * FROM Users WHERE id={player} LIMIT 1")
         res = Database.cursor.fetchone()
         Database.cursor.execute(f"UPDATE Users SET xp={int(res[1] - XP)} WHERE id={player}")
         Database.db.commit()
         print(f"Quiz - User {player} has got removed {XP} XP!")
+
+
 
 def setup(bot: commands.Bot):
 
