@@ -146,12 +146,12 @@ class Quiz(commands.Cog):
         await Quiz.quiz_embed_starts_over(self, inter)
 
         # Wait 60 seconds
-        time.sleep(3)
+        time.sleep(60)
         
         await Quiz.quiz_embed_started(self, inter, quiz_question=vraag)
         
         # Wait 2.5 minutes
-        await asyncio.sleep(6)
+        await asyncio.sleep(90)
 
         # Check for if a user has won
         await Quiz.check_quiz_outcome_thread(self, inter, right_answer_1=juiste_antwoord_1, right_answer_2=juiste_antwoord_2, quiz_answers=self.quiz_answers)
