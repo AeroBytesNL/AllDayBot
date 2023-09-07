@@ -52,7 +52,6 @@ class Quiz(commands.Cog):
         
         # If icon is not in the icon list delete it
         if str(reaction.emoji) not in self.quiz_answers_icons:
-            print("DEBUG: ", self.answers_randomized_with_icons)
             msg = self.bot.get_message(reaction.message_id)
             await msg.remove_reaction(reaction.emoji, await self.bot.get_or_fetch_user(reaction.member.id))
             return
@@ -96,83 +95,69 @@ class Quiz(commands.Cog):
         ):
 
         self.quiz_maker = inter.author.id
+        print(self.ongoing_quizes)
 
         if len(self.ongoing_quizes) > 0:
             await inter.response.send_message("Je kunt geen 2e quiz maken, de 1e quiz is nog bezig!", ephemeral=True)
             return
-        try:
-            
-            self.quiz_answers.clear()
+  
+        
+        self.quiz_answers.clear()
 
-            quiz_id = random.randint(0, 6969)
+        # Save values in list to randommize        
+        i = []
+        for item in juiste_antwoord_1, juiste_antwoord_2, verkeerd_antwoord_1, verkeerd_antwoord_2, verkeerd_antwoord_3, verkeerd_antwoord_4:
+            if item != None:
+                i.append(item)
 
-            # Save values in list to randommize        
-            i = []
-            for item in juiste_antwoord_1, juiste_antwoord_2, verkeerd_antwoord_1, verkeerd_antwoord_2, verkeerd_antwoord_3, verkeerd_antwoord_4:
-                if item != None:
-                    i.append(item)
+        i = random.sample(i, len(i))
+        
+        icon_count = 0 
+        for item in i:
+            x = [item, self.icons[icon_count]]
+            self.answers_randomized_with_icons.append(x)
+            icon_count = icon_count + 1
 
-            i = random.sample(i, len(i))
-            
-            icon_count = 0 
-            for item in i:
-                x = [item, self.icons[icon_count]]
-                self.answers_randomized_with_icons.append(x)
-                icon_count = icon_count + 1
+        # Save right icons to list
+        icons_with_right_answer = []
+        for item in self.answers_randomized_with_icons:
+            if item[0] == juiste_antwoord_1 or item[0] == juiste_antwoord_2:
+                icons_with_right_answer.append(str(item[1]))
 
-            # Save right icons to list
-            icons_with_right_answer = []
-            for item in self.answers_randomized_with_icons:
-                if item[0] == juiste_antwoord_1 or item[0] == juiste_antwoord_2:
-                    icons_with_right_answer.append(str(item[1]))
+        if len(icons_with_right_answer) == 1:
+            icons_with_right_answer.append(None)
 
-            if len(icons_with_right_answer) == 1:
-                icons_with_right_answer.append(None)
+        for item in self.answers_randomized_with_icons:
+            self.quiz_answers_icons.append(item[1])
 
-            for item in self.answers_randomized_with_icons:
-                self.quiz_answers_icons.append(item[1])
+        # Save quiz data
+        self.quiz_data = {
+            "quiz_maker": str(inter.author.name),
+            "right_answer_1": str(juiste_antwoord_1),
+            "right_answer_2": str(juiste_antwoord_2),
+            "right_answer_1_icon": icons_with_right_answer[0],
+            "right_answer_2_icon": icons_with_right_answer[1],
+            "wrong_answer_1": str(verkeerd_antwoord_1),
+            "wrong_answer_2": str(verkeerd_antwoord_2),
+            "wrong_answer_3": str(verkeerd_antwoord_3),
+            "wrong_answer_4": str(verkeerd_antwoord_4)
+        }
+        
+        await Quiz.quiz_embed_starts_over(self, inter)
 
-            # Save quiz data
-            self.quiz_data = {
-                "quiz_maker": str(inter.author.name),
-                "right_answer_1": str(juiste_antwoord_1),
-                "right_answer_2": str(juiste_antwoord_2),
-                "right_answer_1_icon": icons_with_right_answer[0],
-                "right_answer_2_icon": icons_with_right_answer[1],
-                "wrong_answer_1": str(verkeerd_antwoord_1),
-                "wrong_answer_2": str(verkeerd_antwoord_2),
-                "wrong_answer_3": str(verkeerd_antwoord_3),
-                "wrong_answer_4": str(verkeerd_antwoord_4)
-            }
-            
-            await Quiz.quiz_embed_starts_over(self, inter)
+        # Wait 60 seconds
+        time.sleep(3)
+        
+        await Quiz.quiz_embed_started(self, inter, quiz_question=vraag)
+        
+        # Wait 2.5 minutes
+        await asyncio.sleep(6)
 
-            # Wait 60 seconds
-            time.sleep(60)
-            
-            await Quiz.quiz_embed_started(self, inter, quiz_question=vraag)
-            
-            # Wait 2.5 minutes
-            await asyncio.sleep(90)
+        # Check for if a user has won
+        await Quiz.check_quiz_outcome_thread(self, inter, right_answer_1=juiste_antwoord_1, right_answer_2=juiste_antwoord_2, quiz_answers=self.quiz_answers)
 
-            # Check for if a user has won
-            await Quiz.check_quiz_outcome_thread(self, inter, right_answer_1=juiste_antwoord_1, right_answer_2=juiste_antwoord_2, quiz_answers=self.quiz_answers)
-
-            # Cleaning
-            self.ongoing_quizes.clear()
-            print(self.ongoing_quizes)
-            self.answers_randomized_with_icons.clear()
-            self.quiz_data.clear()
-            self.quiz_answers_icons.clear()
-            self.quiz_answers.clear()
-            self.quiz_winners.clear()
-            self.quiz_losers.clear()
-            self.quiz_maker = 0
-
-
-        except Exception as error:
-            print(error)
-            pass
+        # Clear data
+        Quiz.clear_data(self)
 
 
 
@@ -269,8 +254,9 @@ class Quiz(commands.Cog):
                 Quiz.remove_xp_from_losers(player=loser, XP=1000)
                 
         # Save to log
-        log_channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
-        await log_channel.send(f"Quiz - User {self.quiz_winners[0]} heeft XP gekregen!")
+        if len(self.quiz_winners) > 0:
+            log_channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+            await log_channel.send(f"Quiz - User {self.quiz_winners[0]} heeft XP gekregen!")
 
         # End stage
         print("Quiz checking done!")
@@ -296,6 +282,17 @@ class Quiz(commands.Cog):
         print(f"Quiz - User {player} has got removed {XP} XP!")
 
 
+
+    def clear_data(self):
+        # Cleaning
+        self.ongoing_quizes.clear()
+        self.answers_randomized_with_icons.clear()
+        self.quiz_data.clear()
+        self.quiz_answers_icons.clear()
+        self.quiz_answers.clear()
+        self.quiz_winners.clear()
+        self.quiz_losers.clear()
+        self.quiz_maker = 0
 
 def setup(bot: commands.Bot):
 
