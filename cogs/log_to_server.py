@@ -150,15 +150,13 @@ class log_to_server(commands.Cog):
     # Reaction emojis
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        # If reaction is from adb then do nothing
-        if payload.member == self.bot.user or self.bot:
-            return
+
+        # Do nothing if user is bot
+        if payload.member == self.bot.user: return
 
         if log_to_server.get_settings(setting="sw_message_reaction"):
-            
             print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
             await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
-
 
 
     @commands.Cog.listener()
@@ -168,14 +166,11 @@ class log_to_server(commands.Cog):
             await log_to_server.log_reactions(self, payload, type_embed="verwijderd")
 
 
-
     # Threads
     @commands.Cog.listener()
     async def on_thread_create(self, thread):
         if log_to_server.get_settings(setting="sw_threads"):            
             await log_to_server.log_threads(self, thread, type_embed="aangemaakt")
-
-
 
     @commands.Cog.listener()
     async def on_thread_delete(self, thread):
