@@ -23,6 +23,14 @@ class Introduce_remover(commands.Cog):
             if message.author.id == member.id:
                 print(f"#stel-jezelf-voor message deleted from user {member.display_name}")
                 await message.delete()
+                await Introduce_remover.log_removed_introduction(self, member)
+
+
+
+    async def log_removed_introduction(self, member):
+        channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
+        embed=disnake.Embed(title="#stel-jezelf-voor bericht automatisch verwijderd van:", description=f"{member.display_name}", color=disnake.Color.red())
+        await channel.send(embed=embed)
 
 
 
