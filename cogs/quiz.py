@@ -159,6 +159,12 @@ class Quiz(commands.Cog):
         Quiz.clear_data(self)
 
 
+    # Quiz score command
+    @quiz.sub_command(description="Zie de quiz scorebord!")
+    async def scorebord(self, inter):
+        await Quiz.quiz_scoreboard(inter, self)
+
+
 
     async def quiz_embed_starts_over(self, inter):
 
@@ -235,6 +241,9 @@ class Quiz(commands.Cog):
 
         position_number = 1
         for winner in self.quiz_winners:
+            if position_number == 1:
+                Quiz.save_winner_to_db(user_id=winner)
+
             name = (await self.bot.get_or_fetch_user(int(winner))).display_name
             embed.add_field(name=f"Winnaar #{position_number}", value=str(name), inline=False)
             position_number += 1
@@ -288,7 +297,36 @@ class Quiz(commands.Cog):
 
 
 
+    def save_winner_to_db(user_id):
+
+        Database.cursor.execute(f"SELECT * FROM quiz WHERE user_id={user_id} LIMIT 1")
+        res = Database.cursor.fetchone()    
+        if Database.cursor.rowcount == 0:
+            Database.cursor.execute(f"INSERT INTO quiz (win_count, user_id) VALUES (1, {user_id})")
+        else:
+            Database.cursor.execute(f"UPDATE quiz SET win_count={res[0] + 1} WHERE user_id = {user_id}")
+        
+        Database.db.commit()
+
+
+
+    async def quiz_scoreboard(inter, self):
+        Database.cursor.execute("SELECT user_id, win_count FROM quiz ORDER BY win_count DESC")
+        res = Database.cursor.fetchall()
+
+        embed = disnake.Embed(title='ADT&G Quiz scorebord', color=0xdf8cfe)
+        
+        position_count = 1
+        for entry in res:
+            user = await self.bot.get_or_fetch_user(entry[0])
+            embed.add_field(name=f"#{position_count}", value=f"**{user.display_name}**", inline=False)
+            position_count += 1
+        await inter.response.send_message(embed=embed)
+
+
+
     def clear_data(self):
+
         # Cleaning
         self.ongoing_quizes.clear()
         self.answers_randomized_with_icons.clear()
