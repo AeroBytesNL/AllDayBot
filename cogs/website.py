@@ -28,5 +28,22 @@ class Website(commands.Cog):
         
 
 
+    @commands.default_member_permissions(moderate_members=True)
+    @commands.slash_command()
+    async def website_bot(self, inter):
+        pass
+
+
+
+    @website_bot.sub_command(description="Maak een account aan")
+    async def maak_account(self, inter, email:str):
+
+        Database.cursor.execute(f"INSERT into discord_auth (email) VALUES ('{email}')")
+        Database.db.commit()
+
+        await inter.response.send_message(f"https://alldaybot.alldaytechandgaming.nl/discord/auth?email={email}", ephemeral=True)
+
+
+
 def setup(bot: commands.Bot):
-    bot.add_cog(Website(bot))   
+    bot.add_cog(Website(bot))
