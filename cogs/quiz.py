@@ -95,7 +95,6 @@ class Quiz(commands.Cog):
         ):
 
         self.quiz_maker = inter.author.id
-        print(self.ongoing_quizes)
 
         if len(self.ongoing_quizes) > 0:
             await inter.response.send_message("Je kunt geen 2e quiz maken, de 1e quiz is nog bezig!", ephemeral=True)
@@ -215,6 +214,12 @@ class Quiz(commands.Cog):
 
         if len(self.quiz_winners) > 0:
             embed=disnake.Embed(title=f"Quiz! - We hebben winnaars!", description=f"Aantal deelnemers: {len(self.quiz_winners) + len(self.quiz_losers)}", color=0xdf8cfe)
+            
+            if self.quiz_data["right_answer_2"] != "None":
+                embed.add_field(name=f"Juiste antwoorden waren: ", value=f"**- {self.quiz_data['right_answer_1']}\n- {self.quiz_data['right_answer_2']}**", inline=False)        
+            else:
+                embed.add_field(name=f"Juiste antwoord was: ", value=f"**- {self.quiz_data['right_answer_1']}**", inline=False)       
+
         else:
             embed=disnake.Embed(title=f"Quiz! - We hebben geen winnaars", description=f"Aantal deelnemers: {len(self.quiz_winners) + len(self.quiz_losers)}", color=0xdf8cfe)
 
