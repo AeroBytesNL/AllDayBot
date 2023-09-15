@@ -12,6 +12,7 @@ bot = commands.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
+    
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
     print("The bot is ready!")
 
