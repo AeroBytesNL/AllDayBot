@@ -42,6 +42,7 @@ class log_to_server(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        # Nickname change log
         if log_to_server.get_settings(setting="sw_nickname_change"):
             if before.nick != after.nick:
                 name_before = before.nick
