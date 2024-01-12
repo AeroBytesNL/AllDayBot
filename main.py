@@ -49,7 +49,7 @@ bot.load_extension("cogs.website")
 bot.load_extension("cogs.quiz")
 bot.load_extension("cogs.bump_reminder")
 bot.load_extension("cogs.introduce_remover")
-
+bot.load_extension("cogs.welcome_message")
 
 
 # Running the bot and starting thread
