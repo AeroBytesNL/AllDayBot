@@ -24,12 +24,12 @@ class Welcome_message(commands.Cog):
             return 
         
         self.joined_members.remove(before.id)
-        
+
         general_channel = await self.bot.fetch_channel(Channel.GENERAL)
         joined_user = await self.bot.get_or_fetch_user(before.id)
         bot_user = await self.bot.get_or_fetch_user(self.bot.user.id)
 
-        await general_channel.send(f"Welkom {joined_user} in All Day Tech & Gaming.\n\nIn onze server maken we gebruik van verschillende kanalen om onderwerpen gescheiden te houden:\n- Hulp nodig met tech? <#1019678705045471272>\n- Voor tech gesprekken zie <#723556858820034612>\n- Voor game gesprekken zie <#759456512165937183>\nMocht je vragen hebben m.b.t het beheer dan kun je {bot_user.mention} DM'en!")
+        await general_channel.send(f"Welkom {joined_user.mention} in All Day Tech & Gaming.\n\nIn onze server maken we gebruik van verschillende kanalen om onderwerpen gescheiden te houden:\n- Hulp nodig met tech? <#1019678705045471272>\n- Voor tech gesprekken zie <#723556858820034612>\n- Voor game gesprekken zie <#759456512165937183>\nMocht je vragen hebben m.b.t het beheer dan kun je {bot_user.mention} DM'en!")
 
 
 def setup(bot: commands.Bot):
