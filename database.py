@@ -10,9 +10,9 @@ class Database:
         password = secure.DATABASE_PASSWORD,
         database = secure.DATABASE_NAME,
         auth_plugin="mysql_native_password"
-
         )
         cursor = db.cursor(buffered=True)
+        print(cursor)
     except Exception as e:
         print(e)
         pass
