@@ -8,6 +8,7 @@ class Welcome_message(commands.Cog):
         self.bot = bot
         print("Cog Welcome_message is loaded!")
         self.joined_members = []
+        self.potential_messages_deletion = {}
 
 
     @commands.Cog.listener() 
@@ -27,9 +28,20 @@ class Welcome_message(commands.Cog):
 
         general_channel = await self.bot.fetch_channel(Channel.GENERAL)
         joined_user = await self.bot.get_or_fetch_user(before.id)
-        bot_user = await self.bot.get_or_fetch_user(self.bot.user.id)
 
-        await general_channel.send(f"Welkom {joined_user.mention} in All Day Tech & Gaming.\n\nIn onze server maken we gebruik van verschillende kanalen om onderwerpen gescheiden te houden:\n- Hulp nodig met tech? <#1019678705045471272>\n- Voor tech gesprekken zie <#723556858820034612>\n- Voor game gesprekken zie <#759456512165937183>\nMocht je vragen hebben m.b.t het beheer dan kun je {bot_user.mention} DM'en!")
+        welcome_message = await general_channel.send(f"Welkom {joined_user.mention} in All Day Tech & Gaming!\n\nIn onze server maken we gebruik van verschillende kanalen om onderwerpen gescheiden te houden:\n- Ben je opzoek naar hulp, dan kan je in <#1019678705045471272> een forum bericht starten.\n- Babbelen over alles wat met tech te maken heeft? <#723556858820034612>\n- Gesprekken met betrekking tot games? <#759456512165937183>\nMocht je vragen hebben m.b.t. het beheer dan kun je {self.bot.user.mention} DM'en!")
+        self.potential_messages_deletion.update({before.id:welcome_message.id})
+
+    
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        try:
+            message_to_delete = self.bot.get_message(int(self.potential_messages_deletion[member.id]))
+            await message_to_delete.delete()
+            self.potential_messages_deletion.pop(member.id)
+        except Exception as error:
+            print("Error inside welcome_message: ", error)
+            pass
 
 
 def setup(bot: commands.Bot):
