@@ -1,6 +1,5 @@
 import disnake
 from disnake.ext import commands, tasks
-from disnake.enums import ButtonStyle
 from env import *
 from datetime import datetime
 
