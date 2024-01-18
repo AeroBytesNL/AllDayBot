@@ -4,18 +4,14 @@ from env import *
 from database import *
 
 
-
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
 
 
-
 @bot.event
 async def on_ready():
-    
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
     print("The bot is ready!")
-
 
 
 @tasks.loop(seconds=120) 
@@ -25,7 +21,6 @@ async def keep_sql_active():
     print("Just keeping the data-slut active!")
     
 keep_sql_active.start()
-
 
 
 # Loading different cogs
@@ -50,6 +45,7 @@ bot.load_extension("cogs.quiz")
 bot.load_extension("cogs.bump_reminder")
 bot.load_extension("cogs.introduce_remover")
 bot.load_extension("cogs.welcome_message")
+bot.load_extension("cogs.poll")
 
 
 # Running the bot and starting thread
