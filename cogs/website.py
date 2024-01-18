@@ -1,5 +1,5 @@
 import disnake
-from disnake.ext import commands, tasks
+from disnake.ext import commands
 from env import *
 from database import Database
 import secrets

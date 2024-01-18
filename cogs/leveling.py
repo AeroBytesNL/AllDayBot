@@ -1,21 +1,11 @@
 import disnake
 from disnake.ext import commands, tasks
-from disnake.ext.commands import MissingPermissions
-from disnake.enums import ButtonStyle
 import datetime
-from datetime import timedelta
-import mysql.connector
-import random
 from datetime import datetime
-import threading 
-from threading import Timer
 from env import *
 from datetime import datetime
 import pytz
-import random
-import asyncio
 from database import *
-import urllib.request
 
 
 
