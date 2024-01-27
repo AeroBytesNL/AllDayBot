@@ -1,53 +1,71 @@
 import disnake
 from disnake.ext import commands, tasks
+from database import Database
+import datetime
 from env import *
-from datetime import datetime
 
 
-
-class buy_sell(commands.Cog):
-
-
-
+class Buy_sell(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog buy/sell is loaded!")
-        buy_sell.buy_sell_cleaner_9000.start(self)
+        Buy_sell.not_selled_articles.start(self)
+        print("Cog buy_sell is loaded!")
 
 
-
-    #  loop
-    @tasks.loop(seconds=360) 
-    async def buy_sell_cleaner_9000(self):
-
-        print("Doing an #koopverkoop scan")
-
+    @tasks.loop(seconds=5)
+    async def not_selled_articles(self):
         try:
-            
-            buy_sell_channel = self.bot.get_channel(env_variable.KOOP_VERKOOP_ID)
+            threads = Buy_sell.get_threads_from_db()
 
-            messages = await buy_sell_channel.history(limit=200).flatten()
-            
-            for message in messages:
+            for thread in threads:
+                datatime_1 = datetime.datetime.strptime(str(thread[3]), "%Y-%m-%d %H:%M:%S")
+                #if (datetime.datetime.now() - datatime_1).days <= 30: return
 
-                string_datetime = str(message.created_at)
-                splitted_string_datetime = string_datetime.split(".")[0]
+                thread = self.bot.get_channel(thread[4])
 
-                date_object = datetime.strptime(splitted_string_datetime, "%Y-%m-%d %H:%M:%S")
-                date_diff = datetime.now().date() - date_object.date()
+                tags = thread.parent.get_tag_by_name("Niet verkocht")
+                await thread.add_tags(tags)                
 
-                if date_diff.days <= 31:
-                    return
-                if message.author == self.bot.user:
-                    return
-                else:
-                    await message.delete()
-                    print("Message in buy sell deleted")
+                await thread.send("Dit artikel is niet verkocht binnen een maand en is dus als 'niet verkocht' gemarkeerd. Na 2 maanden wordt het verwijderd.")
 
+                            
         except Exception as error:
             print(error)
-                
-            
+            pass
+
+
+    # Called when a new thread is created
+    # If in the buy sell forum, insert data into DB
+    @commands.Cog.listener()
+    async def on_thread_create(self, thread):
+        if thread.parent_id != 1179111617196216361: return
+        
+        Buy_sell.insert_thread_into_db(self, thread)
+        
+
+    # Called when a thread is deleted
+    # If in the buy sell forum, delete data from DB
+    @commands.Cog.listener()
+    async def on_raw_thread_delete(self, payload):
+        if payload.parent_id != 1179111617196216361: return
+
+        Buy_sell.delete_thread_from_db(self, payload)	
+
+
+    def insert_thread_into_db(self, thread):
+        Database.cursor.execute(f"INSERT INTO koop_verkoop (archived, auto_archive_duration, create_timestamp, thread_id, owner_id) VALUES (0, {thread.auto_archive_duration}, '{thread.create_timestamp}', {thread.id}, {thread.owner_id})")
+        Database.db.commit()
+
+
+    def delete_thread_from_db(self, payload):
+        Database.cursor.execute(f"DELETE FROM koop_verkoop WHERE thread_id={payload.thread_id}")
+        Database.db.commit()
+
+
+    def get_threads_from_db():
+        Database.cursor.execute("SELECT * FROM koop_verkoop")
+        return Database.cursor.fetchall()
+    
 
 def setup(bot: commands.Bot):
-    bot.add_cog(buy_sell(bot))                    
+    bot.add_cog(Buy_sell(bot))                    
