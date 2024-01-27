@@ -1,7 +1,9 @@
 from env import secure
 import mysql.connector
+from helpers.ntfy import NtfyLogging
 
-# Database class
+
+# Database 
 class Database:
     try: 
         db = mysql.connector.connect(
@@ -12,9 +14,7 @@ class Database:
         auth_plugin="mysql_native_password"
         )
         cursor = db.cursor(buffered=True)
-        print(cursor)
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        NtfyLogging.error(error)
+        print("Database error: ", error)
         pass
- 
-
