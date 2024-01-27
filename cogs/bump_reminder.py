@@ -1,8 +1,7 @@
 import disnake
 from disnake.ext import commands, tasks
 from env import *
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class Bump_reminder(commands.Cog):
 

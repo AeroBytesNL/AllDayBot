@@ -2,13 +2,8 @@ import disnake
 from disnake.ext import commands
 import requests
 from re import M
-from datetime import date
 from datetime import datetime
 from statistics import mode
-import mysql.connector
-from threading import Timer
-import os
-import time
 from env import *
 
 version_nummer =  ("2.0")

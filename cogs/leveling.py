@@ -6,7 +6,8 @@ from env import *
 from datetime import datetime
 import pytz
 from database import *
-from helpers.ntfy import NtfyLogging
+import urllib.request
+
 
 
 class Leveling(commands.Cog):

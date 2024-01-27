@@ -51,6 +51,7 @@ bot.load_extension("cogs.bump_reminder")
 bot.load_extension("cogs.introduce_remover")
 bot.load_extension("cogs.welcome_message")
 bot.load_extension("cogs.poll")
+bot.load_extension("cogs.showcase_remover")
 
 
 # Running the bot and starting thread

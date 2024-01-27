@@ -4,7 +4,6 @@ from env import *
 from database import *
 import requests 
 import json
-import xml.etree.ElementTree as ET
 import xmltodict
 
 
