@@ -11,7 +11,7 @@ class buy_sell(commands.Cog):
         buy_sell.buy_sell_cleaner_9000.start(self)
 
 
-    @tasks.loop(seconds=10) 
+    @tasks.loop(seconds=360) 
     async def buy_sell_cleaner_9000(self):
         print("Doing an #koopverkoop scan")
 
