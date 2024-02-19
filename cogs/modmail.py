@@ -12,6 +12,15 @@ class modmail(commands.Cog):
         print("Cog ModMail is loaded!")
 
 
+    @commands.slash_command(description="Open een ticket richting een lid")
+    async def modmail_nieuw_ticket(self, inter, user: disnake.User):
+        # Make thread
+
+        channel = self.bot.get_channel(env_variable.MODMAIL_ID)
+        thread  = await channel.create_thread(name=f"{str(user.display_name)}&&MM", reason=f"ModMail for {user.mention}", type=disnake.ChannelType.text, message=None)
+        await inter.response.send_message(f"ModMail ticket aangemaakt in: {thread.mention}")
+
+
     # On message
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -107,7 +116,7 @@ class modmail(commands.Cog):
         role_moderator = guild.get_role(Role_ids.MODERATOR)
 
         channel = self.bot.get_channel(env_variable.MODMAIL_ID)
-        thread  = await channel.create_thread(name=f"{str(message.author.name)}&&MM", reason=f"ModMail for {message.author.name}", type=None, message=msg)
+        thread  = await channel.create_thread(name=f"{str(message.author.name)}&&MM", reason=f"ModMail for {message.author.name}", type=None, message=message)
         
         class Deny(disnake.ui.View):
 
