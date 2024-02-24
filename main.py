@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands, tasks
 from env import *
 from database import *
-
+from helpers.ntfy import NtfyLogging
 
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
@@ -16,9 +16,14 @@ async def on_ready():
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
-    Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
-    res = Database.cursor.fetchone()
-    print("Just keeping the data-slut active!")
+    try:     
+        Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
+        res = Database.cursor.fetchone()
+        print("Just keeping the data-slut active!")
+    except Exception as error:
+        NtfyLogging.error(error)
+        print(error)
+        pass
     
 keep_sql_active.start()
 
