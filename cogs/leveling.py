@@ -397,18 +397,17 @@ class Leveling(commands.Cog):
             e.add_field(name="Gecomplimenteerde users: ", value=get_actual_daily_compliments, inline=True)
             
         else:
-            user = (await self.bot.get_or_fetch_user(gebruiker.id)).name
+            user = (await self.bot.get_or_fetch_user(gebruiker.id))
             
             Leveling.set_dailycomplements(inter.author.id, get_actual_daily_compliments + 1)
-            e = disnake.Embed(title="Complimenten", color=disnake.Color.green())
+            e = disnake.Embed(title="Complimenten", color=0xdf8cfe)
             e.set_author(name=inter.author.display_name, icon_url=inter.author.avatar)
 
             complements = Leveling.get_complements(gebruiker.id)
             Leveling.set_complements(gebruiker.id, complements + 1)
             Leveling.gainXP(self, gebruiker.id, xp_amount=150)
-            e.add_field(name="Compliment gegeven aan", value=user)
+            e.add_field(name="Compliment gegeven aan", value=user.mention)
             e.add_field(name="Reden", value=reden)
-
 
         return e
 
