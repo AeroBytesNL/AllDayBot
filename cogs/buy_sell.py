@@ -15,20 +15,14 @@ class Buy_sell(commands.Cog):
     @tasks.loop(seconds=5)
     async def not_selled_articles(self):
         try:
-            threads = Buy_sell.get_threads_from_db()
+            guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
+            channel = await self.bot.fetch_channel(Channel.BUY_SELL)
+            active_threads = await guild.active_threads()
+            archived_threads = channel.archived_threads()
 
-            for thread in threads:
-                datatime_1 = datetime.datetime.strptime(str(thread[3]), "%Y-%m-%d %H:%M:%S")
-                #if (datetime.datetime.now() - datatime_1).days <= 30: return
+            for archived_thread in archived_threads:
+                print(archived_thread.name)
 
-                thread = self.bot.get_channel(thread[4])
-
-                tags = thread.parent.get_tag_by_name("Niet verkocht")
-                await thread.add_tags(tags)                
-
-                await thread.send("Dit artikel is niet verkocht binnen een maand en is dus als 'niet verkocht' gemarkeerd. Na 2 maanden wordt het verwijderd.")
-
-                            
         except Exception as error:
             print(error)
             pass
