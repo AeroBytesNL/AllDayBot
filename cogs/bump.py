@@ -3,25 +3,39 @@ from disnake.ext import commands, tasks
 from env import *
 import time
 from datetime import datetime, timedelta
+from database import Database
+
 
 class Bump_reminder(commands.Cog):
-
-
-    
     def __init__(self, bot: commands.Bot):
-
         self.bot = bot
         print("Cog Bump reminder is loaded!")
         self.last_processed_bump = 0
 
 
-
     @commands.Cog.listener()
     async def on_ready(self):
-
         Bump_reminder.check_if_bump_is_ready.start(self)
 
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        try:
+            if message.channel.id != Channel.BUMP:
+                return
+            
+            if message.author.id != 302050872383242240:
+                return
+            
+            if message.interaction.name != "bump":
+                return
+            
+            Bump_reminder.add_xp_to_bumper(self, message.interaction.user.id)
+            print(f"Added xp to bumper {message.interaction.user}")
+            
+        except Exception as error:
+            print(error)
+            pass
 
     @tasks.loop(seconds=5)
     async def check_if_bump_is_ready(self):
@@ -55,6 +69,13 @@ class Bump_reminder(commands.Cog):
             print(error)
             pass
 
+
+    def add_xp_to_bumper(self, author_id):
+        Database.cursor.execute(f"SELECT xp FROM Users WHERE id='{author_id}'")
+        res = Database.cursor.fetchone()[0]
+
+        Database.cursor.execute(f"UPDATE Users SET xp = {res + 60} WHERE id='{author_id}'")
+        Database.db.commit()
 
 
 def setup(bot: commands.Bot):
