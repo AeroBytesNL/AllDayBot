@@ -61,7 +61,7 @@ class Bump_reminder(commands.Cog):
             
             if diff >= 7192 and diff < 7200: 
                 # Send the reminder
-                await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
+                await channel.send("De server kan weer gebumped worden! Dit kan d.m.v. het command `/bump`. Dit helpt de server groeien! (Ook ontvang je een bonus van 60 XP!)")
                 print("Server ready to be bumped")
                 self.last_processed_bump = last_bump.id
                 
