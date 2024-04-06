@@ -153,17 +153,23 @@ class Birthday(commands.Cog):
         datetime_AM = datetime.now(pytz.timezone('Europe/Amsterdam') )
         now_time = datetime_AM.strftime("%H%M")
         now_date = datetime_AM.strftime("%d-%m")
+        guild = self.bot.get_guild(int(env_variable.GUILD_ID))
 
-        if now_time == "1150" and self.bd_counter[0] < 1: # 1045
+        if now_time == "1045" and self.bd_counter[0] < 1: # 1045
             self.bd_counter[0] = 1
-
             try:
                 Database.cursor.execute("SELECT * FROM birthday_users")               
                 res = Database.cursor.fetchall()
 
                 for birthday_user in res:
-
                     if birthday_user[2] == now_date:
+                        # Checking if the user is in the guild
+                        user = guild.get_member(int(birthday_user[1]))
+                        if user == None:
+                            Database.cursor.execute(f"DELETE FROM birthday_users WHERE user_id = {birthday_user[1]}")
+                            Database.db.commit()
+                            return
+                        
                         calculate_age = int(datetime_AM.strftime("%Y")) - int(birthday_user[3])
                         print(f"Jeeej for user: {birthday_user[1]}, hij is {calculate_age} geworden!")
                         
