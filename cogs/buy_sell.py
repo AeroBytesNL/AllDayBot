@@ -26,8 +26,12 @@ class buy_sell(commands.Cog):
                 date_diff = datetime.now().date() - date_object.date()
 
                 if date_diff.days > 31 and message.author != self.bot.user:
-                    await message.delete()
+                    #await message.delete()
                     print("Message in buy sell deleted")
+
+                    # Debug
+                    log_channel = self.bot.get_channel(1078411597019615233)
+                    await log_channel.send(f"Message in buy sell should be deleted: {message.jump_url}")
 
         except Exception as error:
             print(error)
