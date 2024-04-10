@@ -8,68 +8,26 @@ class Forum(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog Forum is loaded!")
-        self.is_notified = []
 
 
     @commands.Cog.listener()
     async def on_ready(self):
         self.not_responding_checker.start()
-        self.empty_list.start()
 
 
     # Not responding age checker
     @tasks.loop(seconds=30)
     async def not_responding_checker(self):
-        print("Scanning for forum posts that doesn't have a response")
+        print("Scanning for forum posts that doesn't have a response....")
 
-        channel = self.bot.get_channel(Channel.TECH_SUPPORT)
-        guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
+        channel = await self.bot.fetch_channel(Channel.TECH_SUPPORT)
+        archived_threads = channel.archived_threads()
 
-        for thread in channel.threads:
-            try:
-                # If thread is locked then do nothing (the same as the person who have written this)
-                if thread.locked == True:
-                    return 
-                
-                # If thread is archived then do nothing
-                if thread.archived == True:
-                    return
-
-                i = self.bot.get_channel(thread.id)
-                x = await guild.fetch_channel(thread.id)
-
-                last_message = await x.fetch_message(thread.last_message_id)
-
-                last_msg_time_object = datetime.strptime(str(last_message.created_at).split(".")[0], "%Y-%m-%d %H:%M:%S")
-                days_different = str(datetime.now() - last_msg_time_object).split(" ")[0]
-                                
-                # IF last message is older then 3 days
-                if "3 day" in days_different and thread.owner.id not in self.is_notified and thread.owner.id == 632677231113666601: # Remove and thread.owner.id == 632677231113666601 after testing
-                    # Send reminder to thread owner in DM
-                    print(f"Sending {thread.owner} a reminder inside DM!")
-                    await Forum.reminder_thread_in_dm(self, thread_name=thread.name, thread_owner=thread.owner)
-                    self.is_notified.append(int(thread.owner.id))
-
-                # IF last message is older then 5 days
-                if "5 day" in days_different and thread.owner.id not in self.is_notified and thread.owner.id == 632677231113666601: # Remove and thread.owner.id == 632677231113666601 after testing
-                    # Send reminder to thread owner in DM
-                    print(f"Thread of {thread.owner.display_name} has been closed due to inactivity!")
-                    # Adding tag "No reaction"
-                    tags = thread.parent.get_tag_by_name("Geen reactie")
-                    await thread.add_tags(tags)
-                    # Lock thead
-                    await thread.edit(locked=True, archived=True)   
-
-            except Exception as error:
-                pass
-
-        
-    # Empty list  
-    @tasks.loop(hours=24)
-    async def empty_list(self):
-        self.is_notified.clear()
-        print("Is notified list is cleared!")
-
+        async for archived_thread in archived_threads:                        
+            if hasattr(archived_thread, "name") == []: return
+            
+            print(archived_thread.name)
+    
 
     @commands.slash_command(description="Markeer dit forum kanaal als opgelost")
     async def opgelost(self, inter):
