@@ -1,9 +1,12 @@
 import disnake
-from disnake.ext import commands
+from disnake.ext import commands, tasks
+from disnake.enums import ButtonStyle
 from env import *
 from database import *
 from datetime import datetime
 from dateutil import relativedelta
+import requests
+import os
 # @todo fix image remove logging
 
 
@@ -11,6 +14,51 @@ class log_to_server(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog Log to server is loaded!")
+        log_to_server.image_cache_cleaner.start(self)
+
+
+    # Image cacher
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        # Do nothing if no atachments are precent
+        if len(message.attachments) == 0:
+            return
+        
+        attachment = message.attachments[0]
+
+        # If filename doesn't end with those below then return
+        if not attachment.filename.endswith(
+            (
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".gif",
+                ".webp"
+            )):
+            return
+
+        # Save file, with a custom name
+        img = requests.get(attachment.url).content
+        with open(f"./files/alldaylog_image_cache/{message.id}.png", mode="wb") as file:
+            file.write(img)
+            file.close()
+            print("Saved image file to cache")
+
+
+    # Delete unused images from image cache older then 14 days
+    @tasks.loop(seconds=60)
+    async def image_cache_cleaner(self):
+        print("Cleaning image cache")
+        images = [f for f in os.listdir("./files/alldaylog_image_cache")]
+
+        for image in images:
+            image_time = os.path.getmtime(f"./files/alldaylog_image_cache/{image}")
+            date_stamp = datetime.fromtimestamp(image_time)
+            delta = datetime.now() - date_stamp
+            
+            if delta.days >= 7:
+                os.remove(f"./files/alldaylog_image_cache/{image}")
+                print(f"Deleted image from image cache")
 
 
     # Member guild
@@ -247,17 +295,23 @@ class log_to_server(commands.Cog):
 
     # Message
     async def message_deleted(self, payload, message, channel):
-
         embed=disnake.Embed(title=f"\n", description=f"{payload.author.mention} verwijderde een bericht in {channel.mention}", color=disnake.Color.red())
         embed.set_author(name=payload.author.display_name, icon_url=payload.author.avatar)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
-        try:
-            if payload.attachments[0] != None:
-                    embed.set_image(url=payload.attachments[0].proxy_url)
-        except Exception as error:
-            pass
-        embed.add_field(name="Content:", value=str(payload.clean_content), inline=False)
-        await channel_to_send.send(embed=embed)
+
+        images = [f for f in os.listdir("./files/alldaylog_image_cache")]
+
+        if str(f"{payload.id}.png") in images:
+            with open(f"./files/alldaylog_image_cache/{payload.id}.png", mode="rb") as file:
+                embed.add_field(name="Content:", value=str(payload.clean_content), inline=False)
+                embed.add_field(name="Afbeelding:", value="Zie afbeelding hier beneden", inline=False)
+                await channel_to_send.send(embed=embed)
+                await channel_to_send.send(file=disnake.File(file))
+                print("Sended file from cache to log channel")
+        else:
+            embed.add_field(name="Content:", value=str(payload.clean_content), inline=False)
+            await channel_to_send.send(embed=embed)
+
 
     async def message_bulk_deleted(self, count, channel):
 
