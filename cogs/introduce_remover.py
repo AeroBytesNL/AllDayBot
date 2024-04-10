@@ -1,5 +1,5 @@
 import disnake
-from disnake.ext import commands, tasks
+from disnake.ext import commands
 from env import *
 
 class Introduce_remover(commands.Cog):

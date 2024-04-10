@@ -1,9 +1,8 @@
 import disnake
-from disnake.ext import commands, tasks
+from disnake.ext import commands
 from env import *
 from datetime import datetime
 import pytz
-import numpy as np
 from database import Database
 import random
 

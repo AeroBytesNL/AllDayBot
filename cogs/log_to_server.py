@@ -3,7 +3,7 @@ from disnake.ext import commands, tasks
 from disnake.enums import ButtonStyle
 from env import *
 from database import *
-from datetime import datetime, date
+from datetime import datetime
 from dateutil import relativedelta
 import requests
 import os

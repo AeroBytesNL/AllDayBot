@@ -1,6 +1,5 @@
 import disnake
 from disnake.ext import commands
-from disnake.enums import ButtonStyle
 from env import *
 from database import *
 
