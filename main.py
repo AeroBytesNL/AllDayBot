@@ -2,7 +2,8 @@ import disnake
 from disnake.ext import commands, tasks
 from env import *
 from database import *
-from helpers.ntfy import NtfyLogging
+from helpers.webhook_reporting import Logging
+
 
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
@@ -12,7 +13,7 @@ bot = commands.Bot(intents=intents)
 async def on_ready():
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
     print("The bot is ready!")
-
+    Logging.error(event="1", error="2")
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
@@ -21,7 +22,6 @@ async def keep_sql_active():
         res = Database.cursor.fetchone()
         print("Just keeping the data-slut active!")
     except Exception as error:
-        NtfyLogging.error(error)
         print(error)
         pass
     
