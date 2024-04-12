@@ -46,7 +46,7 @@ class log_to_server(commands.Cog):
 
 
     # Delete unused images from image cache older then 14 days
-    @tasks.loop(seconds=60)
+    @tasks.loop(hours=336)
     async def image_cache_cleaner(self):
         print("Cleaning image cache")
         images = [f for f in os.listdir("./files/alldaylog_image_cache")]
