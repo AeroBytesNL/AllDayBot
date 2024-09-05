@@ -15,7 +15,6 @@ class modmail(commands.Cog):
     @commands.slash_command(description="Open een ticket richting een lid")
     async def modmail_nieuw_ticket(self, inter, user: disnake.User):
         # Make thread
-
         channel = self.bot.get_channel(env_variable.MODMAIL_ID)
         thread  = await channel.create_thread(name=f"{str(user.display_name)}&&MM", reason=f"ModMail for {user.mention}", type=disnake.ChannelType.text, message=None)
         await inter.response.send_message(f"ModMail ticket aangemaakt in: {thread.mention}")
@@ -30,7 +29,6 @@ class modmail(commands.Cog):
     
         # if message is in DM
         if isinstance(message.channel, disnake.channel.DMChannel):
-            
             i = True
             for guild in self.bot.guilds:
                 for channel in guild.threads:
@@ -48,12 +46,9 @@ class modmail(commands.Cog):
         # if message is in a thread
         if hasattr(message, "thread"):
             if not isinstance(message.channel, disnake.channel.DMChannel):
-
                 if "MM" in str(message.channel.name):
-
                     username_to_send = str(message.channel.name).split("&&")[0]
                     for member in self.bot.get_all_members():
-                        
                         if member.name == username_to_send:
                             await modmail.send_admin_response_to_ticket_maker(self, message, member)
                             await modmail.close_ticket_and_thread(self, message, member)
@@ -62,7 +57,6 @@ class modmail(commands.Cog):
     # First contact
     async def first_contact(self, message):
         class Confirm(disnake.ui.View):
-
             def __init__(self):
                 super().__init__(timeout=0)
 
@@ -95,7 +89,6 @@ class modmail(commands.Cog):
     # Making thread
     async def create_contact_with_staff(self, message):
         class Confirm(disnake.ui.View):
-
             def __init__(self):
                 super().__init__(timeout=0)
 
@@ -119,7 +112,6 @@ class modmail(commands.Cog):
         thread  = await channel.create_thread(name=f"{str(message.author.name)}&&MM", reason=f"ModMail for {message.author.name}", type=None, message=message)
         
         class Deny(disnake.ui.View):
-
             def __init__(self):
                 super().__init__(timeout=0)
 
@@ -167,17 +159,14 @@ class modmail(commands.Cog):
         await member.send(embed=embed)
 
 
-
     # Closing thread
     async def close_ticket_and_thread(self, message, member):
         class Confirm(disnake.ui.View):
-
             def __init__(self):
                 super().__init__(timeout=0)            
 
             @disnake.ui.button(label="Sluit ticket", style=disnake.ButtonStyle.red)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-                
                 await inter.response.send_message("Ik heb de ticket gesloten!")
                 embed=disnake.Embed(title="Contact ADT&G ticket gesloten!", description=f"Door: `{message.author.name}`", color=disnake.Color.red())
                 await member.send(embed=embed)
@@ -204,13 +193,11 @@ class modmail(commands.Cog):
 
     async def send_user_response(self, message, thread_to_send):
         class Confirm(disnake.ui.View):
-
             def __init__(self):
                 super().__init__(timeout=0)
                 
             @disnake.ui.button(label="Sluit ticket", style=disnake.ButtonStyle.red)
             async def confirm(self_inside_button, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-                
                 await inter.response.send_message("Ik heb de ticket gesloten!")
                 embed=disnake.Embed(title="Contact ADT&G ticket gesloten!", description=f"Door: `{inter.author.name}`", color=disnake.Color.red())
                 await message.author.send(embed=embed)
