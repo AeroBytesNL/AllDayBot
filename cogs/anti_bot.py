@@ -1,12 +1,19 @@
 import disnake
 from disnake.ext import commands
-from env import *
+from env import AntiBot as AntiBotEnv
 
 class AntiBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog anti_bot is loaded!")
 
+    @commands.Cog.listener()
+    async def on_raw_member_update(self, member):
+        for role in member.roles:
+            if role.id == AntiBotEnv.ANTI_BOT_ROLE_ID:
+                user = self.bot.get_user(member.id)
+                await user.kick(reason="Gebruiker eruit YEET ivm het selecteren van de anti bot rol (automatisch)")
+                print("AllDayAntiBot kicked an user because he selected the anti bot role!")
 
 def setup(bot: commands.Bot):
     bot.add_cog(AntiBot(bot))
