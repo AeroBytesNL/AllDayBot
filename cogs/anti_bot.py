@@ -12,6 +12,11 @@ class AntiBot(commands.Cog):
         for role in member.roles:
             if role.id == AntiBotEnv.ANTI_BOT_ROLE_ID:
                 user = self.bot.get_user(member.id)
+                await user.send("""
+                                Je bent gekicked uit All Day Tech & Gaming omdat je de automatische bot-preventie rol hebt geselecteerd. 
+                                Je kan opnieuw lid worden via onze uitnodigingslink. 
+                                Mocht je geen toegang hebben tot deze link, stuur dan een bericht naar deze bot om contact te leggen met het beheer voor een uitnodigingslink.
+                                """)
                 await user.kick(reason="Gebruiker eruit YEET ivm het selecteren van de anti bot rol (automatisch)")
                 print("AllDayAntiBot kicked an user because he selected the anti bot role!")
 
