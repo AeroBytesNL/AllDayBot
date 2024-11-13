@@ -5,3 +5,5 @@ pytz
 python-dateutil
 numpy
 xmltodict
+audioop-lts
+
