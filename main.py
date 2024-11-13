@@ -3,10 +3,14 @@ from disnake.ext import commands, tasks
 from env import *
 from database import *
 from helpers.ntfy import NtfyLogging
+import sentry_sdk
 
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
 
+sentry_sdk.init(
+    dsn=Sentry.DSN,
+)
 
 @bot.event
 async def on_ready():
