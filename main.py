@@ -51,6 +51,7 @@ bot.load_extension("cogs.introduce_remover")
 bot.load_extension("cogs.welcome_message")
 bot.load_extension("cogs.showcase_remover")
 bot.load_extension("cogs.anti_bot")
+bot.load_extension("cogs.status")
 
 # Running the bot and starting thread
 if __name__ == '__main__':
