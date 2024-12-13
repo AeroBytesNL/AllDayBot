@@ -9,13 +9,11 @@ import requests
 import os
 # @todo fix image remove logging
 
-
 class log_to_server(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog Log to server is loaded!")
         log_to_server.image_cache_cleaner.start(self)
-
 
     # Image cacher
     @commands.Cog.listener()
@@ -44,7 +42,6 @@ class log_to_server(commands.Cog):
             file.close()
             print("Saved image file to cache")
 
-
     # Delete unused images from image cache older then 14 days
     @tasks.loop(seconds=60)
     async def image_cache_cleaner(self):
@@ -59,7 +56,6 @@ class log_to_server(commands.Cog):
             if delta.days >= 7:
                 os.remove(f"./files/alldaylog_image_cache/{image}")
                 print(f"Deleted image from image cache")
-
 
     # Member guild
     @commands.Cog.listener()
@@ -97,7 +93,6 @@ class log_to_server(commands.Cog):
                     name_after = after.display_name
                 await self.user_name_change(name_before, name_after)
 
-
     # Voice 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -113,7 +108,6 @@ class log_to_server(commands.Cog):
                 # Member switches voice channels
                 if before.channel != after.channel:
                     await self.log_voice_state(member, vc_channel=after.channel, type="Veranderde")
-                
 
     # Messages in guild
     @commands.Cog.listener()
@@ -139,7 +133,6 @@ class log_to_server(commands.Cog):
                 jump_to_msg = after.jump_url
                 await self.message_edited(before_content, after_content, channel, author, jump_to_msg)
 
-
     # Changes in guild and roles
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
@@ -157,7 +150,6 @@ class log_to_server(commands.Cog):
         elif before.color != after.color:
             await self.color_change_role(self, before, after)
 
-
     # Channels
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
@@ -172,7 +164,6 @@ class log_to_server(commands.Cog):
         if before.name != after.name:
             await log_to_server.channel_name_change(self, before=before.name, after=after.name)
 
-
     # Audit
     @commands.Cog.listener()
     async def on_audit_log_entry_create(self, entry):
@@ -185,14 +176,10 @@ class log_to_server(commands.Cog):
             embed.add_field(name="Bericht was van:", value=str(entry.target), inline=True)
             await channel_to_send.send(embed=embed)
 
-
-    
     # Emoji 
     @commands.Cog.listener()
     async def on_guild_emojis_update(self, guild, before, after):
         print(set(before).symmetric_difference(set(after)))
-
-
 
     # Reaction emojis
     @commands.Cog.listener()
@@ -205,13 +192,11 @@ class log_to_server(commands.Cog):
             print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
             await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
 
-
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         if log_to_server.get_settings(setting="sw_message_reaction"):
             print("Reactie verwijderd", payload.emoji, payload.message_id, payload.user_id)
             await log_to_server.log_reactions(self, payload, type_embed="verwijderd")
-
 
     # Threads
     @commands.Cog.listener()
@@ -224,14 +209,10 @@ class log_to_server(commands.Cog):
         if log_to_server.get_settings(setting="sw_threads"):            
             await log_to_server.log_threads(self, thread, type_embed="verwijderd")
 
-
-
-
     #
     # Functions
     #
     async def member_guild_embed(self, member, type):
-
         date_created_at = str(member.created_at).split(" ")[0]
         x = date_created_at.split("-")
 
@@ -266,16 +247,13 @@ class log_to_server(commands.Cog):
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
 
-
     # Member username change
     async def user_name_change(self, name_before, name_after):
-
         embed=disnake.Embed(title=f"Server gebruikersnaam bewerkt", description=f"\n", color=disnake.Color.orange())
         embed.add_field(name="Voor het bewerken:", value=str(name_before), inline=False)
         embed.add_field(name="Na het bewerken:", value=str(name_after), inline=False)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
-
 
     # Voice logging
     async def log_voice_state(self, member, vc_channel, type):
@@ -291,7 +269,6 @@ class log_to_server(commands.Cog):
         embed.set_author(name=member.display_name, icon_url=member.avatar)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
-
 
     # Message
     async def message_deleted(self, payload, message, channel):
@@ -312,9 +289,7 @@ class log_to_server(commands.Cog):
             embed.add_field(name="Content:", value=str(payload.clean_content), inline=False)
             await channel_to_send.send(embed=embed)
 
-
     async def message_bulk_deleted(self, count, channel):
-
         channel_name = (await self.bot.fetch_channel(channel)).mention
         embed=disnake.Embed(title=f"\n", description=f"**Bulk berichten verwijderd in {channel_name} - Aantal: {count}**", color=disnake.Color.red())
 
@@ -330,10 +305,6 @@ class log_to_server(commands.Cog):
 
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
-
-
-
-
 
     # Roles
     async def new_or_deleted_role(self, role, type):
@@ -366,7 +337,6 @@ class log_to_server(commands.Cog):
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)
 
-
     # Channels
     async def channel_change(self, channel, type):
             print(channel)
@@ -386,10 +356,7 @@ class log_to_server(commands.Cog):
             embed.add_field(name="Na het bewerken:", value=str(after), inline=False)
 
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
-            await channel_to_send.send(embed=embed)            
-    
-
-
+            await channel_to_send.send(embed=embed)
 
     # Logging commands to log channel
     def log_commands(self, inter, command, on_user):
@@ -400,8 +367,6 @@ class log_to_server(commands.Cog):
 
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             self.bot.loop.create_task(channel_to_send.send(embed=embed))
-            
-    
 
     async def log_reactions(self, payload, type_embed):
             user = self.bot.get_user(payload.user_id)
@@ -414,13 +379,9 @@ class log_to_server(commands.Cog):
 
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)            
-    
-
-
 
     async def log_threads(self, thread, type_embed):
             print(f"Thread {type_embed}",thread.name, thread.category, thread.jump_url, thread.owner)
-
 
             embed=disnake.Embed(title=f"Thread {type_embed}", description="\n", color=disnake.Color.orange())
             embed.add_field(name=f"Threadnaam:", value=f"{thread.name}", inline=True)
@@ -429,11 +390,8 @@ class log_to_server(commands.Cog):
 
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)            
-    
-
 
     def get_settings(setting):
-
             Database.cursor.execute(f"SELECT {setting} FROM bot_settings LIMIT 1")
             res = Database.cursor.fetchone()[0]
 
@@ -441,8 +399,6 @@ class log_to_server(commands.Cog):
                 return True
             else:
                 return False
-         
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(log_to_server(bot))
