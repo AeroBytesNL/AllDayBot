@@ -58,3 +58,8 @@ class Ntfy:
  
 class AntiBot:
     ANTI_BOT_ROLE_ID = int
+
+class Status:
+    PTERODACTYL_API_TOKEN = ""
+    BOT_ID = ""
+    URL = ""
