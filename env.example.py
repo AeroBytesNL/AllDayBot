@@ -63,3 +63,6 @@ class Status:
     PTERODACTYL_API_TOKEN = ""
     BOT_ID = ""
     URL = ""
+    KUMA_URL = ""
+    KUMA_USERNAME = ""
+    KUMA_PASSWORD = ""
