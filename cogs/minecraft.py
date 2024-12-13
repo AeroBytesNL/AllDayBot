@@ -6,19 +6,15 @@ import re
 from rcon.source import Client
 from env import secure
 
-
-
 class minecraft(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot 
         print("Cog Minecraft is loaded!")
 
-
     # Mother Off All Commands
     @commands.slash_command()
     async def minecraft(self, inter):
         pass
-
 
     # Server commands
     @minecraft.sub_command(description="Zie de survival info")
@@ -62,10 +58,8 @@ class minecraft(commands.Cog):
         except Exception as error:
             await inter.response.send_message(f"Error: {error}")
 
-
     # Functions
     async def server_info_embed(self, inter, status, resp):
-
         print(f"Debug 69: ", resp)
 
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
@@ -116,14 +110,12 @@ class minecraft(commands.Cog):
                     user_without_prefix = user.split("Lid]")[1]
                     member_storage = member_storage + f"{user_without_prefix}\n"
 
-                
         if len(admin_storage) == 0:
             admin_storage = "Er zijn geen admins online."
         if len(moderator_storage) == 0:
             moderator_storage = "Er zijn geen moderators online."
         if len(member_storage) == 0:
             member_storage = "Er zijn geen leden online."
-
         
         embed.add_field(name="Admins online:", value=str(admin_storage), inline=False)
         embed.add_field(name="Moderators online:", value=str(moderator_storage), inline=False)
@@ -135,7 +127,6 @@ class minecraft(commands.Cog):
         admin_storage = ""
         moderator_storage = ""
         member_storage = ""
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(minecraft(bot))
