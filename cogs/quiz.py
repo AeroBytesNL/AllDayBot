@@ -11,11 +11,7 @@ import asyncio
 # Quiz doorloop tijd: 1.5 minuten
 
 class Quiz(commands.Cog):
-
-
-
     def __init__(self, bot: commands.Bot):
-
         self.bot = bot
         print("Cog Quiz is loaded!")
         self.ongoing_quizes = []
@@ -28,11 +24,8 @@ class Quiz(commands.Cog):
         self.quiz_winners = []
         self.quiz_losers = []
 
-
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction):
-
         # Do nothing if user is bot
         if reaction.member == self.bot.user: return
         
@@ -60,20 +53,14 @@ class Quiz(commands.Cog):
         answer_user = [int(reaction.member.id), str(reaction.emoji)]
         self.quiz_answers.append(answer_user)
 
-
-
     # Mother Of All Commands
     @commands.slash_command()
     async def quiz(self, inter):
-
         pass
-
-
 
     # Quiz info command
     @quiz.sub_command(description="Zie info over de quiz!")
     async def info(self, inter):
-
         embed=disnake.Embed(title="Quiz informatie", description="\n", color=0xdf8cfe)
         embed.add_field(name=f"Regels:", value="""
 - De 1e die het juiste antwoord aanklikt wint de quiz.                        
@@ -86,21 +73,17 @@ class Quiz(commands.Cog):
 - Wanneer je een icoon aanklikt staat je reactie vast!""", inline=True)
         await inter.response.send_message(embed=embed, ephemeral=True)
 
-
-
     # Quiz make command
     @quiz.sub_command(description="Maak een quiz aan")
     async def aanmaken(self, inter, vraag: str, juiste_antwoord_1: str, verkeerd_antwoord_1: str, 
         juiste_antwoord_2: str = None, verkeerd_antwoord_2: str = None, verkeerd_antwoord_3: str = None, verkeerd_antwoord_4: str = None 
         ):
-
         self.quiz_maker = inter.author.id
 
         if len(self.ongoing_quizes) > 0:
             await inter.response.send_message("Je kunt geen 2e quiz maken, de 1e quiz is nog bezig!", ephemeral=True)
             return
-  
-        
+
         self.quiz_answers.clear()
 
         # Save values in list to randommize        
@@ -158,16 +141,12 @@ class Quiz(commands.Cog):
         # Clear data
         Quiz.clear_data(self)
 
-
     # Quiz score command
     @quiz.sub_command(description="Zie de quiz scorebord!")
     async def scorebord(self, inter):
         await Quiz.quiz_scoreboard(inter, self)
 
-
-
     async def quiz_embed_starts_over(self, inter):
-
         channel = self.bot.get_channel(inter.channel.id)
 
         embed=disnake.Embed(title="Quiz tijd!", description=f"Hij start {disnake.utils.format_dt(datetime.now() + timedelta(seconds=60), 'R')}", color=0xdf8cfe)
@@ -183,10 +162,7 @@ class Quiz(commands.Cog):
         await inter.response.send_message("Quiz is aangemaakt!", ephemeral=True)
         await channel.send(embed=embed)
 
-
-
     async def quiz_embed_started(self, inter, quiz_question):
-
         channel = self.bot.get_channel(inter.channel.id)
 
         embed=disnake.Embed(title=f"Quiz! - {quiz_question}", description=f"Hij verloopt {disnake.utils.format_dt(datetime.now() + timedelta(seconds=90), 'R')}", color=0xdf8cfe)
@@ -205,10 +181,7 @@ class Quiz(commands.Cog):
         for item in self.answers_randomized_with_icons:
             await msg.add_reaction(str(item[1]))
 
-    
-
     async def check_quiz_outcome_thread(self, inter, right_answer_1, right_answer_2, quiz_answers):
-
         # Get channel to send
         channel = self.bot.get_channel(inter.channel.id)
 
@@ -274,31 +247,22 @@ class Quiz(commands.Cog):
 
         # End stage
         print("Quiz checking done!")
-        
-
 
     def add_xp_to_winner(player, XP):
-
         Database.cursor.execute(f"SELECT * FROM Users WHERE id={player} LIMIT 1")
         res = Database.cursor.fetchone()
         Database.cursor.execute(f"UPDATE Users SET xp={int(res[1] + XP)} WHERE id={player}")
         Database.db.commit()
         print(f"Quiz - User {player} has recieved {XP} XP!")
 
-
-
     def remove_xp_from_losers(player, XP):
-
         Database.cursor.execute(f"SELECT * FROM Users WHERE id={player} LIMIT 1")
         res = Database.cursor.fetchone()
         Database.cursor.execute(f"UPDATE Users SET xp={int(res[1] - XP)} WHERE id={player}")
         Database.db.commit()
         print(f"Quiz - User {player} has got removed {XP} XP!")
 
-
-
     def save_winner_to_db(user_id):
-
         Database.cursor.execute(f"SELECT * FROM quiz WHERE user_id={user_id} LIMIT 1")
         res = Database.cursor.fetchone()    
         if Database.cursor.rowcount == 0:
@@ -307,8 +271,6 @@ class Quiz(commands.Cog):
             Database.cursor.execute(f"UPDATE quiz SET win_count={res[0] + 1} WHERE user_id = {user_id}")
         
         Database.db.commit()
-
-
 
     async def quiz_scoreboard(inter, self):
         Database.cursor.execute("SELECT user_id, win_count FROM quiz ORDER BY win_count DESC")
@@ -323,10 +285,7 @@ class Quiz(commands.Cog):
             position_count += 1
         await inter.response.send_message(embed=embed)
 
-
-
     def clear_data(self):
-
         # Cleaning
         self.ongoing_quizes.clear()
         self.answers_randomized_with_icons.clear()
@@ -338,5 +297,4 @@ class Quiz(commands.Cog):
         self.quiz_maker = 0
 
 def setup(bot: commands.Bot):
-
     bot.add_cog(Quiz(bot))

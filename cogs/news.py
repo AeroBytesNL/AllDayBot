@@ -6,16 +6,10 @@ import requests
 import json
 import xmltodict
 
-
 class news(commands.Cog):
-
-
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         print("Cog news is loaded!")
-
-
 
     class Confirm(disnake.ui.View):
         def __init__(self, page, url):
@@ -30,37 +24,26 @@ class news(commands.Cog):
 
         @disnake.ui.button(label="Pagina terug", style=disnake.ButtonStyle.red)
         async def cancel(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
-
             await news.nu_and_tweakers(self, self.url, inter, page=self.current_page - 1)
             self.value = False
-
-
 
     # Commands 
     @commands.slash_command()
     async def nieuws(self, inter):
         pass
 
-
-
     @nieuws.sub_command(description= "Zie het tech nieuws van nu")
     async def nu(self, inter, pagina:int = 1):
         url = "https://www.nu.nl/rss/Tech"
         await news.nu_and_tweakers(self, url, inter, page=pagina)
-
 
     @nieuws.sub_command(description= "Zie het tech nieuws van nu")
     async def tweakers(self, inter, pagina:int = 1):
         url = "http://feeds.feedburner.com/tweakers/mixed"
         await news.nu_and_tweakers(self, url, inter, page=pagina)
 
-
-
     # Functions
     async def nu_and_tweakers(self, url, inter, page):
-
-        
-        
         pagina = page
         view = news.Confirm(page, url)
 
@@ -88,7 +71,6 @@ class news(commands.Cog):
 
         index = 0
 
-    
         components=[
             disnake.ui.Button(label="Pagina verder", style=disnake.ButtonStyle.success, custom_id="forward"),
             disnake.ui.Button(label="Pagina terug", style=disnake.ButtonStyle.danger, custom_id="back"),
@@ -100,22 +82,17 @@ class news(commands.Cog):
             return
 
         while i < p and i < count_items:
-                item = json_data["rss"]["channel"]["item"]
-                embed.add_field(name=item[i ]["title"], value=str(f"{item[i ]['description'][:70]} \n {item[i]['link']}"), inline=False)
-                index = index + 1
-                i = i + 1
+            item = json_data["rss"]["channel"]["item"]
+            embed.add_field(name=item[i ]["title"], value=str(f"{item[i ]['description'][:70]} \n {item[i]['link']}"), inline=False)
+            index = index + 1
+            i = i + 1
 
         embed.set_footer(text=f"Pagina: {pagina}")
 
         await inter.response.send_message(embed=embed, view=view, ephemeral=True)
 
-
-
-
     async def tweakers(inter):
         data = requests.get("https://www.nu.nl/rss/Tech").text
 
-    
-    
 def setup(bot: commands.Bot):
     bot.add_cog(news(bot))

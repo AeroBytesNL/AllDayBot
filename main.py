@@ -17,7 +17,6 @@ async def on_ready():
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
     print("The bot is ready!")
 
-
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
     try:     
@@ -31,9 +30,7 @@ async def keep_sql_active():
     
 keep_sql_active.start()
 
-
-# Loading different cogs
-bot.load_extension("cogs.ad_weer") 
+bot.load_extension("cogs.ad_weer")
 bot.load_extension("cogs.forum") 
 bot.load_extension("cogs.birthday") 
 bot.load_extension("cogs.log_to_server") 
@@ -42,13 +39,11 @@ bot.load_extension("cogs.moderation")
 bot.load_extension("cogs.modmail") 
 #bot.load_extension("cogs.minecraft") 
 bot.load_extension("cogs.leveling") 
-bot.load_extension("cogs.it_admin") 
-bot.load_extension("cogs.buy_sell") 
+bot.load_extension("cogs.buy_sell")
 bot.load_extension("cogs.news") 
 bot.load_extension("cogs.announce") 
 bot.load_extension("cogs.analytics") 
 #bot.load_extension("cogs.test") 
-#bot.load_extension("cogs.user_saver")
 bot.load_extension("cogs.website")
 bot.load_extension("cogs.quiz")
 bot.load_extension("cogs.bump")
@@ -56,7 +51,6 @@ bot.load_extension("cogs.introduce_remover")
 bot.load_extension("cogs.welcome_message")
 bot.load_extension("cogs.showcase_remover")
 bot.load_extension("cogs.anti_bot")
-
 
 # Running the bot and starting thread
 if __name__ == '__main__':
