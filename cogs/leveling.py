@@ -8,11 +8,8 @@ import pytz
 from database import *
 import urllib.request
 
-
-
 class Leveling(commands.Cog):
     def __init__(self, bot: commands.Bot):
-
         self.intents = disnake.Intents.all()
         self.bot = bot
 
@@ -27,8 +24,6 @@ class Leveling(commands.Cog):
 
         self.vChannels = [env_variable.V_CHANNEL_ONE, env_variable.V_CHANNEL_TWO]
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
-
-
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -46,8 +41,6 @@ class Leveling(commands.Cog):
         Leveling.basic_log(self, log="Reboot")
         
         self.minute.start()
-
-
 
     # On message
     @commands.Cog.listener()
@@ -81,8 +74,6 @@ class Leveling(commands.Cog):
                 messaged.append(id)
                 Leveling.gainXP(self, id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="message"))
 
-
-
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         print("Cleaning User and birthday_users tables!")
@@ -90,7 +81,6 @@ class Leveling(commands.Cog):
         await Leveling.member_leave_dbClean()
         # If member leaves, remove from birthday
         await Leveling.member_leave_birthday_clear(user_id=member.id)
-
 
     # Slash commands
     @commands.slash_command(description="Zie de level van de members van ADT&G!")
@@ -106,7 +96,6 @@ class Leveling(commands.Cog):
                 else:
                     await inter.response.send_message(embed=e)
 
-
     @commands.slash_command(description="Zie je eigen level!")
     async def level(self, inter):
                 print(f"User {inter.author.display_name} gebruikte het command 'level'")
@@ -116,7 +105,6 @@ class Leveling(commands.Cog):
                     await inter.response.send_message("Er ging iets mis. Oepsie!")
                 else:
                     await inter.response.send_message(embed=e)
-
 
     @commands.slash_command(description="Bereken je level!")
     async def level_calc(self, inter, level: int):
@@ -128,10 +116,8 @@ class Leveling(commands.Cog):
                 else:
                     await inter.response.send_message(embed=e)
 
-
     @commands.slash_command(description="Bedank iemand!")
     async def bedank(self, inter, gebruiker: disnake.User, reden: str = "Geen reden opgegeven"):
-                
                 if gebruiker == self.bot or gebruiker == self.bot.user:
                     await inter.response.send_message(f"{inter.author.display_name}, je mag de bot niet bedanken. Gebruik deze functie niet voor onnodige bedankjes!")
                     return
@@ -142,7 +128,6 @@ class Leveling(commands.Cog):
                     await inter.response.send_message("Er ging iets mis. Oepsie!")
                 else:
                     await inter.response.send_message(embed=e)
-
 
     @commands.slash_command(description="Comp-leaderboard")
     async def comp_scorebord(self, inter, pagina: int):
@@ -155,8 +140,6 @@ class Leveling(commands.Cog):
                     await inter.response.send_message("Er ging iets mis. Oepsie!")
                 else:
                     await inter.response.send_message(embed=e)
-
-
 
     # Functions
     async def member_leave_dbClean():
@@ -185,8 +168,6 @@ class Leveling(commands.Cog):
 
             i = i + 1  
 
-
-
     async def member_leave_birthday_clear(user_id):
         try:
             Database.cursor.execute(f"DELETE FROM birthday_users WHERE user_id={user_id}")
@@ -195,8 +176,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-
-
 
     def gainXP(self, id, xp_amount):
         print("Gaining XP for user: " + str(id))
@@ -221,8 +200,6 @@ class Leveling(commands.Cog):
 
             else:
                 Leveling.set_xp(self, id, xp)
-    
-
 
     async def gainLevel(self, id, level):
         print("Leveling user " + str(id) + " to level " + str(level))
@@ -261,10 +238,7 @@ class Leveling(commands.Cog):
         embed.set_thumbnail(url=guild.icon)
         await channel.send(embed=embed)
 
-
-
     async def levelCalc(self, id, level):
-
         totalNeeded = int(8.196 * pow((level), 2.65) + 200)
         xp = Leveling.get_xp(self, id)
         userNeeded = int(totalNeeded) - xp     
@@ -280,8 +254,6 @@ class Leveling(commands.Cog):
         embed.set_thumbnail(url=guild.icon)
 
         return embed
-
-
         
     async def levelLeaderboard(self, p):
         global guild
@@ -311,10 +283,7 @@ class Leveling(commands.Cog):
         
         return embed
 
-
-
     async def compLeaderboard(self, p):
-
         try:
             Database.cursor.execute("SELECT id, complements FROM Users ORDER BY complements DESC")
             result = Database.cursor.fetchall()
@@ -342,8 +311,6 @@ class Leveling(commands.Cog):
             i = i + 1
         
         return embed
-
-
 
     async def levelMessage(self, id):
         xp = Leveling.get_xp(self, id)
@@ -373,12 +340,8 @@ class Leveling(commands.Cog):
 
         return embed
 
-
-
     def author_check(author):
         return lambda message: message.author == author
-
-
 
     async def thank(self, inter, gebruiker, reden):
         global users
@@ -411,8 +374,6 @@ class Leveling(commands.Cog):
 
         return e
 
-
-
     def set_xp(self, id, xp):
         try:
             Database.cursor.execute("UPDATE Users SET xp = " + str(xp) + " WHERE id = " + str(id))
@@ -421,8 +382,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-
-
 
     def get_xp(self, id):
         try:
@@ -434,7 +393,6 @@ class Leveling(commands.Cog):
             print(error)
             pass
 
-
     def set_level(id, lvl):
         try:
             Database.cursor.execute("UPDATE Users SET lvl = " + str(lvl) + " WHERE id = " + str(id))
@@ -443,7 +401,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-
 
     def get_level(id):
         try:
@@ -458,7 +415,6 @@ class Leveling(commands.Cog):
             print(error)
             pass
 
-
     def set_complements(id, complements):
         try:
             Database.cursor.execute("UPDATE Users SET complements = " + str(complements) + " WHERE id = " + str(id))
@@ -467,7 +423,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-
 
     def get_complements(id):
         try:
@@ -482,7 +437,6 @@ class Leveling(commands.Cog):
             print(error)
             pass
 
-
     def set_dailycomplements(id, dailycomplements):
         try:
             Database.cursor.execute("UPDATE Users SET dailycomplements = " + str(dailycomplements) + " WHERE id = " + str(id))
@@ -491,7 +445,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-
 
     def get_dailycomplements(id):
         try:
@@ -506,7 +459,6 @@ class Leveling(commands.Cog):
             print(error)
             pass
 
-
     @tasks.loop(seconds=30) 
     async def reset_daily_comps():
             datetime_AM = datetime.now(pytz.timezone('Europe/Amsterdam') )
@@ -519,7 +471,6 @@ class Leveling(commands.Cog):
 
     reset_daily_comps.start()
 
-
     def create_user(id, xp):
         try:
             Database.cursor.execute("INSERT INTO Users(id, xp, lvl, dailycomplements, complements) VALUES ("+ str(id) + ", " + str(xp) + ", 0, 0, 0);")
@@ -528,7 +479,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-
 
     def delete_user(id):
         try:
@@ -539,7 +489,6 @@ class Leveling(commands.Cog):
             print(error)
             pass
 
-    
     @tasks.loop(seconds=60.0)
     async def minute(self):
         try:
@@ -560,7 +509,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(error)
             pass
-            
 
     # validate users
     def validate_user_in_db(self, id):
@@ -576,7 +524,6 @@ class Leveling(commands.Cog):
             NtfyLogging.error(error)
             print(f"DEBUGGING: Error: {error}")
 
-    
     def get_xp_amount_value(msg_or_vc):
         try:
             if msg_or_vc == "message":
@@ -591,7 +538,6 @@ class Leveling(commands.Cog):
             print(error)
             pass
 
-
     # Basic log function
     def basic_log(self, log):
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
@@ -600,8 +546,6 @@ class Leveling(commands.Cog):
         embed.set_footer(text=f"Datum: {str(datetime.now(self.tz_AM))[0:19]}")
 
         self.bot.loop.create_task(channel_to_send.send(embed=embed))
-
-
 
     # Sending stuff to LOG channel
     def error_logging_to_guild(self, error):
@@ -612,7 +556,6 @@ class Leveling(commands.Cog):
         embed.set_footer(text=f"Datum: {str(datetime.now(self.tz_AM))[0:19]}")
 
         self.bot.loop.create_task(channel_to_send.send(embed=embed))
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Leveling(bot))
