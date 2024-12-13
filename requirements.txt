@@ -7,3 +7,4 @@ numpy
 xmltodict
 audioop-lts
 sentry_sdk
+uptime_kuma_api
