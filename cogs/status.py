@@ -25,10 +25,9 @@ class Status(commands.Cog):
         embed = disnake.Embed(
             title="AllDayBot",
             description="uptime en resource informatie",
-            color=disnake.Colour.green(),
+            color=0xdf8cfe,
             url="https://uptime.auticodes.nl"
         )
-
         embed.add_field(
             name="Online",
             value=online,
@@ -73,18 +72,41 @@ class Status(commands.Cog):
         try:
             embed = disnake.Embed(
                 title="Uptime pagina",
-                description="uptime informatie",
-                color=disnake.Colour.green(),
+                description="AllDayTechAndGaming",
+                color=0xdf8cfe,
                 url="https://uptime.auticodes.nl/status/main"
             )
             embed.add_field(
-                name="ALlDayTechAndGaming website",
-                value=f"Ik ben voor `{round(Status.get_kuma_monitor_uptime_precentage(self, monitor_id=4, hours=24), 2)}`% online in de laatste 24 uur",
+                name="Website",
+                value=f"Uptime in de laatste 24 uur: `{round(Status.get_kuma_monitor_uptime_precentage(self, monitor_id=4, hours=24), 2)}`%.\n Huidige status: `{Status.get_kuma_monitor_current_status(monitor_id=4)}`.",
                 inline=False
             )
+            embed.add_field(
+                name="AllDayBot",
+                value=f"Uptime in de laatste 24 uur: `{round(Status.get_kuma_monitor_uptime_precentage(self, monitor_id=11, hours=24), 2)}`%.\n Huidige status: `{Status.get_kuma_monitor_current_status(monitor_id=11)}`.",
+                inline=False
+            )
+
             await inter.response.send_message(embed=embed)
-        except:
-            await inter.response.send_message('Er ging iets mis!')
+        except Exception as error:
+            await inter.response.send_message(f"Er ging iets mis! Fout: `{error}`\n<@632677231113666601> ga eens aan het werk joh!")
+
+    def get_kuma_monitor_current_status(monitor_id):
+        uptime_kuma = UptimeKumaApi(url=StatusEnv.KUMA_URL)
+        uptime_kuma.login(
+            StatusEnv.KUMA_USERNAME,
+            StatusEnv.KUMA_PASSWORD
+        )
+
+        monitor = uptime_kuma.get_monitor_beats(
+            monitor_id,
+            1
+        )
+
+        if monitor[-1]["status"] == 1:
+            return 'Online'
+
+        return 'Offline'
 
     def get_kuma_monitor_uptime_precentage(self, monitor_id, hours):
         uptime_kuma = UptimeKumaApi(url=StatusEnv.KUMA_URL)
