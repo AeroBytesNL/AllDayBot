@@ -26,8 +26,8 @@ async def keep_sql_active():
         Database.cursor.fetchone()
         Log.info("Keeping the database aka dataslut active")
     except Exception as error:
-        Log.error(f"keep_sql_active {error}")
-        pass
+        Log.error(error)
+        quit()
     
 keep_sql_active.start()
 
