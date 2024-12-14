@@ -6,18 +6,15 @@ from datetime import datetime, timedelta
 from database import Database
 from helpers.error import Log
 
-
 class Bump_reminder(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.last_processed_bump = 0
         Log.info("Loaded Cog bump")
 
-
     @commands.Cog.listener()
     async def on_ready(self):
         Bump_reminder.check_if_bump_is_ready.start(self)
-
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -32,10 +29,10 @@ class Bump_reminder(commands.Cog):
                 return
 
             Bump_reminder.add_xp_to_bumper(self, message.interaction.user.id)
-            print(f"Added xp to bumper {message.interaction.user}")
+            Log.info("Added xp to bumper")
 
         except Exception as error:
-            print(error)
+            Log.error(error)
             pass
 
     @tasks.loop(seconds=5)
@@ -63,13 +60,12 @@ class Bump_reminder(commands.Cog):
             if diff >= 7192 and diff < 7200: 
                 # Send the reminder
                 await channel.send("De server kan weer gebumped worden! Dit kan d.m.v. het command `/bump`. Dit helpt de server groeien! (Ook ontvang je een bonus van 60 XP!)")
-                print("Server ready to be bumped")
+                Log.info("Server is ready to be bumped")
                 self.last_processed_bump = last_bump.id
 
         except Exception as error:
-            print(error)
+            Log.error(error)
             pass
-
 
     def add_xp_to_bumper(self, author_id):
         Database.cursor.execute(f"SELECT xp FROM Users WHERE id='{author_id}'")
@@ -77,7 +73,6 @@ class Bump_reminder(commands.Cog):
 
         Database.cursor.execute(f"UPDATE Users SET xp = {res + 60} WHERE id='{author_id}'")
         Database.db.commit()
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Bump_reminder(bot))

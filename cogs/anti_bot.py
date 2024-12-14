@@ -22,7 +22,7 @@ class AntiBot(commands.Cog):
                                 Mocht je geen toegang hebben tot deze link, stuur dan een bericht naar deze bot om contact te leggen met het beheer voor een uitnodigingslink.
                                 """)
                 await guild.kick(user=after, reason="Gebruiker eruit geyeet ivm het selecteren van de anti bot rol (automatisch)")
-                print("AllDayAntiBot kicked an user because he selected the anti bot role!")
+                Log.warning("AllDayAntiBot kicked an user because he selected the anti bot role!")
 
 def setup(bot: commands.Bot):
     bot.add_cog(AntiBot(bot))

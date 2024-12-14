@@ -42,12 +42,12 @@ class log_to_server(commands.Cog):
         with open(f"./files/alldaylog_image_cache/{message.id}.png", mode="wb") as file:
             file.write(img)
             file.close()
-            print("Saved image file to cache")
+            Log.info("Saved an image to cache")
 
     # Delete unused images from image cache older then 14 days
     @tasks.loop(seconds=60)
     async def image_cache_cleaner(self):
-        print("Cleaning image cache...")
+        Log.info("Cleaning image cache")
         images = [f for f in os.listdir("./files/alldaylog_image_cache")]
 
         for image in images:
@@ -57,31 +57,31 @@ class log_to_server(commands.Cog):
             
             if delta.days >= 7:
                 os.remove(f"./files/alldaylog_image_cache/{image}")
-                print(f"Deleted image from image cache")
+                Log.warning("Removed an image from cache")
 
     # Member guild
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if log_to_server.get_settings(setting="sw_join_leave"):
-            print("Welcome! ", member)
+            Log.info(f"Welcome {member}")
             await self.member_guild_embed(member, type="joinde de keet!")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         if log_to_server.get_settings(setting="sw_join_leave"):
-            print("Aaaah! er is een member/memberina weg!")
+            Log.info("Someone left the server")
             await self.member_guild_embed(member, type="verliet de keet!")
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
         if log_to_server.get_settings(setting="sw_ban_unban"):
-            print(f"Aaaah! User: {member} is gebanned van guild: {guild}.")
+            Log.info(f"User banned: {member}")
             await self.member_guild_embed(member, type="is verbannen van deze keet!")
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):
         if log_to_server.get_settings(setting="sw_ban_unban"):
-            print(f"Aaaah! User: {member} is ungebanned van guild: {guild}.")
+            Log.info(f"User unban: {member}")
             await self.member_guild_embed(member, type="is un-banned van deze keet!")    
 
     @commands.Cog.listener()
@@ -100,26 +100,31 @@ class log_to_server(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
         if log_to_server.get_settings(setting="sw_vc_join_leave"):
             # member joins voice
-            if before.channel is None and after.channel is not None: 
+            if before.channel is None and after.channel is not None:
+                Log.info(f"Member {member} joined VC {after.channel}")
                 await self.log_voice_state(member, vc_channel=after.channel, type="Joinde")
             # Member leaves voice
             elif after.channel is None and before.channel is not None:
+                Log.info(f"Member {member} leaved VC {after.channel}")
                 await self.log_voice_state(member, vc_channel=before.channel, type="Verliet")
 
             elif log_to_server.get_settings(setting="sw_vc_change"):
                 # Member switches voice channels
                 if before.channel != after.channel:
+                    Log.info(f"Member {member} changed VC {after.channel}")
                     await self.log_voice_state(member, vc_channel=after.channel, type="Veranderde")
 
     # Messages in guild
     @commands.Cog.listener()
     async def on_message_delete(self, payload):
         if log_to_server.get_settings(setting="sw_message_deleted"):
+            Log.info("Someone deleted an message")
             await self.message_deleted(payload, message=payload.content, channel=payload.channel)
             
     @commands.Cog.listener()
     async def on_raw_bulk_message_delete(self, messages):
         if log_to_server.get_settings(setting="sw_message_deleted"):
+            Log.info("Bulk message deletion")
             bulk_deleted_count = len(messages.message_ids)
             bulk_deleted_channel = messages.channel_id
             await self.message_bulk_deleted(count=bulk_deleted_count, channel=bulk_deleted_channel)
@@ -127,6 +132,7 @@ class log_to_server(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if log_to_server.get_settings(setting="sw_message_edited"):
+            Log.info("Message edited")
             channel = after.channel.mention
             author = before.author
             if before.clean_content != after.clean_content:
@@ -182,6 +188,7 @@ class log_to_server(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_emojis_update(self, guild, before, after):
         print(set(before).symmetric_difference(set(after)))
+        Log.info("Reaction on message added")
 
     # Reaction emojis
     @commands.Cog.listener()
@@ -191,13 +198,13 @@ class log_to_server(commands.Cog):
         if payload.member == self.bot.user: return
 
         if log_to_server.get_settings(setting="sw_message_reaction"):
-            print("Reactie toegevoegd", payload.emoji, payload.message_id, payload.user_id)
+            Log.info(f"Reaction added on message: {payload.emoji} {payload.message_id} {payload.user_id}")
             await log_to_server.log_reactions(self, payload, type_embed="toegevoegd")
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         if log_to_server.get_settings(setting="sw_message_reaction"):
-            print("Reactie verwijderd", payload.emoji, payload.message_id, payload.user_id)
+            Log.info(f"Reaction removed on message: {payload.emoji} {payload.message_id} {payload.user_id}")
             await log_to_server.log_reactions(self, payload, type_embed="verwijderd")
 
     # Threads
@@ -286,7 +293,7 @@ class log_to_server(commands.Cog):
                 embed.add_field(name="Afbeelding:", value="Zie afbeelding hier beneden", inline=False)
                 await channel_to_send.send(embed=embed)
                 await channel_to_send.send(file=disnake.File(file))
-                print("Sended file from cache to log channel")
+                Log.info("Sended file from cache to log channel")
         else:
             embed.add_field(name="Content:", value=str(payload.clean_content), inline=False)
             await channel_to_send.send(embed=embed)
@@ -341,7 +348,6 @@ class log_to_server(commands.Cog):
 
     # Channels
     async def channel_change(self, channel, type):
-            print(channel)
             match type:
                 case "Nieuw kanaal":
                     embed_color = disnake.Color.green()
@@ -383,8 +389,6 @@ class log_to_server(commands.Cog):
             await channel_to_send.send(embed=embed)            
 
     async def log_threads(self, thread, type_embed):
-            print(f"Thread {type_embed}",thread.name, thread.category, thread.jump_url, thread.owner)
-
             embed=disnake.Embed(title=f"Thread {type_embed}", description="\n", color=disnake.Color.orange())
             embed.add_field(name=f"Threadnaam:", value=f"{thread.name}", inline=True)
             embed.add_field(name="In category:", value=f"{thread.category}", inline=True)
