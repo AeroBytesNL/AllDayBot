@@ -9,3 +9,4 @@ audioop-lts
 sentry_sdk
 uptime_kuma_api
 azure-ai-inference
+google-generativeai

@@ -3,6 +3,7 @@ from disnake.ext import commands, tasks
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.credentials import AzureKeyCredential
+import google.generativeai as genai
 from env import Api
 
 class Llm(commands.Cog):
@@ -36,6 +37,17 @@ class Llm(commands.Cog):
         )
 
         await channel.send(content=f"# Llama\n\n ## Vraag:\n{vraag}\n## Antwoord: \n{response.choices[0].message.content}")
+
+    @ai.sub_command(description="Stel vragen aan Gemini!")
+    async def gemini(self, inter, vraag: str):
+        genai.configure(api_key=Api.GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        channel = self.bot.get_channel(inter.channel.id)
+        message = await inter.response.send_message(f"Ik ben aan het denken!...", ephemeral=True)
+        response = model.generate_content(str(vraag))
+
+        await channel.send(f"# Gemini\n\n ## Vraag:\n{vraag}\n## Antwoord: \n{response.text}")
 
 def setup(bot: commands.Bot):
     bot.add_cog(Llm(bot))
