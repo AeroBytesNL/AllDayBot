@@ -71,8 +71,8 @@ def setup_logging(log_level):
     return logger
 
 # Testing
-Log.info("I have started up")
-Log.debug("response time: 10ms")
-Log.warning("Oeps, things didnt go 100%")
-Log.error("Oeps, pooped my pants")
-Log.critical("FACKKKKK")
+# Log.info("I have started up")
+# Log.debug("response time: 10ms")
+# Log.warning("Oeps, things didnt go 100%")
+# Log.error("Oeps, pooped my pants")
+# Log.critical("FACKKKKK")

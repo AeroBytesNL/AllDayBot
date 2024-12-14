@@ -1,5 +1,6 @@
 import disnake
 from disnake.ext import commands
+from helpers.error import Log
 
 class ErrorHandling(commands.Cog):
     def __init__(self, bot: commands.Bot):

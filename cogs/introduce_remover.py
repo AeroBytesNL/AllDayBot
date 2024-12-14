@@ -2,12 +2,13 @@ import disnake
 from disnake.ext import commands
 from env import *
 import time
+from helpers.error import Log
 
 
 class Introduce_remover(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Introduce remover is loaded!")
+        Log.info("Loaded Cog introduce_remover")
         
 
     # Deletes introduction if there already is an introduction of that member

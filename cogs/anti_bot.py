@@ -2,11 +2,12 @@ import disnake
 from disnake.ext import commands
 from env import AntiBot as AntiBotEnv
 from env import env_variable
+from helpers.error import Log
 
 class AntiBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog anti_bot is loaded!")
+        Log.info("Loaded Cog anti_bot")
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):

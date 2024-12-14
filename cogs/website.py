@@ -1,13 +1,11 @@
 import disnake
 from disnake.ext import commands
-from env import *
-from database import Database
-import secrets
+from helpers.error import Log
 
 class Website(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Website is loaded!")
+        Log.info("Loaded Cog website")
 
     @commands.slash_command()
     async def website(self, inter):

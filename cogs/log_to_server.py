@@ -7,13 +7,15 @@ from datetime import datetime
 from dateutil import relativedelta
 import requests
 import os
+from helpers.error import Log
+
 # @todo fix image remove logging
 
 class log_to_server(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Log to server is loaded!")
         log_to_server.image_cache_cleaner.start(self)
+        Log.info("Loaded Cog log_to_server")
 
     # Image cacher
     @commands.Cog.listener()

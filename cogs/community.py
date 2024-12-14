@@ -5,6 +5,7 @@ from datetime import datetime
 import pytz
 from database import Database
 import random
+from helpers.error import Log
 
 
 
@@ -14,7 +15,7 @@ class community(commands.Cog):
     
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Community is loaded!")
+        Log.info("Loaded Cog community")
 
 
 

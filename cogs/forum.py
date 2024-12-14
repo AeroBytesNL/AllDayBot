@@ -2,16 +2,16 @@ import disnake
 from disnake.ext import commands, tasks
 from env import *
 from datetime import datetime
+from helpers.error import Log
 
 class Forum(commands.Cog):
 
     
 
     def __init__(self, bot: commands.Bot):
-
         self.bot = bot
-        print("Cog Forum is loaded!")
         self.is_notified = []
+        Log.info("Loaded Cog forum")
 
 
 

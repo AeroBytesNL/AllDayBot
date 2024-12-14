@@ -4,15 +4,16 @@ from env import *
 from database import Database
 from datetime import datetime
 import pytz
+from helpers.error import Log
 
 # TODO change month string to int
 
 class Birthday(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Birthday is loaded!")
-        self.bd_counter = [0] 
+        self.bd_counter = [0]
         Birthday.birthday_date_checkert.start(self)
+        Log.info("Loaded Cog birthday")
 
 
     # Main birthday command

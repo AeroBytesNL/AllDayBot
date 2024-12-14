@@ -4,13 +4,14 @@ from env import *
 import time
 from datetime import datetime, timedelta
 from database import Database
+from helpers.error import Log
 
 
 class Bump_reminder(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Bump reminder is loaded!")
         self.last_processed_bump = 0
+        Log.info("Loaded Cog bump")
 
 
     @commands.Cog.listener()

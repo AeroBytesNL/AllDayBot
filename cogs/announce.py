@@ -1,6 +1,7 @@
 import disnake
 from disnake.ext import commands
 from env import *
+from helpers.error import Log
 
 
 
@@ -10,7 +11,7 @@ class announce(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog announce is loaded!")
+        Log.info("Loaded Cog announce")
 
 
 

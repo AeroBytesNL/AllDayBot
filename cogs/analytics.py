@@ -3,6 +3,7 @@ from disnake.ext import commands, tasks
 from env import *
 from database import Database
 from time import sleep
+from helpers.error import Log
 
 class analytics(commands.Cog):
 
@@ -11,7 +12,6 @@ class analytics(commands.Cog):
     def __init__(self, bot: commands.Bot):
 
         self.bot = bot
-        print("Cog Analytics is loaded!")
 
         # Starting loopies
         self.member_statistics.start()
@@ -25,6 +25,7 @@ class analytics(commands.Cog):
         self.voice_channels = 0
         self.categories = 0
         self.created_at = ""
+        Log.info("Loaded Cog analytics")
 
 
 

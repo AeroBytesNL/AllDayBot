@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from env import *
 from database import Database
+from helpers.error import Log
 
 # TODO: Make unban system
 # Make user notification system
@@ -9,7 +10,7 @@ from database import Database
 class moderation(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Moderation is loaded!")
+        Log.info("Loaded Cog moderation")
 
     # Commands
     # Mother Off All Commands

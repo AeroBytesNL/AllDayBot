@@ -5,11 +5,12 @@ from mcstatus import JavaServer
 import re
 from rcon.source import Client
 from env import secure
+from helpers.error import Log
 
 class minecraft(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot 
-        print("Cog Minecraft is loaded!")
+        Log.info("Loaded Cog minecraft")
 
     # Mother Off All Commands
     @commands.slash_command()

@@ -7,23 +7,22 @@ from datetime import datetime
 import pytz
 from database import *
 import urllib.request
+from helpers.error import Log
 
 class Leveling(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.intents = disnake.Intents.all()
         self.bot = bot
-
         # Time stuffies
         self.tz_AM = pytz.timezone('Europe/Amsterdam') 
         self.datetime_AM = datetime.now(self.tz_AM) 
         self.time_now = self.datetime_AM.strftime("%H:%M:%S")
-
         self.users =[]
         self.messaged = []
         self.guild = []
-
         self.vChannels = [env_variable.V_CHANNEL_ONE, env_variable.V_CHANNEL_TWO]
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
+        Log.info("Loaded Cog leveling")
 
     @commands.Cog.listener()
     async def on_ready(self):

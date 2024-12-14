@@ -3,11 +3,12 @@ from disnake.ext import commands
 import requests
 from env import Status as StatusEnv
 from uptime_kuma_api import UptimeKumaApi
+from helpers.error import Log
 
 class Status(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Status is loaded!")
+        Log.info("Loaded Cog status")
 
     @commands.slash_command()
     async def status(self, inter):
