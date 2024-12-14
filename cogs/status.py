@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 import requests
 from env import Status as StatusEnv
+from uptime_kuma_api import UptimeKumaApi
 
 class Status(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -66,6 +67,43 @@ class Status(commands.Cog):
                 inline=False
             )
         await inter.response.send_message(embed=embed)
+
+    @status.sub_command(description="Zie de infrastructuur status")
+    async def pagina(self, inter):
+        try:
+            embed = disnake.Embed(
+                title="Uptime pagina",
+                description="uptime informatie",
+                color=disnake.Colour.green(),
+                url="https://uptime.auticodes.nl/status/main"
+            )
+            embed.add_field(
+                name="ALlDayTechAndGaming website",
+                value=f"Ik ben voor `{round(Status.get_kuma_monitor_uptime_precentage(self, monitor_id=4, hours=24), 2)}`% online in de laatste 24 uur",
+                inline=False
+            )
+            await inter.response.send_message(embed=embed)
+        except:
+            await inter.response.send_message('Er ging iets mis!')
+
+    def get_kuma_monitor_uptime_precentage(self, monitor_id, hours):
+        uptime_kuma = UptimeKumaApi(url=StatusEnv.KUMA_URL)
+        uptime_kuma.login(
+            StatusEnv.KUMA_USERNAME,
+            StatusEnv.KUMA_PASSWORD
+        )
+
+        monitor = uptime_kuma.get_monitor_beats(
+            monitor_id,
+            hours
+        )
+
+        down_count = sum(1 for record in monitor if record["status"] != 1)
+
+        if len(monitor) > 0:
+            return float(100 - ((down_count / len(monitor)) * 100))
+
+        return float(0)
 
     def bytes_to_mb(bytes):
         return int(bytes) / (1024 * 1024)
