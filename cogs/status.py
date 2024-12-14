@@ -31,33 +31,38 @@ class Status(commands.Cog):
         embed.add_field(
             name="Online",
             value=online,
-            inline=False
+            inline=True
+        )
+        embed.add_field(
+            name="Latency",
+            value=f"`{str(round(self.bot.latency * 1000))}`ms",
+            inline=True
         )
 
         if resp["attributes"]["current_state"] == "starting":
             embed.add_field(
                 name="CPU",
-                value=f"{round(resp["attributes"]["resources"]["cpu_absolute"], 3)}%",
-                inline=False
+                value=f"`{round(resp["attributes"]["resources"]["cpu_absolute"], 3)}`%",
+                inline=True
             )
             embed.add_field(
                 name="RAM",
-                value=f"{round(Status.bytes_to_mb(resp["attributes"]["resources"]["memory_bytes"]), 3)}mb",
-                inline=False
-            )
-            embed.add_field(
-                name="Opslag",
-                value=f"{round(Status.bytes_to_mb(resp["attributes"]["resources"]["disk_bytes"]), 3)}mb",
-                inline=False
+                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["memory_bytes"]), 3)}`mb",
+                inline=True
             )
             embed.add_field(
                 name="Netwerk in",
-                value=f"{round(Status.bytes_to_mb(resp["attributes"]["resources"]["network_rx_bytes"]), 3)}mb",
-                inline=False
+                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["network_rx_bytes"]), 3)}`mb",
+                inline=True
             )
             embed.add_field(
                 name="Netwerk uit",
-                value=f"{round(Status.bytes_to_mb(resp["attributes"]["resources"]["network_tx_bytes"]), 3)}mb",
+                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["network_tx_bytes"]), 3)}`mb",
+                inline=True
+            )
+            embed.add_field(
+                name="Opslag",
+                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["disk_bytes"]), 3)}`mb",
                 inline=False
             )
         await inter.response.send_message(embed=embed)
