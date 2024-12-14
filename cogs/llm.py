@@ -36,7 +36,7 @@ class Llm(commands.Cog):
             model="Llama-3.3-70B-Instruct"
         )
 
-        await channel.send(content=f"# Llama\n\n ## Vraag:\n{vraag}\n## Antwoord: \n{response.choices[0].message.content}")
+        await channel.send(content=f"# Llama\n\n ## Vraag:\n{vraag}\n## Antwoord: \n{response.choices[0].message.content}\n-# Aangevraagd door: {inter.author.display_name}\n-# Deze tekst is gegenereerd door AI/LLM. Het kan fouten bevatten.")
 
     @ai.sub_command(description="Stel vragen aan Gemini!")
     async def gemini(self, inter, vraag: str):
@@ -47,7 +47,7 @@ class Llm(commands.Cog):
         message = await inter.response.send_message(f"Ik ben aan het denken!...", ephemeral=True)
         response = model.generate_content(str(vraag))
 
-        await channel.send(f"# Gemini\n\n ## Vraag:\n{vraag}\n## Antwoord: \n{response.text}")
+        await channel.send(f"# Gemini\n\n ## Vraag:\n{vraag}\n## Antwoord: \n{response.text}\n-# Aangevraagd door: {inter.author.display_name}\n-# Deze tekst is gegenereerd door AI/LLM. Het kan fouten bevatten.")
 
 def setup(bot: commands.Bot):
     bot.add_cog(Llm(bot))
