@@ -3,21 +3,13 @@ from disnake.ext import commands, tasks
 from env import *
 from database import Database
 from time import sleep
+from helpers.error import Log
 
 class analytics(commands.Cog):
-
-
-
     def __init__(self, bot: commands.Bot):
-
         self.bot = bot
-        print("Cog Analytics is loaded!")
-
-        # Starting loopies
         self.member_statistics.start()
         self.save_general_statistics_to_db.start()
-
-        # Storage global
         self.msg_storage = []
         self.total_members = 0
         self.members_online = 0
@@ -25,34 +17,26 @@ class analytics(commands.Cog):
         self.voice_channels = 0
         self.categories = 0
         self.created_at = ""
-
-
+        Log.info("Loaded Cog analytics")
 
     # message statistics
     @commands.Cog.listener()
     async def on_message(self, message):
-        
-        # Do nothing if message if from bot
         if message.author == self.bot.user:
             return
         
         # Adding message with channel to storage
         self.msg_storage.append(str(message.channel))
 
-
-
     # Updating total members
     @tasks.loop(seconds=28)
     async def member_statistics(self):
-
-        print("Getting guild statistics....")
+        Log.info("Getting server statistics")
 
         # Getting guild
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-
         # Getting total members and add to storage
         self.total_members = int(guild.approximate_member_count)
-
         # Getting total online members and save it to storage
         self.members_online = int(guild.approximate_presence_count)
         
@@ -68,15 +52,14 @@ class analytics(commands.Cog):
             self.created_at = str(guild.created_at)
 
         except Exception as error:
+            Log.error(error)
             pass
-            
-
 
     # Saving stuff from self.storage to DB
     @tasks.loop(seconds=30)
     async def save_general_statistics_to_db(self):
         try:
-            print("Saving new total analytics....")
+            Log.info("Saving server statistics")
 
             # Get current analytics
             Database.cursor.execute("SELECT * FROM statistics LIMIT 1")
@@ -108,10 +91,8 @@ class analytics(commands.Cog):
             self.msg_storage.clear()
 
         except Exception as error:
-            print(error)
+            Log.error(error)
             pass
-    
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(analytics(bot))

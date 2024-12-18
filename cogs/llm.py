@@ -5,11 +5,12 @@ from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.credentials import AzureKeyCredential
 import google.generativeai as genai
 from env import Api
+from helpers.error import Log
 
 class Llm(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("LLM Cog loaded!")
+        Log.info("Loaded Cog llm")
 
     @commands.slash_command()
     async def ai(self, inter):

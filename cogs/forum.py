@@ -2,16 +2,16 @@ import disnake
 from disnake.ext import commands, tasks
 from env import *
 from datetime import datetime
+from helpers.error import Log
 
 class Forum(commands.Cog):
 
     
 
     def __init__(self, bot: commands.Bot):
-
         self.bot = bot
-        print("Cog Forum is loaded!")
         self.is_notified = []
+        Log.info("Loaded Cog forum")
 
 
 
@@ -25,8 +25,7 @@ class Forum(commands.Cog):
     # Not responding age checker
     @tasks.loop(seconds=30)
     async def not_responding_checker(self):
-
-        print("Scanning for forum posts that doesn't have a response")
+        Log.info("Forum posts scanning")
 
         channel = self.bot.get_channel(Channel.TECH_SUPPORT)
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
@@ -75,15 +74,13 @@ class Forum(commands.Cog):
     # Empty list  
     @tasks.loop(hours=24)
     async def empty_list(self):
-
         self.is_notified.clear()
-        print("Is notified list is cleared!")
+        Log.info("Notified list cleared")
 
 
     @commands.slash_command(description="Markeer dit forum kanaal als opgelost")
     async def opgelost(self, inter):
             
-        print(f"User {inter.author.name} gebruikte het command 'opgelost'")
         valide_owner = await Forum.valide_thread_command_owner(self, inter)
         if valide_owner == True:
             await Forum.close_thread(self, inter)
@@ -97,7 +94,6 @@ class Forum(commands.Cog):
     @commands.slash_command(description="Markeer dit forum kanaal als niet opgelost")
     async def niet_opgelost(self, inter):
             
-        print(f"User {inter.author.name} gebruikte het command 'niet opgelost'")
         await Forum.log_command(self, author=inter.author, command="`/niet_opgelost`", channel=inter.channel)
         await Forum.not_solved_close_thread(self, inter)
 

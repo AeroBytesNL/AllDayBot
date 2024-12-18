@@ -7,13 +7,14 @@ from database import Database
 from datetime import datetime, timedelta
 import random
 import asyncio
+from helpers.error import Log
+
 # Quiz start tijd: 1 min (static)
 # Quiz doorloop tijd: 1.5 minuten
 
 class Quiz(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Quiz is loaded!")
         self.ongoing_quizes = []
         self.quiz_maker = 0
         self.icons = ["🇦", "🇧", "🇨", "🇩", "🇪", "🇫"]
@@ -23,6 +24,7 @@ class Quiz(commands.Cog):
         self.quiz_answers = []
         self.quiz_winners = []
         self.quiz_losers = []
+        Log.info("Loaded Cog quiz")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction):

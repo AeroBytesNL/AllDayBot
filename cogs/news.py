@@ -5,11 +5,12 @@ from database import *
 import requests 
 import json
 import xmltodict
+from helpers.error import Log
 
 class news(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog news is loaded!")
+        Log.info("Loaded Cog news")
 
     class Confirm(disnake.ui.View):
         def __init__(self, page, url):

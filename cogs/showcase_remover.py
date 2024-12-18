@@ -1,11 +1,12 @@
 import disnake
 from disnake.ext import commands
 from env import Channel, env_variable
+from helpers.error import Log
 
 class Showcase_remover(commands.Cog):
     def  __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog showcase_remover is loaded!")
+        Log.info("Loaded Cog showcase_remover")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):

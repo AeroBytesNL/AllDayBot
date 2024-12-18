@@ -1,13 +1,14 @@
 import disnake
 from disnake.ext import commands
 from env import Channel
+from helpers.error import Log
 
 class Welcome_message(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Welcome_message is loaded!")
         self.joined_members = []
         self.potential_messages_deletion = {}
+        Log.info("Loaded Cog welcome_message")
 
     @commands.Cog.listener() 
     async def on_member_join(self, member):

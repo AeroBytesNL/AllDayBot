@@ -7,23 +7,22 @@ from datetime import datetime
 import pytz
 from database import *
 import urllib.request
+from helpers.error import Log
 
 class Leveling(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.intents = disnake.Intents.all()
         self.bot = bot
-
         # Time stuffies
         self.tz_AM = pytz.timezone('Europe/Amsterdam') 
         self.datetime_AM = datetime.now(self.tz_AM) 
         self.time_now = self.datetime_AM.strftime("%H:%M:%S")
-
         self.users =[]
         self.messaged = []
         self.guild = []
-
         self.vChannels = [env_variable.V_CHANNEL_ONE, env_variable.V_CHANNEL_TWO]
         self.levelRoles = [768381227497029632, 768381279582027796, 768381333259943946, 768381397412478977, 768381462314483712, 768382361342836766, 768382540917506058, 768382615027449876, 768382797214777374, 768382928790749184, 959422205240946718, 959422412204691506, 959739023822323782, 959739123437031455, 959740858461224960, 959741104733966436, 959741224594604032, 959741349211553842, 959741768356728955, 959741830570848296]
+        Log.info("Loaded Cog leveling")
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -32,10 +31,9 @@ class Leveling(commands.Cog):
             global guild    
             global channel
             guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
-            print("The bot is ready!")
 
         except Exception as error:
-            print(error)
+            Log.error(error)
             pass
 
         Leveling.basic_log(self, log="Reboot")
@@ -76,7 +74,7 @@ class Leveling(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        print("Cleaning User and birthday_users tables!")
+        Log.info("Cleaning User and birthday_users tables!")
         # If member leaves, clear DB
         await Leveling.member_leave_dbClean()
         # If member leaves, remove from birthday
@@ -85,7 +83,6 @@ class Leveling(commands.Cog):
     # Slash commands
     @commands.slash_command(description="Zie de level van de members van ADT&G!")
     async def scorebord(self, inter, pagina: int = 1):
-                print(f"User {inter.author.display_name} gebruikte het command 'leaderboard'")
                 p = 0
                 p = pagina
                 p = p - 1
@@ -98,7 +95,6 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Zie je eigen level!")
     async def level(self, inter):
-                print(f"User {inter.author.display_name} gebruikte het command 'level'")
                 id = inter.author.id
                 e = await Leveling.levelMessage(self, id)
                 if e is None:
@@ -108,7 +104,6 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Bereken je level!")
     async def level_calc(self, inter, level: int):
-                print(f"User {inter.author.display_name} gebruikte het command 'level_calc'")
                 lvl = level
                 e = await Leveling.levelCalc(self, inter.author.id, lvl)
                 if e is None:
@@ -122,7 +117,6 @@ class Leveling(commands.Cog):
                     await inter.response.send_message(f"{inter.author.display_name}, je mag de bot niet bedanken. Gebruik deze functie niet voor onnodige bedankjes!")
                     return
 
-                print(f"User {inter.author.display_name} gebruikte het command 'thank'")
                 e = await Leveling.thank(self, inter, gebruiker, reden)
                 if e is None:
                     await inter.response.send_message("Er ging iets mis. Oepsie!")
@@ -131,8 +125,6 @@ class Leveling(commands.Cog):
 
     @commands.slash_command(description="Comp-leaderboard")
     async def comp_scorebord(self, inter, pagina: int):
-                print(f"User {inter.author.display_name} gebruikte het command 'compleaderboard'")
-
                 p = pagina
                 p = p - 1
                 e = await Leveling.compLeaderboard(self, p)
@@ -154,16 +146,15 @@ class Leveling(commands.Cog):
             Database.cursor.execute("SELECT * FROM Users")
             sqlids = Database.cursor.fetchall()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             return 
 
         i = 0
         while i < len(sqlids):
             if sqlids[i][0] in presentids:
-                print(str(sqlids[i][0]) + " is still here")
+                Log.info(str(sqlids[i][0]) + " is still here")
             else:
-                print("removing user with ID: " + str(sqlids[i][0]))
+                Log.warning("removing user with ID: " + str(sqlids[i][0]))
                 Leveling.delete_user(sqlids[i][0])
 
             i = i + 1  
@@ -173,12 +164,11 @@ class Leveling(commands.Cog):
             Database.cursor.execute(f"DELETE FROM birthday_users WHERE user_id={user_id}")
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(f"member_leave_birthday_clear {error}")
             pass
 
     def gainXP(self, id, xp_amount):
-        print("Gaining XP for user: " + str(id))
+        Log.info(f"Gaining XP for user: {str(id)}")
         x = xp_amount
 
         val_user = Leveling.validate_user_in_db(self, id) 
@@ -202,7 +192,7 @@ class Leveling(commands.Cog):
                 Leveling.set_xp(self, id, xp)
 
     async def gainLevel(self, id, level):
-        print("Leveling user " + str(id) + " to level " + str(level))
+        Log.info("Leveling user " + str(id) + " to level " + str(level))
         channel = self.bot.get_channel(Channel.ALLDAYBOT)
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
@@ -262,8 +252,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("SELECT id, lvl, xp FROM Users ORDER BY xp DESC")
             users = Database.cursor.fetchall()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             return
         
         embed = disnake.Embed(title='ADT&G XP scorebord, pagina ' + str(p + 1), color=0xdf8cfe)
@@ -288,8 +277,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("SELECT id, complements FROM Users ORDER BY complements DESC")
             result = Database.cursor.fetchall()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             return
         
         embed = disnake.Embed(title='ADT&G complimenten scorebord, pagina ' + str(p + 1), color=0xdf8cfe)
@@ -379,8 +367,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("UPDATE Users SET xp = " + str(xp) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def get_xp(self, id):
@@ -389,8 +376,7 @@ class Leveling(commands.Cog):
             result = Database.cursor.fetchone()[0]
             return result
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def set_level(id, lvl):
@@ -398,8 +384,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("UPDATE Users SET lvl = " + str(lvl) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def get_level(id):
@@ -411,8 +396,7 @@ class Leveling(commands.Cog):
             result = Database.cursor.fetchone()[0]
             return result
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def set_complements(id, complements):
@@ -420,8 +404,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("UPDATE Users SET complements = " + str(complements) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def get_complements(id):
@@ -433,8 +416,7 @@ class Leveling(commands.Cog):
             result = Database.cursor.fetchone()[0]
             return result
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def set_dailycomplements(id, dailycomplements):
@@ -442,8 +424,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("UPDATE Users SET dailycomplements = " + str(dailycomplements) + " WHERE id = " + str(id))
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def get_dailycomplements(id):
@@ -455,8 +436,7 @@ class Leveling(commands.Cog):
             result = Database.cursor.fetchone()[0]
             return result
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     @tasks.loop(seconds=30) 
@@ -467,7 +447,7 @@ class Leveling(commands.Cog):
             if now_time == "0300":
                 Database.cursor.execute("UPDATE Users SET dailycomplements=0")
                 Database.db.commit()
-                print("Daily comp reset")
+                Log.info("Daily comp reset")
 
     reset_daily_comps.start()
 
@@ -476,8 +456,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("INSERT INTO Users(id, xp, lvl, dailycomplements, complements) VALUES ("+ str(id) + ", " + str(xp) + ", 0, 0, 0);")
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     def delete_user(id):
@@ -485,8 +464,7 @@ class Leveling(commands.Cog):
             Database.cursor.execute("DELETE FROM Users WHERE id = " + str(id))
             Database.db.commit()
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     @tasks.loop(seconds=60.0)
@@ -497,7 +475,7 @@ class Leveling(commands.Cog):
             global users
             messaged = []
 
-            print("A minute has passed!")
+            Log.info("The leveling minute loop starts over again")
             for vChannel in self.vChannels:
                 channel = self.bot.get_channel(vChannel)
                 if len(channel.members) > 1:
@@ -506,8 +484,7 @@ class Leveling(commands.Cog):
                             Leveling.gainXP(self, member.id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="voicechat"))
 
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     # validate users
@@ -521,8 +498,7 @@ class Leveling(commands.Cog):
             
             return True
         except Exception as error:
-            NtfyLogging.error(error)
-            print(f"DEBUGGING: Error: {error}")
+            Log.error(error)
 
     def get_xp_amount_value(msg_or_vc):
         try:
@@ -534,8 +510,7 @@ class Leveling(commands.Cog):
             res = Database.cursor.fetchone()[0]
             return res
         except Exception as error:
-            NtfyLogging.error(error)
-            print(error)
+            Log.error(error)
             pass
 
     # Basic log function

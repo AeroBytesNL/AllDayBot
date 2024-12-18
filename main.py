@@ -4,6 +4,7 @@ from env import *
 from database import *
 from helpers.ntfy import NtfyLogging
 import sentry_sdk
+from helpers.error import Log
 
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
@@ -15,18 +16,18 @@ sentry_sdk.init(
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
-    print("The bot is ready!")
+    Log.info(f"Signed in as {bot.user.name}")
+    Log.info(f"The bot is Ready!")
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
     try:     
         Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
-        res = Database.cursor.fetchone()
-        print("Just keeping the data-slut active!")
+        Database.cursor.fetchone()
+        Log.info("Keeping the database aka dataslut active")
     except Exception as error:
-        NtfyLogging.error(error)
-        print(error)
-        pass
+        Log.error(error)
+        quit()
     
 keep_sql_active.start()
 
@@ -54,6 +55,6 @@ bot.load_extension("cogs.anti_bot")
 bot.load_extension("cogs.status")
 bot.load_extension("cogs.llm")
 
-# Running the bot and starting thread
+# Running the bot
 if __name__ == '__main__':
         bot.run(secure.BOT_TOKEN)

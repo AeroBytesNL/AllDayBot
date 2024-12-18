@@ -1,10 +1,10 @@
 import disnake
 from disnake.ext import commands
 import requests
-from re import M
 from datetime import datetime
 from statistics import mode
 from env import *
+from helpers.error import Log
 
 version_nummer =  ("2.0")
 
@@ -15,7 +15,7 @@ bot = commands.Bot(intents=intents)
 class Community(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Ad_weer is loaded!")
+        Log.info("Loaded Cog ad_weer")
 
         @bot.slash_command()
         async def weer(inter):

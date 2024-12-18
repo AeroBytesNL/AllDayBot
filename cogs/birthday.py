@@ -4,22 +4,21 @@ from env import *
 from database import Database
 from datetime import datetime
 import pytz
+from helpers.error import Log
 
 # TODO change month string to int
 
 class Birthday(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog Birthday is loaded!")
-        self.bd_counter = [0] 
+        self.bd_counter = [0]
         Birthday.birthday_date_checkert.start(self)
-
+        Log.info("Loaded Cog birthday")
 
     # Main birthday command
     @commands.slash_command()
     async def verjaardag(self, inter):
         pass
-
 
     # Adding birthday command
     @verjaardag.sub_command(description = "Voeg je verjaardag toe aan AllDayBot!")
@@ -80,7 +79,6 @@ class Birthday(commands.Cog):
             return await inter.response.send_message(
                 f"Dit command heeft een cooldown, probeer het over `{new_error}` opnieuw.", ephemeral=True)
 
-
     # Functions
     def check_xp(id):
         try:
@@ -93,9 +91,8 @@ class Birthday(commands.Cog):
                 return True      
                     
         except Exception as error:
-            print(f"DEBUG birthday function 'check_cp', error: {error}")
+            Log.error(error)
             pass
-
 
     def birthday_add(self, inter, day, month, year):
         try:
@@ -114,7 +111,7 @@ class Birthday(commands.Cog):
                 return 2
             
         except Exception as error:
-            print(f"DEBUG birthday funtion 'birthday_add', error: {error}")
+            Log.error(error)
             pass
 
     def birthday_remove(id):
@@ -127,7 +124,7 @@ class Birthday(commands.Cog):
                 Database.db.commit()
 
         except Exception as error:
-            print(f"DEBUG birthday funtion 'birthday_remove', error: {error}")
+            Log.error(error)
             pass
 
     async def birthday_send_embed(self, id, age):
@@ -142,14 +139,12 @@ class Birthday(commands.Cog):
             self.bot.loop.create_task(channel_to_send.send(embed=embed, allowed_mentions=disnake.AllowedMentions.all()))
             
         except Exception as error:
-            print(error)
+            Log.error(error)
             pass
-
 
     # Birthday loop to check date
     @tasks.loop(seconds=10) 
     async def birthday_date_checkert(self):
-
         datetime_AM = datetime.now(pytz.timezone('Europe/Amsterdam') )
         now_time = datetime_AM.strftime("%H%M")
         now_date = datetime_AM.strftime("%d-%m")
@@ -171,28 +166,25 @@ class Birthday(commands.Cog):
                             return
                         
                         calculate_age = int(datetime_AM.strftime("%Y")) - int(birthday_user[3])
-                        print(f"Jeeej for user: {birthday_user[1]}, hij is {calculate_age} geworden!")
-                        
+                        Log.info(f"Jeeej for user: {birthday_user[1]}, hij is {calculate_age} geworden!")
+
                         await Birthday.birthday_send_embed(self, id=birthday_user[1], age=calculate_age)
         
             except Exception as error:
-                print(f"DEBUG birthday funtion, Error= {error}")
+                Log.error(error)
                 pass
 
         if now_time == "1100":
             self.bd_counter[0] = 0
 
-
     # Command logging
     async def log_command(self, author, command, channel):
-
         embed=disnake.Embed(title=f"Een user heeft een command gebruikt!", description=f"\n", color=disnake.Color.green())
         embed.add_field(name="Command::", value=str(command), inline=True)
         embed.add_field(name="Author:", value=str(author.mention), inline=True)
         embed.add_field(name="Kanaal:", value=str(channel.mention), inline=False)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Birthday(bot))                    

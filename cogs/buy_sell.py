@@ -3,12 +3,13 @@ from disnake.ext import commands, tasks
 from env import *
 from datetime import datetime, date
 import time
+from helpers.error import Log
 
 class buy_sell(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog buy/sell is loaded!")
         buy_sell.archived_threads.start(self)
+        Log.info("Loaded Cog buy_sell")
 
 
     # Selled command

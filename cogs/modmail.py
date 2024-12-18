@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from env import *
 from database import *
+from helpers.error import Log
 
 
 # TODO change user.name to general name to prefend errors
@@ -9,7 +10,7 @@ from database import *
 class modmail(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog ModMail is loaded!")
+        Log.info("Loaded Cog modmail")
 
     @commands.slash_command(description="Open een ticket richting een lid")
     async def modmail_nieuw_ticket(self, inter, user: disnake.User):

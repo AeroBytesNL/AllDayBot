@@ -2,11 +2,12 @@ import disnake
 from disnake.ext import commands
 from env import AntiBot as AntiBotEnv
 from env import env_variable
+from helpers.error import Log
 
 class AntiBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        print("Cog anti_bot is loaded!")
+        Log.info("Loaded Cog anti_bot")
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -21,7 +22,7 @@ class AntiBot(commands.Cog):
                                 Mocht je geen toegang hebben tot deze link, stuur dan een bericht naar deze bot om contact te leggen met het beheer voor een uitnodigingslink.
                                 """)
                 await guild.kick(user=after, reason="Gebruiker eruit geyeet ivm het selecteren van de anti bot rol (automatisch)")
-                print("AllDayAntiBot kicked an user because he selected the anti bot role!")
+                Log.warning("AllDayAntiBot kicked an user because he selected the anti bot role!")
 
 def setup(bot: commands.Bot):
     bot.add_cog(AntiBot(bot))
