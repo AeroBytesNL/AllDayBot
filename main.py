@@ -15,9 +15,12 @@ sentry_sdk.init(
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
-    Log.info(f"Signed in as {bot.user.name}")
-    Log.info(f"The bot is Ready!")
+    try:
+        await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
+        Log.info(f"Signed in as {bot.user.name}")
+        Log.info(f"The bot is Ready!")
+    except Exception as error:
+        Log.error(error)
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
