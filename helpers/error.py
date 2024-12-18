@@ -6,7 +6,7 @@ import pytz
 from datetime import datetime
 
 # Logging paths
-LOG_DIR = "../logs"
+LOG_DIR = r"C:\Users\autic\OneDrive\Persoonlijk\Documenten (1)\AllDayBot\logs"
 LOG_NAME = "main.log"
 
 # colors for text in terminal
@@ -27,42 +27,35 @@ if os.access(f"{LOG_DIR}/{LOG_NAME}", os.W_OK) != True:
 
 class Log():
     # Info logging
+    @staticmethod
     def info(data):
-        try:
-            logger = setup_logging(logging.INFO)
-            logger.info(str(data))
-            print(f"{GREEN}INFO{RESET} - {get_time_nl()} - {data}")
-        except Exception as error:
-            print(f"{RED}ERROR{RESET} - {get_time_nl()} - {error}")
-            pass
+        logger = setup_logging(logging.INFO)
+        logger.info(str(data))
+        print(f"{GREEN}INFO{RESET} - {get_time_nl()} - {data}")
 
     # Debug logging
+    @staticmethod
     def debug(data):
-        try:
-            logger = setup_logging(logging.DEBUG)
-            logger.debug(str(data))
-            print(f"{BLUE}DEBUG{RESET} - {get_time_nl()} - {data}")
-        except Exception as error:
-            print(f"{RED}ERROR{RESET} - {get_time_nl()} - {error}")
-            pass
+        logger = setup_logging(logging.DEBUG)
+        logger.debug(str(data))
+        print(f"{BLUE}DEBUG{RESET} - {get_time_nl()} - {data}")
 
     # Warning logging
+    @staticmethod
     def warning(data):
-        try:
-            logger = setup_logging(logging.WARNING)
-            logger.warning(str(data))
-            print(f"{YELLOW}WARNING{RESET} - {get_time_nl()} - {data}")
-        except Exception as error:
-            print(f"{RED}ERROR{RESET} - {get_time_nl()} - {error}")
-            pass
+        logger = setup_logging(logging.WARNING)
+        logger.warning(str(data))
+        print(f"{YELLOW}WARNING{RESET} - {get_time_nl()} - {data}")
 
     # Error logging
+    @staticmethod
     def error(data):
         logger = setup_logging(logging.ERROR)
         logger.error(str(data))
         print(f"{RED}ERROR{RESET} - {get_time_nl()} - {data}")
 
     # Critical logging
+    @staticmethod
     def critical(data):
         logger = setup_logging(logging.CRITICAL)
         logger.critical(str(data))
@@ -86,8 +79,6 @@ def initialize_logger():
         ],
     )
 
-logging.info("Dit is een testbericht.")
-
 # Setting up logging
 def setup_logging(log_level):
     try:
@@ -103,11 +94,6 @@ def setup_logging(log_level):
             logger.addHandler(file_handler)
 
             print(f"{GREEN}INFO{RESET} - Logging naar bestand ingesteld op {LOG_DIR}/{LOG_NAME}")
-        else:
-            print(f"{YELLOW}WARNING{RESET} - Logger bestond al, handlers zijn al ingesteld.")
-
-        for handler in logger.handlers:
-            print(f"{BLUE}DEBUG{RESET} - Handler gevonden: {handler}")
 
         return logger
     except Exception as error:
