@@ -68,11 +68,14 @@ class Bump_reminder(commands.Cog):
             pass
 
     def add_xp_to_bumper(self, author_id):
-        Database.cursor.execute(f"SELECT xp FROM Users WHERE id='{author_id}'")
-        res = Database.cursor.fetchone()[0]
+        try:
+            Database.cursor.execute(f"SELECT xp FROM Users WHERE id='{author_id}'")
+            res = Database.cursor.fetchone()[0]
 
-        Database.cursor.execute(f"UPDATE Users SET xp = {res + 60} WHERE id='{author_id}'")
-        Database.db.commit()
+            Database.cursor.execute(f"UPDATE Users SET xp = {res + 60} WHERE id='{author_id}'")
+            Database.db.commit()
+        except Exception as error:
+            Log.error(error)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Bump_reminder(bot))
