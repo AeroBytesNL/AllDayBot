@@ -6,7 +6,7 @@ import pytz
 from datetime import datetime
 
 # Logging paths
-LOG_DIR = r"C:\Users\autic\OneDrive\Persoonlijk\Documenten (1)\AllDayBot\logs"
+LOG_DIR = rf"{os.getcwd()}/logs"
 LOG_NAME = "main.log"
 
 # colors for text in terminal
