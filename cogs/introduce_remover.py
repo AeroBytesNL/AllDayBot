@@ -4,12 +4,10 @@ from env import *
 import time
 from helpers.error import Log
 
-
 class Introduce_remover(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         Log.info("Loaded Cog introduce_remover")
-        
 
     # Deletes introduction if there already is an introduction of that member
     @commands.Cog.listener()
@@ -34,12 +32,11 @@ class Introduce_remover(commands.Cog):
             return        
         
         await message.delete()
-        print("Message deleted from user that wanted to post a second time in introduction")
+        Log.warning("Message deleted from user that wanted to post a second time in introduction")
         msg = await channel.send("Je bericht is verwijderd, maximaal één bericht is toegestaan!")
         time.sleep(5)
         await msg.delete()
         counter = 0
-
 
     # Deletes an introduction if an member leaves
     @commands.Cog.listener()
@@ -50,16 +47,14 @@ class Introduce_remover(commands.Cog):
         for message in messages_in_channel:
             if message.author.id != member.id:
                 return
-            print(f"#stel-jezelf-voor message deleted from user {member.display_name}")
+            Log.warning(f"#stel-jezelf-voor message deleted from user {member.display_name}")
             await message.delete()
             await Introduce_remover.log_removed_introduction(self, member)
-
 
     async def log_removed_introduction(self, member):
         channel = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         embed=disnake.Embed(title="#stel-jezelf-voor bericht automatisch verwijderd van:", description=f"{member.display_name}", color=disnake.Color.red())
         await channel.send(embed=embed)
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Introduce_remover(bot))
