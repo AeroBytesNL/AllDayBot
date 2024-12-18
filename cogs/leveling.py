@@ -66,11 +66,12 @@ class Leveling(commands.Cog):
             pass
         else:
             id = m.author.id
+            user_name = m.author.display_name
             if id in messaged:
                 return
             else:
                 messaged.append(id)
-                Leveling.gainXP(self, id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="message"))
+                Leveling.gainXP(self, user_name, id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="message"))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -167,8 +168,8 @@ class Leveling(commands.Cog):
             Log.error(f"member_leave_birthday_clear {error}")
             pass
 
-    def gainXP(self, id, xp_amount):
-        Log.info(f"Gaining XP for user: {str(id)}")
+    def gainXP(self, name, id, xp_amount):
+        Log.info(f"Gaining {xp_amount} xp for user: {name}")
         x = xp_amount
 
         val_user = Leveling.validate_user_in_db(self, id) 
@@ -356,7 +357,7 @@ class Leveling(commands.Cog):
 
             complements = Leveling.get_complements(gebruiker.id)
             Leveling.set_complements(gebruiker.id, complements + 1)
-            Leveling.gainXP(self, gebruiker.id, xp_amount=150)
+            Leveling.gainXP(self, gebruiker.display_name, gebruiker.id, xp_amount=150)
             e.add_field(name="Compliment gegeven aan", value=user.mention)
             e.add_field(name="Reden", value=reden)
 
@@ -481,7 +482,7 @@ class Leveling(commands.Cog):
                 if len(channel.members) > 1:
                     for member in channel.members:
                         if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
-                            Leveling.gainXP(self, member.id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="voicechat"))
+                            Leveling.gainXP(self, member.name, member.id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="voicechat"))
 
         except Exception as error:
             Log.error(error)
