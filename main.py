@@ -19,7 +19,7 @@ async def on_ready():
         await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
         Log.info(f"Signed in as {bot.user.name}")
     except Exception as error:
-        Log.error(error)
+        Log.error(f"Error while signing in: {error}`")
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
