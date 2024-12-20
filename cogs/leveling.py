@@ -169,7 +169,7 @@ class Leveling(commands.Cog):
             pass
 
     def gainXP(self, name, id, xp_amount):
-        Log.info(f"Gaining {xp_amount} xp for user: {name}")
+        Log.debug(f"Gaining {xp_amount} xp for user: {name}")
         x = xp_amount
 
         val_user = Leveling.validate_user_in_db(self, id) 
@@ -193,7 +193,7 @@ class Leveling(commands.Cog):
                 Leveling.set_xp(self, id, xp)
 
     async def gainLevel(self, id, level):
-        Log.info("Leveling user " + str(id) + " to level " + str(level))
+        Log.debug("Leveling user " + str(id) + " to level " + str(level))
         channel = self.bot.get_channel(Channel.ALLDAYBOT)
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
