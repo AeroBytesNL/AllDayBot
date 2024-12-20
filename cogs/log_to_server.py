@@ -21,6 +21,14 @@ class log_to_server(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         try:
+            # Check if directory's exists, if not make them
+            if not os.path.exists(rf"{os.getcwd()}/files"):
+                Log.info("Creating files directory")
+                os.mkdir(rf"{os.getcwd()}/files")
+            if not os.path.exists(rf"{os.getcwd()}/files/alldaylog_image_cache"):
+                Log.info("Creating image cacher directory")
+                os.mkdir(rf"{os.getcwd()}/files/alldaylog_image_cache")
+
             # Do nothing if no atachments are precent
             if len(message.attachments) == 0:
                 return
