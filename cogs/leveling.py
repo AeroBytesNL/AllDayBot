@@ -476,14 +476,13 @@ class Leveling(commands.Cog):
             global users
             messaged = []
 
-            Log.info("The leveling minute loop starts over again")
+            Log.debug("The leveling minute loop starts over again")
             for vChannel in self.vChannels:
                 channel = self.bot.get_channel(vChannel)
                 if len(channel.members) > 1:
                     for member in channel.members:
                         if not(member.voice.afk or member.voice.mute or member.voice.deaf or member.voice.self_mute or member.voice.self_deaf):
                             Leveling.gainXP(self, member.name, member.id, xp_amount=Leveling.get_xp_amount_value(msg_or_vc="voicechat"))
-
         except Exception as error:
             Log.error(error)
             pass

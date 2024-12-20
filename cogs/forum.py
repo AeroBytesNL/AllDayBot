@@ -5,33 +5,25 @@ from datetime import datetime
 from helpers.error import Log
 
 class Forum(commands.Cog):
-
-    
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.is_notified = []
         Log.info("Loaded Cog forum")
-
-
 
     @commands.Cog.listener()
     async def on_ready(self):
         self.not_responding_checker.start()
         self.empty_list.start()
 
-
-
     # Not responding age checker
     @tasks.loop(seconds=30)
     async def not_responding_checker(self):
-        Log.info("Forum posts scanning")
+        Log.debug("Forum posts scanning")
 
         channel = self.bot.get_channel(Channel.TECH_SUPPORT)
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
 
         for thread in channel.threads:
-
             try:
                 # If thread is locked then do nothing (the same as the person who have written this)
                 if thread.locked == True:
@@ -64,23 +56,18 @@ class Forum(commands.Cog):
                     tags = thread.parent.get_tag_by_name("Geen reactie")
                     await thread.add_tags(tags)
                     # Lock thead
-                    await thread.edit(locked=True, archived=True)   
-
+                    await thread.edit(locked=True, archived=True)
             except Exception as error:
                 pass
-
-
         
     # Empty list  
     @tasks.loop(hours=24)
     async def empty_list(self):
         self.is_notified.clear()
-        Log.info("Notified list cleared")
-
+        Log.debug("Notified list cleared")
 
     @commands.slash_command(description="Markeer dit forum kanaal als opgelost")
     async def opgelost(self, inter):
-            
         valide_owner = await Forum.valide_thread_command_owner(self, inter)
         if valide_owner == True:
             await Forum.close_thread(self, inter)
@@ -88,19 +75,13 @@ class Forum(commands.Cog):
             await inter.response.send_message("Whoepsiedoepsie, jij bent geen admin of eigenaar van deze thread, en mag dit dus niet doen!", ephemeral=True)
         await Forum.log_command(self, author=inter.author, command="`/opgelost`", channel=inter.channel)
 
-
-
     @commands.default_member_permissions(moderate_members=True)
     @commands.slash_command(description="Markeer dit forum kanaal als niet opgelost")
     async def niet_opgelost(self, inter):
-            
         await Forum.log_command(self, author=inter.author, command="`/niet_opgelost`", channel=inter.channel)
         await Forum.not_solved_close_thread(self, inter)
 
-
-
     async def close_thread(self, inter):
-
         embed=disnake.Embed(title="Opgelost!", description=f"Ik heb deze thread als opgelost gemarkeerd! Thread is gesloten door {inter.author.mention}", color=disnake.Colour.green())
         await inter.response.send_message(embed=embed)  
         
@@ -109,11 +90,8 @@ class Forum(commands.Cog):
         tags = thread.parent.get_tag_by_name("Opgelost")
         await thread.add_tags(tags)
         await thread.edit(locked=True, archived=True)   
-    
-
 
     async def not_solved_close_thread(self, inter):
-
         embed=disnake.Embed(title="Niet opgelost!", description=f"Ik heb deze thread als niet opgelost gemarkeerd! Thread is gesloten door {inter.author.mention}", color=disnake.Colour.red())
         await inter.response.send_message(embed=embed)  
         
@@ -123,10 +101,7 @@ class Forum(commands.Cog):
         await thread.add_tags(tags)
         await thread.edit(locked=True, archived=True)            
 
-
-
     async def valide_thread_command_owner(self, inter):
-
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID) 
         role_list = [guild.get_role(Management_roles.OPRICHTER_ID), guild.get_role(Management_roles.ADMINISTRATOR), guild.get_role(Management_roles.SERVER_DEVELOPER), guild.get_role(Management_roles.MODERATOR)]
 
@@ -142,7 +117,6 @@ class Forum(commands.Cog):
             return True
         else:
             return False
-
 
     # Send reminder of answering thread to owner 
     async def reminder_thread_in_dm(self, thread_name, thread_owner):
@@ -163,16 +137,12 @@ Het beheer van All Day Tech & Gaming.
 
     # Command logging
     async def log_command(self, author, command, channel):
-
         embed=disnake.Embed(title=f"Een user heeft een command gebruikt!", description=f"\n", color=disnake.Color.green())
         embed.add_field(name="Command::", value=str(command), inline=True)
         embed.add_field(name="Author:", value=str(author.mention), inline=True)
         embed.add_field(name="Kanaal:", value=str(channel.mention), inline=False)
         channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
         await channel_to_send.send(embed=embed)
-
-
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Forum(bot))

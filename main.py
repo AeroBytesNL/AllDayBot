@@ -18,7 +18,6 @@ async def on_ready():
     try:
         await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
         Log.info(f"Signed in as {bot.user.name}")
-        Log.info(f"The bot is Ready!")
     except Exception as error:
         Log.error(error)
 
@@ -27,10 +26,10 @@ async def keep_sql_active():
     try:     
         Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
         Database.cursor.fetchone()
-        Log.info("Keeping the database aka dataslut active")
+        Log.debug("keep_sql_active has runned!")
     except Exception as error:
         Log.error(error)
-        quit()
+        pass
     
 keep_sql_active.start()
 
