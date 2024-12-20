@@ -26,40 +26,35 @@ if os.access(f"{LOG_DIR}/{LOG_NAME}", os.W_OK) != True:
     print(f"{RED}ERROR{RESET} - Geen schrijfpermissies voor {log_path}")
 
 class Log():
-    # Info logging
+    # Info
     @staticmethod
     def info(data):
-        logger = setup_logging(logging.INFO)
+        logger = setup_logging(logging.DEBUG)
         logger.info(str(data))
         print(f"{GREEN}INFO{RESET} - {get_time_nl()} - {data}")
 
-    # Debug logging
+    # Debug
     @staticmethod
     def debug(data):
+        if Config.DEBUG != True: return
+
         logger = setup_logging(logging.DEBUG)
         logger.debug(str(data))
         print(f"{BLUE}DEBUG{RESET} - {get_time_nl()} - {data}")
 
-    # Warning logging
+    # Warning
     @staticmethod
     def warning(data):
         logger = setup_logging(logging.WARNING)
         logger.warning(str(data))
         print(f"{YELLOW}WARNING{RESET} - {get_time_nl()} - {data}")
 
-    # Error logging
+    # Error
     @staticmethod
     def error(data):
         logger = setup_logging(logging.ERROR)
         logger.error(str(data))
         print(f"{RED}ERROR{RESET} - {get_time_nl()} - {data}")
-
-    # Critical logging
-    @staticmethod
-    def critical(data):
-        logger = setup_logging(logging.CRITICAL)
-        logger.critical(str(data))
-        print(f"{RED}CRITICAL{RESET} - {get_time_nl()} - {data}")
 
 # Get current Dutch data time
 def get_time_nl():
