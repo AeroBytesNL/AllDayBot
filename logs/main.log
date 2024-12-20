@@ -170,3 +170,126 @@
 20-12-2024 21:01:25 - INFO - Getting server statistics
 20-12-2024 21:01:25 - INFO - Saving server statistics
 20-12-2024 21:01:25 - INFO - Getting server statistics
+20-12-2024 21:05:01 - INFO - Loaded Cog ad_weer
+20-12-2024 21:05:01 - INFO - Loaded Cog forum
+20-12-2024 21:05:01 - INFO - Loaded Cog birthday
+20-12-2024 21:05:01 - INFO - Loaded Cog log_to_server
+20-12-2024 21:05:01 - INFO - Loaded Cog community
+20-12-2024 21:05:01 - INFO - Loaded Cog moderation
+20-12-2024 21:05:01 - INFO - Loaded Cog modmail
+20-12-2024 21:05:01 - INFO - Loaded Cog leveling
+20-12-2024 21:05:01 - INFO - Loaded Cog buy_sell
+20-12-2024 21:05:01 - INFO - Loaded Cog news
+20-12-2024 21:05:01 - INFO - Loaded Cog announce
+20-12-2024 21:05:01 - INFO - Loaded Cog analytics
+20-12-2024 21:05:01 - INFO - Loaded Cog website
+20-12-2024 21:05:01 - INFO - Loaded Cog quiz
+20-12-2024 21:05:01 - INFO - Loaded Cog bump
+20-12-2024 21:05:01 - INFO - Loaded Cog introduce_remover
+20-12-2024 21:05:01 - INFO - Loaded Cog welcome_message
+20-12-2024 21:05:01 - INFO - Loaded Cog showcase_remover
+20-12-2024 21:05:01 - INFO - Loaded Cog anti_bot
+20-12-2024 21:05:01 - INFO - Loaded Cog status
+20-12-2024 21:05:01 - INFO - Loaded Cog llm
+20-12-2024 21:05:01 - INFO - Cleaning image cache
+20-12-2024 21:05:01 - ERROR - [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:05:01 - INFO - Getting server statistics
+20-12-2024 21:05:01 - INFO - Signed in as AllDayDevBot
+20-12-2024 21:05:19 - INFO - Loaded Cog ad_weer
+20-12-2024 21:05:19 - INFO - Loaded Cog forum
+20-12-2024 21:05:19 - INFO - Loaded Cog birthday
+20-12-2024 21:05:19 - INFO - Loaded Cog log_to_server
+20-12-2024 21:05:19 - INFO - Loaded Cog community
+20-12-2024 21:05:19 - INFO - Loaded Cog moderation
+20-12-2024 21:05:19 - INFO - Loaded Cog modmail
+20-12-2024 21:05:19 - INFO - Loaded Cog leveling
+20-12-2024 21:05:19 - INFO - Loaded Cog buy_sell
+20-12-2024 21:05:19 - INFO - Loaded Cog news
+20-12-2024 21:05:19 - INFO - Loaded Cog announce
+20-12-2024 21:05:19 - INFO - Loaded Cog analytics
+20-12-2024 21:05:19 - INFO - Loaded Cog website
+20-12-2024 21:05:19 - INFO - Loaded Cog quiz
+20-12-2024 21:05:19 - INFO - Loaded Cog bump
+20-12-2024 21:05:19 - INFO - Loaded Cog introduce_remover
+20-12-2024 21:05:19 - INFO - Loaded Cog welcome_message
+20-12-2024 21:05:19 - INFO - Loaded Cog showcase_remover
+20-12-2024 21:05:19 - INFO - Loaded Cog anti_bot
+20-12-2024 21:05:19 - INFO - Loaded Cog status
+20-12-2024 21:05:19 - INFO - Loaded Cog llm
+20-12-2024 21:05:19 - DEBUG - Running task "keep_sql_active"
+20-12-2024 21:05:19 - DEBUG - Task "keep_sql_active" has finished
+20-12-2024 21:05:19 - INFO - Cleaning image cache
+20-12-2024 21:05:19 - ERROR - [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:05:19 - INFO - Getting server statistics
+20-12-2024 21:05:19 - DEBUG - Saving server statistics
+20-12-2024 21:05:19 - INFO - Signed in as AllDayDevBot
+20-12-2024 21:05:19 - DEBUG - Forum posts scanning
+20-12-2024 21:05:19 - DEBUG - Notified list cleared
+20-12-2024 21:05:19 - DEBUG - The leveling minute loop starts over again
+20-12-2024 21:05:19 - INFO - Getting server statistics
+20-12-2024 21:05:19 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - INFO - Loaded Cog ad_weer
+20-12-2024 21:17:35 - INFO - Loaded Cog forum
+20-12-2024 21:17:35 - INFO - Loaded Cog birthday
+20-12-2024 21:17:35 - INFO - Loaded Cog log_to_server
+20-12-2024 21:17:35 - INFO - Loaded Cog community
+20-12-2024 21:17:35 - INFO - Loaded Cog moderation
+20-12-2024 21:17:35 - INFO - Loaded Cog modmail
+20-12-2024 21:17:35 - INFO - Loaded Cog leveling
+20-12-2024 21:17:35 - INFO - Loaded Cog buy_sell
+20-12-2024 21:17:35 - INFO - Loaded Cog news
+20-12-2024 21:17:35 - INFO - Loaded Cog announce
+20-12-2024 21:17:35 - INFO - Loaded Cog analytics
+20-12-2024 21:17:35 - INFO - Loaded Cog website
+20-12-2024 21:17:35 - INFO - Loaded Cog quiz
+20-12-2024 21:17:35 - INFO - Loaded Cog bump
+20-12-2024 21:17:35 - INFO - Loaded Cog introduce_remover
+20-12-2024 21:17:35 - INFO - Loaded Cog welcome_message
+20-12-2024 21:17:35 - INFO - Loaded Cog showcase_remover
+20-12-2024 21:17:35 - INFO - Loaded Cog anti_bot
+20-12-2024 21:17:35 - INFO - Loaded Cog status
+20-12-2024 21:17:35 - INFO - Loaded Cog llm
+20-12-2024 21:17:35 - DEBUG - Running task "keep_sql_active"
+20-12-2024 21:17:35 - DEBUG - Task "keep_sql_active" has finished
+20-12-2024 21:17:35 - DEBUG - Running task "image_cache_cleaner"
+20-12-2024 21:17:35 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - INFO - Signed in as AllDayDevBot
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - DEBUG - Notified list cleared
+20-12-2024 21:17:35 - DEBUG - The leveling minute loop starts over again
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Running task "image_cache_cleaner"
+20-12-2024 21:17:35 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - DEBUG - The leveling minute loop starts over again
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Running task "keep_sql_active"
+20-12-2024 21:17:35 - DEBUG - Task "keep_sql_active" has finished
+20-12-2024 21:17:35 - DEBUG - Running task "image_cache_cleaner"
+20-12-2024 21:17:35 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - DEBUG - The leveling minute loop starts over again
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - INFO - Getting server statistics
+20-12-2024 21:17:35 - DEBUG - Running task "image_cache_cleaner"
+20-12-2024 21:17:35 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:17:35 - DEBUG - Saving server statistics
+20-12-2024 21:17:35 - DEBUG - Forum posts scanning
+20-12-2024 21:17:35 - DEBUG - The leveling minute loop starts over again
+20-12-2024 21:20:54 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:20:54 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:20:54 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:20:54 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'
+20-12-2024 21:20:54 - ERROR - Error while running task "image_cache_cleaner": [WinError 3] The system cannot find the path specified: './files/alldaylog_image_cache'

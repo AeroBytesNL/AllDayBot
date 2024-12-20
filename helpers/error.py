@@ -30,8 +30,10 @@ class Log():
     @staticmethod
     def info(data):
         logger = setup_logging(logging.DEBUG)
-        logger.info(str(data))
         print(f"{GREEN}INFO{RESET} - {get_time_nl()} - {data}")
+
+        if Config.DEBUG != True: return
+        logger.info(str(data))
 
     # Debug
     @staticmethod

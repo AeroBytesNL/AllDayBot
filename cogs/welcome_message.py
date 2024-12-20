@@ -37,7 +37,7 @@ class Welcome_message(commands.Cog):
             await message_to_delete.delete()
             self.potential_messages_deletion.pop(member.id)
         except Exception as error:
-            print("Error inside welcome_message: ", error)
+            print("Error inside \"on_member_remove\": ", error)
             pass
 
 def setup(bot: commands.Bot):

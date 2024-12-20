@@ -23,12 +23,13 @@ async def on_ready():
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
-    try:     
+    try:
+        Log.debug("Running task \"keep_sql_active\"")
         Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
         Database.cursor.fetchone()
-        Log.debug("keep_sql_active has runned!")
+        Log.debug("Task \"keep_sql_active\" has finished")
     except Exception as error:
-        Log.error(error)
+        Log.error(f"Error while running task \"keep_sql_active\": {error}")
         pass
     
 keep_sql_active.start()
