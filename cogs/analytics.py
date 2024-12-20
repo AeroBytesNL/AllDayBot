@@ -59,7 +59,7 @@ class analytics(commands.Cog):
     @tasks.loop(seconds=30)
     async def save_general_statistics_to_db(self):
         try:
-            Log.info("Saving server statistics")
+            Log.debug("Saving server statistics")
 
             # Get current analytics
             Database.cursor.execute("SELECT * FROM statistics LIMIT 1")
