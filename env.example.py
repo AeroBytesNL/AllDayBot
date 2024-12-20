@@ -66,3 +66,11 @@ class Status:
     KUMA_URL = ""
     KUMA_USERNAME = ""
     KUMA_PASSWORD = ""
+
+class DirectAdmin:
+    SERVER_URL = ""
+    USERNAME = ""
+    PASSWORD = ""
+    DOMAIN = ""
+    DOMAIN_NEW_PATH = ""
+    REDIRECT_TYPE = ""

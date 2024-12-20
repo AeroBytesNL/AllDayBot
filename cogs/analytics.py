@@ -31,7 +31,7 @@ class analytics(commands.Cog):
     # Updating total members
     @tasks.loop(seconds=28)
     async def member_statistics(self):
-        Log.info("Getting server statistics")
+        Log.debug("Running task:  \"member_statistics\"")
 
         # Getting guild
         guild = await self.bot.fetch_guild(env_variable.GUILD_ID)
@@ -51,15 +51,16 @@ class analytics(commands.Cog):
             self.categories = len(guild.categories)
             self.created_at = str(guild.created_at)
 
+            Log.debug("Finished task:  \"member_statistics\"")
         except Exception as error:
-            Log.error(error)
+            Log.error(f"Error inside task:  \"member_statistics\": {error}")
             pass
 
     # Saving stuff from self.storage to DB
     @tasks.loop(seconds=30)
     async def save_general_statistics_to_db(self):
         try:
-            Log.info("Saving server statistics")
+            Log.debug("Running task \"save_general_statistics_to_db\"")
 
             # Get current analytics
             Database.cursor.execute("SELECT * FROM statistics LIMIT 1")
@@ -90,8 +91,9 @@ class analytics(commands.Cog):
             # Clear storage
             self.msg_storage.clear()
 
+            Log.debug("Finished task \"save_general_statistics_to_db\"")
         except Exception as error:
-            Log.error(error)
+            Log.error(f"Error inside task \"save_general_statistics_to_db\": {error}")
             pass
 
 def setup(bot: commands.Bot):

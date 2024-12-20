@@ -18,19 +18,19 @@ async def on_ready():
     try:
         await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.playing , name="DM om beheer te contacteren"))
         Log.info(f"Signed in as {bot.user.name}")
-        Log.info(f"The bot is Ready!")
     except Exception as error:
         Log.error(error)
 
 @tasks.loop(seconds=120) 
 async def keep_sql_active():
-    try:     
+    try:
+        Log.debug("Running task \"keep_sql_active\"")
         Database.cursor.execute("SELECT * FROM Users WHERE id='632677231113666601'")
         Database.cursor.fetchone()
-        Log.info("Keeping the database aka dataslut active")
+        Log.debug("Task \"keep_sql_active\" has finished")
     except Exception as error:
-        Log.error(error)
-        quit()
+        Log.error(f"Error while running task \"keep_sql_active\": {error}")
+        pass
     
 keep_sql_active.start()
 
@@ -57,7 +57,7 @@ bot.load_extension("cogs.showcase_remover")
 bot.load_extension("cogs.anti_bot")
 bot.load_extension("cogs.status")
 bot.load_extension("cogs.llm")
+#bot.load_extension("cogs.custom_invite")
 
-# Running the bot
 if __name__ == '__main__':
-        bot.run(secure.BOT_TOKEN)
+    bot.run(secure.BOT_TOKEN)
