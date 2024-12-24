@@ -9,6 +9,7 @@ class AntiBot(commands.Cog):
         self.bot = bot
         Log.info("Loaded Cog anti_bot")
 
+    # Kicks an user if the anti bot role is selected
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         for role in after.roles:

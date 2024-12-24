@@ -11,7 +11,6 @@ class buy_sell(commands.Cog):
         buy_sell.archived_threads.start(self)
         Log.info("Loaded Cog buy_sell")
 
-
     # Selled command
     @commands.slash_command(description="Verwijder je verkochte artikel")
     async def verkocht(self, inter):
@@ -35,7 +34,6 @@ class buy_sell(commands.Cog):
         await inter.response.send_message("Ik verwijder zo de thread!", ephemeral=True)
         time.sleep(5)
         await thread.delete()   
-    
 
     # Not selled command
     @commands.slash_command(description="Verwijder je niet verkochte artikel")
@@ -61,7 +59,6 @@ class buy_sell(commands.Cog):
         time.sleep(5)
         await thread.delete()   
 
-
     @tasks.loop(seconds=15)
     async def archived_threads(self):
         try:
@@ -84,12 +81,10 @@ class buy_sell(commands.Cog):
                 
                 if delta.days > 30:
                     await archived_thread.delete()
-                    print("Archived thread deleted")
+                    Log.info("I deleted an archived thread!")
 
         except Exception as error:
-            print(error)
-            pass
-
+            Log.error(f"Error in \"archived_threads\" (cog buy_sell): {error}")
 
 def setup(bot: commands.Bot):
     bot.add_cog(buy_sell(bot))                    

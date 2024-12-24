@@ -43,21 +43,18 @@ class Forum(commands.Cog):
                                 
                 # IF last message is older then 3 days
                 if "3 day" in days_different and thread.owner.id not in self.is_notified and thread.owner.id == 632677231113666601: # Remove and thread.owner.id == 632677231113666601 after testing
-                    # Send reminder to thread owner in DM
-                    print(f"Sending {thread.owner} a reminder inside DM!")
                     await Forum.reminder_thread_in_dm(self, thread_name=thread.name, thread_owner=thread.owner)
                     self.is_notified.append(int(thread.owner.id))
 
                 # IF last message is older then 5 days
                 if "5 day" in days_different and thread.owner.id not in self.is_notified and thread.owner.id == 632677231113666601: # Remove and thread.owner.id == 632677231113666601 after testing
-                    # Send reminder to thread owner in DM
-                    print(f"Thread of {thread.owner.display_name} has been closed due to inactivity!")
                     # Adding tag "No reaction"
                     tags = thread.parent.get_tag_by_name("Geen reactie")
                     await thread.add_tags(tags)
                     # Lock thead
                     await thread.edit(locked=True, archived=True)
             except Exception as error:
+                Log.error(f"Error in \"not_reponding_checker\" (cog forum): {error}")
                 pass
         
     # Empty list  
