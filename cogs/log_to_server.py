@@ -494,7 +494,8 @@ class log_to_server(commands.Cog):
 
             embed=disnake.Embed(title=f"Reactie {type_embed}", description="\n", color=disnake.Color.orange())
             embed.add_field(name=f"Emoji:", value=f"{payload.emoji}", inline=True)
-            embed.add_field(name="Bericht:", value=f"{message.jump_url}", inline=True)
+            if hasattr(message, "jump_url"):
+                embed.add_field(name="Bericht:", value=f"{message.jump_url}", inline=True)
             embed.add_field(name="Door user:", value=f"{user.display_name}", inline=True)
 
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
