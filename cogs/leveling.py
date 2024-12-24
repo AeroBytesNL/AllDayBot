@@ -152,9 +152,7 @@ class Leveling(commands.Cog):
 
         i = 0
         while i < len(sqlids):
-            if sqlids[i][0] in presentids:
-                Log.info(str(sqlids[i][0]) + " is still here")
-            else:
+            if sqlids[i][0] not in presentids:
                 Log.warning("removing user with ID: " + str(sqlids[i][0]))
                 Leveling.delete_user(sqlids[i][0])
 
