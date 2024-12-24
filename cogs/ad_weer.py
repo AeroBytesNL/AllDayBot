@@ -11,7 +11,6 @@ version_nummer =  ("2.0")
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
 
-
 class Community(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -21,26 +20,21 @@ class Community(commands.Cog):
         async def weer(inter):
             pass
 
-
         # Commands
         @weer.sub_command(description="Het weer voor op dit moment!!")
         @commands.cooldown(1, 3, commands.BucketType.user)
         async def nu(inter, stadnaam: str):
-                print(f"User {inter.author.name} gebruikte het command 'weer nu'")
-
+                #print(f"User {inter.author.name} gebruikte het command 'weer nu'")
                 await weather_NL_city(inter, stadnaam)
                 await log_command(author=inter.author, command="`/weer nu`", channel=inter.channel)
              
         @weer.sub_command(description="Het weer voor morgen!")
         @commands.cooldown(1, 3, commands.BucketType.user)
         async def morgen(inter, stadnaam: str):
-                print(f"User {inter.author.name} gebruikte het command 'weer morgen'")
-
+                #print(f"User {inter.author.name} gebruikte het command 'weer morgen'")
                 await weather_NL_city_tomorrow(inter, stadnaam)
                 await log_command(author=inter.author, command="`/weer nu`", channel=inter.channel)
 
-        
-                    
         # Weerbot NL General
         async def weather_NL_general(inter, result_city):
                 api_key = "a8a15ef8a0ee24d6782ee2cddea5afae"
@@ -65,7 +59,6 @@ class Community(commands.Cog):
                     windspeed = u["speed"] 
                     sunrise_get_data = response_api_json["sys"]["sunrise"]
                     sunset_get_data = response_api_json["sys"]["sunset"]
-
 
                     if '10d' == cloud_icon:   
                         rain_or_dry = (":cloud_rain:  Zorg ervoor dat je een paraplu meeneemt!")
@@ -118,7 +111,6 @@ class Community(commands.Cog):
                     elif '50n' == cloud_icon:
                         ci = ("https://itkelvin.nl/images/weer/50n@2x.png")          
 
-                        
                     if current_temp < 0:
                         color = 0x4793FF                    
                         x = ("Het vriest!")
@@ -165,8 +157,7 @@ class Community(commands.Cog):
                         windspeed_sentence = (":cloud_tornado: Zeer zware storm, orkaanachtig: Buitengewoon hoge golven, grote schade aan bossen/gebouwen. ")
                     elif windspeed >= 118: 
                         windspeed_sentence = (":cloud_tornado: AAAH! RUN BITCH< RUUUUN. Orkaan: Lucht gevuld met schuim en water, verwoestingen aan gebouwen en bossen, extreem hoge golven. ")   
-                    
-                    
+
                     embed = disnake.Embed(
                         title="Weer-info voor de stad: " +str (result_city),
                         description="Info geleverd door Openweathermap.",
@@ -209,8 +200,7 @@ class Community(commands.Cog):
                     sunrise_get_data = response_api_json["sys"]["sunrise"]
                     sunset_get_data = response_api_json["sys"]["sunset"]
 
-
-                    if '10d' == cloud_icon:   
+                    if '10d' == cloud_icon:
                         rain_or_dry = (":cloud_rain:  Zorg ervoor dat je een paraplu meeneemt!")
                     else:
                         rain_or_dry = (":cloud: Je blijft mooi droog!")
@@ -261,7 +251,6 @@ class Community(commands.Cog):
                     elif '50n' == cloud_icon:
                         ci = ("https://itkelvin.nl/images/weer/50n@2x.png")          
 
-                        
                     if current_temp < 0:
                         color = 0x4793FF                    
                         x = (":cold_face: Het vriest!")
@@ -309,9 +298,6 @@ class Community(commands.Cog):
                     elif windspeed >= 118: 
                         windspeed_sentence = (":cloud_tornado: AAAH! RUN BITCH< RUUUUN. Orkaan: Lucht gevuld met schuim en water, verwoestingen aan gebouwen en bossen, extreem hoge golven. ")   
                 
-                    
-                    
-                    
                     embed = disnake.Embed(
                         title="Weer-info voor de stad: " +str (stadnaam),
                         description="Info geleverd door Openweathermap.",
@@ -326,9 +312,6 @@ class Community(commands.Cog):
                     embed.add_field(name="Zonsopkomst", value=":white_sun_small_cloud: " + str (sunrise_normal), inline=True) 
                     embed.add_field(name="Zonsondergang", value=":white_sun_cloud: " + str (sunset_normal), inline=True) 
                     await inter.response.send_message(embed=embed)
-                    
-                    
-
 
         async def weather_NL_city_tomorrow(inter, stadnaam):
                         api_key = "a8a15ef8a0ee24d6782ee2cddea5afae"
@@ -404,7 +387,6 @@ class Community(commands.Cog):
                             ts = ts + 7200
                             sunsetnormal = (datetime.utcfromtimestamp(ts).strftime(' %H:%M:%S'))
 
-
                     ### gemiddelde uitrekenen
                             def Average(l): 
                                 avg = sum(l) / len(l) 
@@ -452,7 +434,6 @@ class Community(commands.Cog):
                                 AM = (":cloud_lightning: Onweer verwacht!")
                                 ci = ("https://itkelvin.nl/images/weer/11d@2x.png")
 
-
                             if mintemp < 0:
                                 mint = (":cold_face: ")
                                 warning_weather_max = ("Het is beneden het vriespunt, zorg ervoor dat je je goed aankleed!")                                
@@ -478,7 +459,6 @@ class Community(commands.Cog):
                                 warning_weather_max = ("Vergeet niet voldoende water te drinken in dit warme weer! Ga je naar buiten? Let er dan op dat je je insmeert! (Tevens smeer dan regelmatig!)")                
                             else:
                                 warning_weather_max = ("Geen waarschuwingen momenteel!")
-
 
                             if averagetempdag1 < 18:
                                 color = 0x4793FF
@@ -519,7 +499,6 @@ class Community(commands.Cog):
                             elif averagewindspeeddag1 >= 118: 
                                 windspeed_sentence = (":cloud_tornado: AAAH! RUN BITCH< RUUUUN. Orkaan: Lucht gevuld met schuim en water, verwoestingen aan gebouwen en bossen, extreem hoge golven. ")   
                                 
-                                                
                     ##gemiddelde embed
                             embed = disnake.Embed(title="Weer-info voor morgen voor de stad: " +str (stadnaam), description="Info geleverd door OpenWeatherMap.", color=0xdf8cfe)
                             embed.add_field(name="LET OP!", value=warning_weather_max, inline=False)            
@@ -534,9 +513,6 @@ class Community(commands.Cog):
                             embed.add_field(name="Zonsondergang", value=":white_sun_cloud: " + str (sunsetnormal), inline=True) 
                             await inter.response.send_message(embed=embed)
                             
-                            
-
-
         async def send_help_embed(inter):
             embed = disnake.Embed(title="WeerBot help menu!", description="Voor de community, door de community!", color=0x4793FF)
             embed.add_field(name="/weer_help", value="Dit laat dit bericht zien.", inline=False)   
@@ -547,18 +523,14 @@ class Community(commands.Cog):
             embed.add_field(name="/weer_voorspelling", value="Dit laat een grafiek zien met de weersvoorspelling!", inline=False)   
             await inter.response.send_message(embed=embed)
 
-
         # Command logging
         async def log_command(author, command, channel):
-
             embed=disnake.Embed(title=f"Een user heeft een command gebruikt!", description=f"\n", color=disnake.Color.green())
             embed.add_field(name="Command::", value=str(command), inline=True)
             embed.add_field(name="Author:", value=str(author.mention), inline=True)
             embed.add_field(name="Kanaal:", value=str(channel.mention), inline=False)
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)
-
-
 
 # Adds it to the main
 def setup(bot: commands.Bot):
