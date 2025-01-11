@@ -70,6 +70,10 @@ class InviteTracker(commands.Cog):
 
         await inter.response.send_message("Invite beschrijving is verwijderd!", ephemeral=True)
 
+    def get_invite_description(invite_code):
+        Database.cursor.execute(f"SELECT description from invite_tracker WHERE code = '{invite_code}'")
+        return Database.cursor.fetchone()
+
     async def member_guild_embed(self, member, join_type, invite_code, inviter):
         try:
             date_created_at = str(member.created_at).split(" ")[0]
@@ -104,9 +108,13 @@ class InviteTracker(commands.Cog):
                                   color=embed_color)
             embed.set_author(name=member.display_name, icon_url=member.avatar)
             embed.add_field(name="Account leeftijd:", value=str(i), inline=False)
-            embed.add_field(name="Invite code:", value=str(invite_code), inline=False)
-            embed.add_field(name="Invite author:", value=str(inviter.name), inline=False)
-
+            # embed.add_field(name="Invite code:", value=str(invite_code), inline=False)
+            # embed.add_field(name="Invite author:", value=str(inviter.name), inline=False)
+            print(invite_code)
+            invite_description = InviteTracker.get_invite_description(invite_code=invite_code)
+            print(invite_description)
+            if invite_description is not None:
+                embed.add_field(name="Invite:", value=invite_description[0])
             channel_to_send = self.bot.get_channel(env_variable.ADJE_LOG_CHANNEL_ID)
             await channel_to_send.send(embed=embed)
         except Exception as error:
