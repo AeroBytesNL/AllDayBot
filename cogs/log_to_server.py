@@ -319,15 +319,14 @@ class log_to_server(commands.Cog):
 
             # Color
             match type:
-                case "joinde de keet!":
-                    return
-                    embed_color = disnake.Color.green()
                 case "verliet de keet!":
                     embed_color = disnake.Color.dark_red()
                 case "is verbannen van deze keet!":
                     embed_color = disnake.Color.dark_red()
                 case "is un-banned van deze keet!":
                     embed_color = disnake.Color.dark_red()
+
+            if type == "joinde de keet!": return
 
             embed=disnake.Embed(title="\n", description=f"**{member.mention} {type}**", color=embed_color)
             embed.set_author(name=member.display_name, icon_url=member.avatar)
