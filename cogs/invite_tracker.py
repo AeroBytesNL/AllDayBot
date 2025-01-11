@@ -4,6 +4,7 @@ from env import *
 from helpers.error import Log
 from datetime import datetime
 from dateutil import relativedelta
+from database import Database
 
 class InviteTracker(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -25,6 +26,49 @@ class InviteTracker(commands.Cog):
             for current_invite in await self.bot.get_guild(env_variable.GUILD_ID).invites():
                 if old_invite.code == current_invite.code and old_invite.uses < current_invite.uses:
                     await InviteTracker.member_guild_embed(self, member, "joinde de keet!", current_invite.code, current_invite.inviter)
+
+    @commands.default_member_permissions(moderate_members=True)
+    @commands.slash_command(description="Voeg een nieuwe invite beschrijving toe")
+    async def invite_toevoegen(self, inter, uitnodigingscode: str, invite_beschrijving: str):
+        try:
+            Database.cursor.execute(f"INSERT INTO invite_tracker (code, description) VALUES ('{uitnodigingscode}', '{invite_beschrijving}')")
+            Database.db.commit()
+        except Exception as error:
+            Log.error(f"Error inside \"invite_toevoegen\": {error}")
+            await inter.response.send_message("Er ging iets mis!")
+            return
+
+        await inter.response.send_message("Invite beschrijving is toegevoegd!", ephemeral=True)
+
+    @commands.default_member_permissions(moderate_members=True)
+    @commands.slash_command(description="Krijg een lijst te zien van invite beschrijvingen")
+    async def invite_lijst(self, inter):
+        try:
+            Database.cursor.execute("SELECT * FROM invite_tracker")
+            res = Database.cursor.fetchall()
+
+            embed = disnake.Embed(title="Invite beschrijvingen!")
+            for invite_description in res:
+                embed.add_field(name=f"ID: {invite_description[0]} - Code: {invite_description[1]}", value=invite_description[2])
+        except Exception as error:
+            Log.error(f"Error inside \"invite_lijst\": {error}")
+            await inter.response.send_message("Er ging iets mis!")
+            return
+
+        await inter.response.send_message(embed=embed, ephemeral=True)
+
+    @commands.default_member_permissions(moderate_members=True)
+    @commands.slash_command(description="Verwijder een invite beschrijving")
+    async def invite_verwijder(self, inter, invite_id: int):
+        try:
+            Database.cursor.execute(f"DELETE FROM invite_tracker WHERE id = {invite_id}")
+            Database.db.commit()
+        except Exception as error:
+            Log.error(f"Error inside \"invite_verwijder\": {error}")
+            await inter.response.send_message("Er ging iets mis!")
+            return
+
+        await inter.response.send_message("Invite beschrijving is verwijderd!", ephemeral=True)
 
     async def member_guild_embed(self, member, join_type, invite_code, inviter):
         try:
@@ -67,7 +111,6 @@ class InviteTracker(commands.Cog):
             await channel_to_send.send(embed=embed)
         except Exception as error:
             Log.error(f"Error while executing \"member_guild_embed\": {error}")
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(InviteTracker(bot))
