@@ -320,6 +320,7 @@ class log_to_server(commands.Cog):
             # Color
             match type:
                 case "joinde de keet!":
+                    return
                     embed_color = disnake.Color.green()
                 case "verliet de keet!":
                     embed_color = disnake.Color.dark_red()

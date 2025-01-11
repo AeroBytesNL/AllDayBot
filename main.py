@@ -58,6 +58,7 @@ bot.load_extension("cogs.anti_bot")
 bot.load_extension("cogs.status")
 bot.load_extension("cogs.llm")
 #bot.load_extension("cogs.custom_invite")
+bot.load_extension("cogs.invite_tracker")
 
 if __name__ == '__main__':
     bot.run(secure.BOT_TOKEN)
