@@ -43,27 +43,27 @@ class Status(commands.Cog):
         if resp["attributes"]["current_state"] == "starting":
             embed.add_field(
                 name="CPU",
-                value=f"`{round(resp["attributes"]["resources"]["cpu_absolute"], 3)}`%",
+                value=f"`{round(resp['attributes']['resources']['cpu_absolute'], 3)}`%",
                 inline=True
             )
             embed.add_field(
                 name="RAM",
-                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["memory_bytes"]), 3)}`mb",
+                value=f"`{round(Status.bytes_to_mb(resp['attributes']['resources']['memory_bytes']), 3)}`mb",
                 inline=True
             )
             embed.add_field(
                 name="Netwerk in",
-                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["network_rx_bytes"]), 3)}`mb",
+                value=f"`{round(Status.bytes_to_mb(resp['attributes']['resources']['network_rx_bytes']), 3)}`mb",
                 inline=True
             )
             embed.add_field(
                 name="Netwerk uit",
-                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["network_tx_bytes"]), 3)}`mb",
+                value=f"`{round(Status.bytes_to_mb(resp['attributes']['resources']['network_tx_bytes']), 3)}`mb",
                 inline=True
             )
             embed.add_field(
                 name="Opslag",
-                value=f"`{round(Status.bytes_to_mb(resp["attributes"]["resources"]["disk_bytes"]), 3)}`mb",
+                value=f"`{round(Status.bytes_to_mb(resp['attributes']['resources']['disk_bytes']), 3)}`mb",
                 inline=False
             )
         await inter.response.send_message(embed=embed)
