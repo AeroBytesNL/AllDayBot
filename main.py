@@ -2,7 +2,6 @@ import disnake
 from disnake.ext import commands, tasks
 from env import *
 from database import *
-from helpers.ntfy import NtfyLogging
 import sentry_sdk
 from helpers.error import Log
 
