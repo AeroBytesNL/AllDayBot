@@ -25,10 +25,10 @@ class Bump_reminder(commands.Cog):
             if message.author.id != 302050872383242240:
                 return
 
-            if message.interaction_metadata.name != "bump":
+            if message.interaction.name != "bump":
                 return
 
-            Bump_reminder.add_xp_to_bumper(self, message.interaction_metadata.user.id)
+            Bump_reminder.add_xp_to_bumper(self, message.interaction.user.id)
             Log.info("Added xp to bumper")
 
         except Exception as error:
@@ -44,7 +44,7 @@ class Bump_reminder(commands.Cog):
             # Find the last bump
             messages = list(
             filter(
-                lambda x: x.interaction_metadata is not None and x.interaction_metadata.name == "bump",
+                lambda x: x.interaction is not None and x.interaction.name == "bump",
                 await channel.history(limit=50).flatten()
             )
             )
