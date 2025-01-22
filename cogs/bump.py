@@ -44,7 +44,7 @@ class Bump_reminder(commands.Cog):
             # Find the last bump
             messages = list(
             filter(
-                lambda x: x.interaction is not None and x.interaction.name == "bump",
+                lambda x: x.interaction_metadata is not None and x.interaction_metadata.name == "bump",
                 await channel.history(limit=50).flatten()
             )
             )
