@@ -40,7 +40,7 @@ class Bump_reminder(commands.Cog):
         try:
             messages = [
                 msg for msg in await (await self.bot.fetch_channel(Channel.BUMP)).history(limit=50).flatten()
-                if msg.interaction and msg.interaction.name == "bump"
+                if msg.interaction_metadata and msg.interaction_metadata.name == "bump"
             ]
 
             last_bump = max(messages, key=lambda x: x.id)
