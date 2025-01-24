@@ -6,69 +6,37 @@ from datetime import datetime, timedelta, timezone
 from database import Database
 from helpers.error import Log
 
-class Bump_reminder(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class BumpReminder(commands.Cog):
+    def __init__(self, bot):
         self.bot = bot
-        self.last_processed_bump = 0
+        self.last_bump_time = None
+        self.bump_channel_id = Channel.BUMP
+        self.bump_interval = timedelta(hours=2)
         Log.info("Loaded Cog bump")
+
+    @tasks.loop(minutes=5)
+    async def check_bump(self):
+        channel = self.bot.get_channel(self.bump_channel_id)
+        if not channel:
+            Log.error(f"Error in check_bump: Channel not found")
+            return
+
+        if self.last_bump_time:
+            time_since_last_bump = datetime.now(timezone.utc) - self.last_bump_time
+            if time_since_last_bump >= self.bump_interval:
+                await channel.send("Reminder: It's time to bump the server!")
+                self.last_bump_time = datetime.now(timezone.utc)
+        else:
+            self.last_bump_time = datetime.now(timezone.utc)
+            await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
+
+    @check_bump.before_loop
+    async def before_check_bump(self):
+        await self.bot.wait_until_ready()
 
     @commands.Cog.listener()
     async def on_ready(self):
-        Bump_reminder.check_if_bump_is_ready.start(self)
+        self.check_bump.start()
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        try:
-            if message.channel.id != Channel.BUMP:
-                return
-
-            if message.author.id != 302050872383242240:
-                return
-
-            if message.interaction.name != "bump":
-                return
-
-            Bump_reminder.add_xp_to_bumper(self, message.interaction.user.id)
-            Log.info("Added xp to bumper")
-
-        except Exception as error:
-            Log.error(error)
-            pass
-
-    @tasks.loop(seconds=5)
-    async def check_if_bump_is_ready(self):
-        try:
-            messages = [
-                msg for msg in await (await self.bot.fetch_channel(Channel.BUMP)).history(limit=50).flatten()
-                if msg.interaction_metadata and msg.interaction_metadata.name == "bump"
-            ]
-
-            last_bump = max(messages, key=lambda x: x.id)
-
-            if last_bump.id == self.last_processed_bump: return
-
-            bump_time = last_bump.created_at
-            diff = (datetime.now(timezone(timedelta(hours=1))) - bump_time).total_seconds()
-
-            if diff >= 7192 and diff < 7200: 
-                await (await self.bot.fetch_channel(Channel.BUMP)).send("De server kan weer gebumped worden! Dit kan d.m.v. het command `/bump`. Dit helpt de server groeien! (Ook ontvang je een bonus van 60 XP!)")
-                Log.info("Server is ready to be bumped")
-                self.last_processed_bump = last_bump.id
-
-        except Exception as error:
-            Log.error(error)
-            pass
-
-    def add_xp_to_bumper(self, author_id):
-        try:
-            Database.cursor.execute(f"SELECT xp FROM Users WHERE id='{author_id}'")
-            res = Database.cursor.fetchone()[0]
-
-            Database.cursor.execute(f"UPDATE Users SET xp = {res + 60} WHERE id='{author_id}'")
-            Database.db.commit()
-        except Exception as error:
-            Log.error(error)
-            pass
-
-def setup(bot: commands.Bot):
-    bot.add_cog(Bump_reminder(bot))
+def setup(bot):
+    bot.add_cog(BumpReminder(bot))
