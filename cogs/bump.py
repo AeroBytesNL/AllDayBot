@@ -24,7 +24,7 @@ class BumpReminder(commands.Cog):
         if self.last_bump_time:
             time_since_last_bump = datetime.now(timezone.utc) - self.last_bump_time
             if time_since_last_bump >= self.bump_interval:
-                await channel.send("Reminder: It's time to bump the server!")
+                await channel.send("De server kan weer gebumped worden! Dit kan d.m.v het command `/bump`. Dit helpt de server groeien!")
                 self.last_bump_time = datetime.now(timezone.utc)
         else:
             self.last_bump_time = datetime.now(timezone.utc)
